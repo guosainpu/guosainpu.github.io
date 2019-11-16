@@ -30,3 +30,5 @@ key: page-about
 ```javascript
 console.log('我是郭赛，一个iOSer，在这里练习基本功');
 ```
+
+![SOHO](/post_image/SOHO.jpg)
