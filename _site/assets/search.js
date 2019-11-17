@@ -1,1 +1,1 @@
-window.TEXT_SEARCH_DATA={'posts':[{'title':"从与非门到俄罗斯方块",'url':"/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html"}]};
+window.TEXT_SEARCH_DATA={'posts':[{'title':"从与非门到俄罗斯方块",'url':"/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html"},{'title':"用与非门实现CPU的数理基础",'url':"/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"}]};
