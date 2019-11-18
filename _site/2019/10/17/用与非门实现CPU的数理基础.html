@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>与非门实现CPU的数理基础 - 一只草履虫</title>
 
-<meta name="description" content="布尔函数布尔函数：布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。布尔函数的两种表示方法：1.真值表：枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。2.布尔表达式：使用布尔操作符（And，Or，Not等）表达，上面的真...">
+<meta name="description" content="布尔函数布尔函数：布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。布尔函数的两种表示方法：1.真值表：枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。真值表2.布尔表达式：使用布尔操作符（And，Or，Not等）表达，上...">
 <link rel="canonical" href="http://localhost:4000/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
@@ -349,6 +349,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <p>1.<strong>真值表：</strong>枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921635xlzj30d00d2wed.jpg" width="25%" /></center>
+<center><figcaption>真值表</figcaption></center>
 <p>2.<strong>布尔表达式：</strong>使用布尔操作符（And，Or，Not等）表达，上面的真值表可以用此表达式表示：</p>
 <center>f(x, y, z) = (x And y) Or (Not(x) And z)</center>
 
