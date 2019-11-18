@@ -31,4 +31,4 @@ key: page-about
 console.log('我是郭赛，一个iOSer，在这里练习基本功');
 ```
 
-![SOHO](/post_image/SOHO.jpg)
+![SOHO](https://tva1.sinaimg.cn/large/006y8mN6ly1g924tzerroj31400u0k1s.jpg)
