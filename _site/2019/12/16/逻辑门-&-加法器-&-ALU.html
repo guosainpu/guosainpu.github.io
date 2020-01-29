@@ -357,15 +357,15 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h3 id="基本逻辑门">基本逻辑门</h3>
 <p>基本逻辑门是一些简单的布尔函数的实现，我们需要的基本逻辑门如下，有1位和多位（16位）之分。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1g9yzjn8lngj30qe0mgwew.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1g9yzjn8lngj30qe0mgwew.jpg" width="600" /></center>
 <center><figcaption>芯片列表</figcaption></center>
 
 <p>我们所有组合逻辑芯片都是基于Nand实现的，下面是Nand的真值表：只有当两个输入都为1时输出为0，其余输出为1反，然后输出。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga16e7ws5tj30b007s3yd.jpg" width="25%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga16e7ws5tj30b007s3yd.jpg" width="300" /></center>
 <center><figcaption>Nand真值表</figcaption></center>
 
 <p>首先我们用Nand实现一个Not。Not很简单，对其输入取反，然后输出。下面是我自己的实现方式：</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga21uf1wocj30s609e3yh.jpg" width="50%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga21uf1wocj30s609e3yh.jpg" width="600" /></center>
 <center><figcaption>Not电路图</figcaption></center>
 
 <p>HDL实现：硬件描述语言实现。</p>
@@ -385,7 +385,7 @@ CHIP Not {
 </code></pre></div></div>
 
 <p>然后我们继续用刚刚实现的Not和Nand组合使用，再实现一个And。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga221fwwf3j310m08mgll.jpg" width="75%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga221fwwf3j310m08mgll.jpg" width="800" /></center>
 <center><figcaption>And电路图</figcaption></center>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
@@ -438,15 +438,15 @@ CHIP And16 {
 <h3 id="加法器">加法器</h3>
 <p>有了上面实现的这些基本逻辑门，我们就可以实现CPU中一个非常重要的基本芯片：加法器。实现加法器的顺序是：半加器-&gt;全加器-&gt;16位加法器</p>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyn6tzgj30va0d8glt.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyn6tzgj30va0d8glt.jpg" width="600" /></center>
 <center><figcaption>芯片列表</figcaption></center>
 
 <p>第一步：实现一个半加器，半加器负责计算两个一位二进制相加，输出sum和carry（进位）。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xb8b2xej30sc09m74d.jpg" width="75%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xb8b2xej30sc09m74d.jpg" width="600" /></center>
 <center><figcaption>半加器</figcaption></center>
 
 <p>虽然半加器看上去跳出了布尔运算，升级到的小学数学，但其仍然可以用真值表表示，所以也就可以用基本逻辑门实现，我们用一个Xor和And就可以实现半加器。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2c9rhu5bj30sa0ge3yo.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2c9rhu5bj30sa0ge3yo.jpg" width="600" /></center>
 <center><figcaption>半加器电路图</figcaption></center>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
@@ -467,10 +467,10 @@ CHIP HalfAdder {
 </code></pre></div></div>
 
 <p>半加器只能计算两个一位二进制数相加，接着我们在输入端再加入一个进位管脚（代表低位做加法时进过来的进位），就成为了一个全加器。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xom01j9j30u80de0sv.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xom01j9j30u80de0sv.jpg" width="600" /></center>
 <center><figcaption>全加器</figcaption></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cemdwywj318g0gu0t1.jpg" width="70%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cemdwywj318g0gu0t1.jpg" width="600" /></center>
 <center><figcaption>全加器电路图</figcaption></center>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
@@ -491,7 +491,7 @@ CHIP FullAdder {
 </code></pre></div></div>
 
 <p>最后我们利用全加器实现16位加法器，有了16位加法器，我们就可以进行2个不大于2^16的整数的加法了。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xrljwy9j30te06sdfv.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xrljwy9j30te06sdfv.jpg" width="600" /></center>
 <center><figcaption>16位加法器</figcaption></center>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
@@ -548,17 +548,17 @@ CHIP Inc16 {
   <li><strong>DMultiplexor:</strong> 有一路输入，多路输出，在输出路中选择一路降输入值输出</li>
 </ul>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyl836uj30v60meaaw.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyl836uj30v60meaaw.jpg" width="600" /></center>
 <center><figcaption>芯片列表</figcaption></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y8t42i3j30p60dq0sv.jpg" width="50%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y8t42i3j30p60dq0sv.jpg" width="600" /></center>
 <center><figcaption>Multiplexor</figcaption></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg" width="50%" /></center>
+<center>&lt;img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg" width="600&gt;</center>
 <center><figcaption>DMultiplexor</figcaption></center>
 
 <p>这里我们实现一个2路1位的Mux。a，b是两路1位信号输入，sel是选择位。如果sel == 0，out管脚输出a的值，否则输出b的值。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1zhhi4a2j30rm0kuq36.jpg" width="50%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1zhhi4a2j30rm0kuq36.jpg" width="600" /></center>
 <center><figcaption>2路1位Mux电路图</figcaption></center>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** 
@@ -581,7 +581,7 @@ CHIP Mux {
 </code></pre></div></div>
 
 <p>当然除了2路选择器，还有4路、8路、16路等多路选择器。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yd61q3mj30ze09at8v.jpg" width="75%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yd61q3mj30ze09at8v.jpg" width="800" /></center>
 <center><figcaption>多路Mux</figcaption></center>
 
 <p>下面是4路16位选择器的一种实现方式</p>
@@ -607,13 +607,13 @@ CHIP Mux4Way16 {
 <h3 id="alu">ALU</h3>
 <p>有了多通道逻辑门，我们就可以进一步实现一个更为复杂的芯片：ALU。ALU是CPU的三大基本模块之一（ALU、寄存器、程序计数器）。基本逻辑门只能计算一种布尔逻辑，而ALU可以通过改变控制位输入变量的组合（zx,nz,zy,ny,f,no），可以控制实现多种计算逻辑。这类似于一个CPU可以执行指令集中的众多指令一样（当然这其中就依赖于ALU）。</p>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cylk4d8j30uo05i3yg.jpg" width="65%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cylk4d8j30uo05i3yg.jpg" width="600" /></center>
 <center><figcaption>芯片列表</figcaption></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf3rz82j30pi0i0dg1.jpg" width="50%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf3rz82j30pi0i0dg1.jpg" width="600" /></center>
 <center><figcaption>ALU</figcaption></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg" width="60%" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg" width="600" /></center>
 <center><figcaption>ALU真值表</figcaption></center>
 
 <p>下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。</p>
@@ -685,7 +685,7 @@ CHIP ALU {
 <p>最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：<strong>任何两个用补码表示的有符号数的加法和正数的加法完全相同</strong>，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。</p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-12-16T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">与非门实现CPU的数理基础</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">与非门实现CPU的数理基础</a></div><div class="next"><span>NEXT</span><a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">时序逻辑芯片：时序门、寄存器、RAM、计数器</a></div></div></div>
 
 </div>
 
