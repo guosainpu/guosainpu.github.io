@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-01-30T14:04:41+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-01-30T14:06:36+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
 </subtitle><author><name>Your Name</name></author><entry><title type="html">时序逻辑芯片：时序门、寄存器、RAM、计数器</title><link href="http://localhost:4000/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html" rel="alternate" type="text/html" title="时序逻辑芯片：时序门、寄存器、RAM、计数器" /><published>2020-01-29T00:00:00+08:00</published><updated>2020-01-29T00:00:00+08:00</updated><id>http://localhost:4000/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87:%E6%97%B6%E5%BA%8F%E9%97%A8%E3%80%81%E5%AF%84%E5%AD%98%E5%99%A8%E3%80%81RAM%E3%80%81%E8%AE%A1%E6%95%B0%E5%99%A8</id><content type="html" xml:base="http://localhost:4000/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">&lt;p&gt;上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。&lt;/p&gt;
 
 &lt;h3 id=&quot;带环电路时钟系统d触发器&quot;&gt;带环电路、时钟系统、D触发器&lt;/h3&gt;
@@ -12,7 +12,7 @@
 &lt;p&gt;在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由SR锁存器派生而来。（如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。&lt;/p&gt;
 
 &lt;p&gt;DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1gbdsrbyc04j3088076a9w.jpg&quot; width=&quot;250&quot; /&gt;&lt;/center&gt;
+&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1gbek01supqj30dq05kaa4.jpg&quot; width=&quot;250&quot; /&gt;&lt;/center&gt;
 
 &lt;h3 id=&quot;1位寄存器和16位寄存器&quot;&gt;1位寄存器和16位寄存器&lt;/h3&gt;
 &lt;p&gt;有了DFF的记忆功能，我们接下来先实现最简单1bit寄存器和16bit寄存器。1bit寄存器的接口包括：in输入管脚，负责传输输入数据；load管脚，load管脚是控制位，只有当load为1的时候，才会存储in的输入数据；out管脚输出当前存储的值。接口如下所示：&lt;/p&gt;

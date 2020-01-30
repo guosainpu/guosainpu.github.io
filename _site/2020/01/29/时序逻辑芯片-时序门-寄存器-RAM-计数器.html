@@ -354,7 +354,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <p>在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由SR锁存器派生而来。（如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。</p>
 
 <p>DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdsrbyc04j3088076a9w.jpg" width="250" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbek01supqj30dq05kaa4.jpg" width="250" /></center>
 
 <h3 id="1位寄存器和16位寄存器">1位寄存器和16位寄存器</h3>
 <p>有了DFF的记忆功能，我们接下来先实现最简单1bit寄存器和16bit寄存器。1bit寄存器的接口包括：in输入管脚，负责传输输入数据；load管脚，load管脚是控制位，只有当load为1的时候，才会存储in的输入数据；out管脚输出当前存储的值。接口如下所示：</p>
