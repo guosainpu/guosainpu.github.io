@@ -105,7 +105,7 @@ CHIP Memory {
 * PC：程序计数器，保存下一条指令地址
 * 控制逻辑：解析指令类型，选择寄存器，更新PC等
 
-CPU的电路示意图如下，完整电路图比较难画，暂时不画。
+CPU的电路示意图如下(完整电路图比较难画，先不画了）
 
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh319ez5ij31800rct9n.jpg" width="700"></center>
 
