@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>时序逻辑芯片：时序门、寄存器、RAM、计数器 - 一只草履虫</title>
 
-<meta name="description" content="上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。带环电路、时钟系统、D触发器组合逻辑芯片之所以...">
+<meta name="description" content="上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。反馈电路、时钟系统、D触发器组合逻辑芯片之所以...">
 <link rel="canonical" href="http://localhost:4000/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
@@ -346,15 +346,17 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。</p>
 
-<h3 id="带环电路时钟系统d触发器">带环电路、时钟系统、D触发器</h3>
+<h3 id="反馈电路时钟系统d触发器">反馈电路、时钟系统、D触发器</h3>
 
-<p>组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。</p>
+<p>组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdrumxqvgj30l60740sl.jpg" width="600" /></center>
 
-<p>提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础，只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。</p>
+<p>提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么通常用时钟频率来作为衡量计算机性能的一个重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbeiyf35ixj313e02edft.jpg" width="800" /></center>
 
-<p>在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由SR锁存器派生而来。（如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。</p>
+<p>在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由R-S锁存器派生而来。（DFF的实现相对复杂，如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc0yzm52nxj317y0iy753.jpg" width="600" /></center>
+<center><figcaption>边沿触发的D型触发器</figcaption></center>
 
 <p>DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbek01supqj30dq05kaa4.jpg" width="250" /></center>
@@ -629,7 +631,7 @@ CHIP PC {
 <p>至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。</p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-01-29T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/12/16/%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">组合逻辑芯片：逻辑门、加法器、ALU</a></div><div class="next"><span>NEXT</span><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">实现hack：计算机架构、内存、CPU和指令集</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">组合逻辑芯片：逻辑门、加法器、ALU</a></div><div class="next"><span>NEXT</span><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">实现hack：计算机架构、内存、CPU和指令集</a></div></div></div>
 
 </div>
 
