@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-18T16:29:41+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-18T17:32:53+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
 </subtitle><author><name>Your Name</name></author><entry><title type="html">实现hack：计算机架构、内存、CPU和指令集</title><link href="http://localhost:4000/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html" rel="alternate" type="text/html" title="实现hack：计算机架构、内存、CPU和指令集" /><published>2020-02-01T00:00:00+08:00</published><updated>2020-02-01T00:00:00+08:00</updated><id>http://localhost:4000/2020/02/01/hack%20CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86</id><content type="html" xml:base="http://localhost:4000/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">&lt;p&gt;经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。&lt;/p&gt;
 
 &lt;h3 id=&quot;计算机架构&quot;&gt;计算机架构&lt;/h3&gt;
@@ -836,7 +836,7 @@ CHIP ALU {
 &lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1gbdjx10y6yj31gu0och04.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
 &lt;center&gt;&lt;figcaption&gt;8086 CPU&lt;/figcaption&gt;&lt;/center&gt;
 
-&lt;p&gt;大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑指令集但却能够超高速运算的特性。&lt;/p&gt;
+&lt;p&gt;大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑运算集但却能够以超高速方式运行的特点。英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。&lt;/p&gt;
 
 &lt;h3 id=&quot;布尔函数&quot;&gt;布尔函数&lt;/h3&gt;
 
@@ -859,7 +859,7 @@ CHIP ALU {
 
 &lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006y8mN6ly1g92165tk1lj311g0d63yy.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
 
-&lt;p&gt;布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。&lt;strong&gt;可以说CPU的实现是建立在布尔函数之上的&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。&lt;strong&gt;一个复杂的CPU物理实现对应着一个复杂的布尔函数设计，可以说CPU的实现是建立在布尔函数之上的。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;用与非门实现cpu的数理基础&quot;&gt;用与非门实现CPU的数理基础&lt;/h3&gt;
 
@@ -872,7 +872,7 @@ CHIP ALU {
 
 &lt;p&gt;&lt;em&gt;以上证明方法可以自行Google&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;有了上面的数理基础做支撑，我们可以得出结论：一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。&lt;/p&gt;
+&lt;p&gt;有了上面的数理基础做支撑，我们可以得出结论：&lt;strong&gt;一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;用软件实现硬件&quot;&gt;用软件实现硬件&lt;/h3&gt;
 
@@ -880,7 +880,7 @@ CHIP ALU {
 
 &lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006y8mN6ly1g921650gf9j313r0u077e.jpg&quot; width=&quot;800&quot; /&gt;&lt;/center&gt;
 
-&lt;p&gt;好了，下面就让我们用Nand来实现一个CPU吧~&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="从0到1构建计算机" /><summary type="html">CPU和布尔函数 CPU本质上是一个函数计算器： 信号通过输入管脚输入，对应着函数的入参 CPU的内部电路是函数的黑盒实现 信号通过输出管脚输出，对应着函数的出参 8086 CPU 大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑指令集但却能够超高速运算的特性。 布尔函数 布尔函数：布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。 布尔函数的两种表示方法： 1.真值表：枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。 真值表 2.布尔表达式：使用布尔操作符（And，Or，Not等）表达，上面的真值表可以用此表达式表示： f(x, y, z) = (x And y) Or (Not(x) And z) 布尔函数和门 门（gate）是用来实现布尔函数的物理设备，例如与门，或门，非门，与非门等。门是基本的电子元器件，复杂的门电路就构成了CPU 门有输入管脚和输出管脚，对应着布尔函数的入参和出参；门电路的具体实现方式则对应着布尔函数的运算规则。复杂的布尔函数就对应的复杂的门电路 布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。可以说CPU的实现是建立在布尔函数之上的 用与非门实现CPU的数理基础 布尔函数的一些数学结论： 任何一个布尔函数，无论多复杂，都可以只用三种布尔操作符And，Or，Not完全表达。 And，Or，Not运算都可以只用Nand（与非）一种运算来代替实现，或者只用Nor（或非）一种运算来代替实现。 由1、2可得：仅使用Nand运算，就能够构建任何布尔函数。 以上证明方法可以自行Google 有了上面的数理基础做支撑，我们可以得出结论：一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。 用软件实现硬件 今天，硬件设计者们也不再亲手制作硬件了，而是用软件来实现设计：通过编写硬件描述语言（HDL）来描述芯片结构，并能通过测试用例来验证设计。 好了，下面就让我们用Nand来实现一个CPU吧~</summary></entry><entry><title type="html">从与非门到俄罗斯方块</title><link href="http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html" rel="alternate" type="text/html" title="从与非门到俄罗斯方块" /><published>2019-10-16T00:00:00+08:00</published><updated>2019-10-16T00:00:00+08:00</updated><id>http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97</id><content type="html" xml:base="http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">&lt;p&gt;&lt;img src=&quot;/post_image/nand_start/adam_god_nand.png&quot; alt=&quot;adam_god_nand&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;好了，下面就让我们用Nand来实现一个CPU吧~&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="从0到1构建计算机" /><summary type="html">CPU和布尔函数 CPU本质上是一个函数计算器： 信号通过输入管脚输入，对应着函数的入参 CPU的内部电路是函数的黑盒实现 信号通过输出管脚输出，对应着函数的出参 8086 CPU 大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑运算集但却能够以超高速方式运行的特点。英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。 布尔函数 布尔函数：布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。 布尔函数的两种表示方法： 1.真值表：枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。 真值表 2.布尔表达式：使用布尔操作符（And，Or，Not等）表达，上面的真值表可以用此表达式表示： f(x, y, z) = (x And y) Or (Not(x) And z) 布尔函数和门 门（gate）是用来实现布尔函数的物理设备，例如与门，或门，非门，与非门等。门是基本的电子元器件，复杂的门电路就构成了CPU 门有输入管脚和输出管脚，对应着布尔函数的入参和出参；门电路的具体实现方式则对应着布尔函数的运算规则。复杂的布尔函数就对应的复杂的门电路 布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。一个复杂的CPU物理实现对应着一个复杂的布尔函数设计，可以说CPU的实现是建立在布尔函数之上的。 用与非门实现CPU的数理基础 布尔函数的一些数学结论： 任何一个布尔函数，无论多复杂，都可以只用三种布尔操作符And，Or，Not完全表达。 And，Or，Not运算都可以只用Nand（与非）一种运算来代替实现，或者只用Nor（或非）一种运算来代替实现。 由1、2可得：仅使用Nand运算，就能够构建任何布尔函数。 以上证明方法可以自行Google 有了上面的数理基础做支撑，我们可以得出结论：一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。 用软件实现硬件 今天，硬件设计者们也不再亲手制作硬件了，而是用软件来实现设计：通过编写硬件描述语言（HDL）来描述芯片结构，并能通过测试用例来验证设计。 好了，下面就让我们用Nand来实现一个CPU吧~</summary></entry><entry><title type="html">从与非门到俄罗斯方块</title><link href="http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html" rel="alternate" type="text/html" title="从与非门到俄罗斯方块" /><published>2019-10-16T00:00:00+08:00</published><updated>2019-10-16T00:00:00+08:00</updated><id>http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97</id><content type="html" xml:base="http://localhost:4000/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">&lt;p&gt;&lt;img src=&quot;/post_image/nand_start/adam_god_nand.png&quot; alt=&quot;adam_god_nand&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Mark!!! 开始学习课程：&lt;a href=&quot;https://www.nand2tetris.org/&quot;&gt;From Nand To Tetris&lt;/a&gt;&lt;/p&gt;
 
