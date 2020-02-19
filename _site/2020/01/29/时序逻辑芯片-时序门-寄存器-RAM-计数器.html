@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>时序逻辑芯片：时序门、寄存器、RAM、计数器 - 一只草履虫</title>
 
-<meta name="description" content="上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。反馈电路、时钟系统、D触发器组合逻辑芯片之所以...">
+<meta name="description" content="上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。反馈电路、时钟系统、D触发器组合逻辑芯片之所以...">
 <link rel="canonical" href="http://localhost:4000/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
@@ -344,14 +344,14 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-01-29T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本片要介绍的：时序逻辑芯片。</p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。</p>
 
 <h3 id="反馈电路时钟系统d触发器">反馈电路、时钟系统、D触发器</h3>
 
-<p>组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。</p>
+<p>组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（即形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdrumxqvgj30l60740sl.jpg" width="600" /></center>
 
-<p>提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么通常用时钟频率来作为衡量计算机性能的一个重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。</p>
+<p>提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么时钟频率通常被当做衡量计算机性能的重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。</p>
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbeiyf35ixj313e02edft.jpg" width="800" /></center>
 
 <p>在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由R-S锁存器派生而来。（DFF的实现相对复杂，如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。</p>
@@ -418,41 +418,13 @@ CHIP Register {
     Mux(a=outBack5, b=in[5], sel=load, out=dffIn5);
     DFF(in=dffIn5, out=out[5], out=outBack5);
 
-    Mux(a=outBack6, b=in[6], sel=load, out=dffIn6);
-    DFF(in=dffIn6, out=out[6], out=outBack6);
-
-    Mux(a=outBack7, b=in[7], sel=load, out=dffIn7);
-    DFF(in=dffIn7, out=out[7], out=outBack7);
-
-    Mux(a=outBack8, b=in[8], sel=load, out=dffIn8);
-    DFF(in=dffIn8, out=out[8], out=outBack8);
-
-    Mux(a=outBack9, b=in[9], sel=load, out=dffIn9);
-    DFF(in=dffIn9, out=out[9], out=outBack9);
-
-    Mux(a=outBack10, b=in[10], sel=load, out=dffIn10);
-    DFF(in=dffIn10, out=out[10], out=outBack10);
-
-    Mux(a=outBack11, b=in[11], sel=load, out=dffIn11);
-    DFF(in=dffIn11, out=out[11], out=outBack11);
-
-    Mux(a=outBack12, b=in[12], sel=load, out=dffIn12);
-    DFF(in=dffIn12, out=out[12], out=outBack12);
-
-    Mux(a=outBack13, b=in[13], sel=load, out=dffIn13);
-    DFF(in=dffIn13, out=out[13], out=outBack13);
-
-    Mux(a=outBack14, b=in[14], sel=load, out=dffIn14);
-    DFF(in=dffIn14, out=out[14], out=outBack14);
-
-    Mux(a=outBack15, b=in[15], sel=load, out=dffIn15);
-    DFF(in=dffIn15, out=out[15], out=outBack15);
+    // ...6到15
 }
 
 </code></pre></div></div>
 
 <h3 id="ram">RAM</h3>
-<p>接着我们来实现计算机中另一个非常重要的组成部分：RAM。刚才看到，16bit寄存器可以由16个1bit的寄存器组合而成，同理一个mKB的RAM，可以由n个16位寄存器组合而成，16位寄存器就是RAM中的基本存储单元，寄存器的宽度（此处是16位）就是RAM”字”（WORD）的宽度。我们都知道，需要通过地址来访问RAM，RAM中每个寄存器都绑定到一个唯一地址。下图是RAM的接口设计，RAM有三种输入：数据输入，地址输入和加载位。地址指定了当前周期RAM中哪一个寄存器被访问，当进行读操作时（load=0），RAM的输出立即数输出被选中的寄存器的值，当进行写操作时（load=1），被选中的寄存器在下一个周期被赋予新的值，从此RAM将开始发出新的值。输入和输出的数据宽度就是RAM”字”的宽度。</p>
+<p>接着我们来实现计算机中另一个非常重要的组成部分：RAM。刚才看到，16bit寄存器可以由16个1bit的寄存器组合而成，同理一个mKB的RAM，可以由n个16位寄存器组合而成，16位寄存器就是RAM中的基本存储单元，寄存器的宽度（此处是16位）就是RAM”字”（WORD）的宽度。我们都知道，需要通过地址来访问RAM，RAM中每个寄存器都绑定到一个唯一地址。下图是RAM的接口设计，RAM有三种输入：数据输入，地址输入和加载位。地址指定了当前周期RAM中哪一个寄存器被访问，当进行读操作时（load=0），RAM立即输出被选中的寄存器的值，当进行写操作时（load=1），被选中的寄存器被赋予新的值，从下个周期开始RAM将开始发出新的值。输入和输出的数据宽度就是RAM”字”的宽度。</p>
 
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbedozihymj30ki0lsjro.jpg" width="500" /></center>
 
