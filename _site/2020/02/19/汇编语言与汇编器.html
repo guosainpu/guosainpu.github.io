@@ -394,15 +394,17 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <p><strong>1.</strong>计算后赋值指令：dest=comp</p>
 
-<p>下图我们可以看到dest，comp，jump各自的操作和code的对应方式。例如comp中0000010对代表算D+A的和，然后从out输出；dest中010代表把comp计算的赋给寄存器D；那么D=D+A，这句汇编指令就代表：进行D+A的计算操作，然后把结果传送到寄存器D。</p>
+<p>下图我们可以看到dest，comp，jump各自的操作和code的对应方式。例如comp中0000010对代表算D+A的和，然后从out输出；dest中010代表把comp计算的赋给寄存器D；那么D=D+A，这句汇编指令就代表：进行D+A的计算操作，然后把结果传送到寄存器D。D=D+A对应的机器指令是：111(0000010)(010)(000)（后三位000代表跳转指令为null，即不跳转）</p>
 
 <p><strong>2.</strong>计算后跳转指令：comp ; jump</p>
 
-<p>jump中001代表判断comp输出的值，如果&gt;0，则进行跳转操作。那么D ; JGT，这句汇编指令就代表：进行D的计算操作（即简单的把D输出），然后判断如果值&gt;0，则进行指令跳转操作。</p>
+<p>jump中001代表判断comp输出的值，如果&gt;0，则进行指令跳转操作。那么D ; JGT，这句汇编指令就代表：进行D的计算操作（即简单的把D输出），然后判断如果值&gt;0，则进行指令跳转操作。D ; JGT对应的机器指令是：111(0001100)(000)(001)。（倒数后三位000代表赋值指令为null，即不需赋值）</p>
 
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc2zbfy0mmj30uq0kgt9m.jpg" width="600" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc2zbfy0mmj30uq0kgt9m.jpg" width="800" /></center>
 
 <h4 id="符号">符号</h4>
+
+<h4 id="举例">举例</h4>
 
 <h3 id="实现">实现</h3>
 
