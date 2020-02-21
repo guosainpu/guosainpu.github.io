@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(7/10)--实现一个虚拟机 - 一只草履虫</title>
 
-<meta name="description" content="计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高了计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相...">
+<meta name="description" content="计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去...">
 <link rel="canonical" href="http://localhost:4000/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
@@ -344,7 +344,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-21T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高了计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算机科学中“封装”的强大力量。</p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算机科学中“封装”的强大力量。</p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-21T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html">从0到1构建计算机(6/10)--汇编语言与汇编器</a></div></div></div>
