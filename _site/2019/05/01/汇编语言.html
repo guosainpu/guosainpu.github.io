@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>Home - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>汇编语言 - 一只草履虫</title>
 
-<meta name="description" content="Your Site Description
-">
-<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="计算机基础：* 编码的奥秘（Charles Petzold）* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)* 程序员的自我修养--链接、装载与库 (俞甲子等)* 深入理解计算机系统 (Randal E. Bryant)* 汇编语言 (王爽)iOS：...">
+<link rel="canonical" href="http://localhost:4000/2019/05/01/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -253,7 +252,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -331,178 +330,60 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(7/10)--实现一个虚拟机</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算...</div><p><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 21, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-21T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(6/10)--汇编语言与汇编器</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器
-
-汇编语言和汇编器
-
-汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下两种指令是一一对应的，例如：1000100111011000对应mov ax,bx，把机器指令拆成3段，其中前8位代表mov，中间4位代表寄存器ax，最后四位代表寄存器bx。此外，我们还可以在汇编语言中用引用一些符号，用于代表某些数值（例如内存地址，指令地址等），这可以把我们从处理这些繁琐的数值的工...</div><p><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 19, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-19T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(5/10)--实现hack：计算机架构、内存、CPU和指令集</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。
-
-计算机架构
-
-hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是将中央处理单元和存储器，通过存储器中存储的程序指令控制中央处理器的执行，即存储程序计算机。它主要有以下几个特点：
-
-  以运算单元为中心
-  采用存储程序原理
-  存储器是按地址访问、线性编址的空间
-  控制流由指令流产生
-  指令由操作码和地址码组成
-  数据以二进制编码
-
-
-
-
-指令集（机器语言）
-我们可以从两个角度来理解CPU，一个是从机器语言的角度，一个是从物...</div><p><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 01, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(4/10)--时序逻辑芯片：时序门、寄存器、RAM、计数器</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。
-
-反馈电路、时钟系统、D触发器
-
-组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（即形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的...</div><p><a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jan 29, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-01-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(3/10)--组合逻辑芯片：逻辑门、加法器、ALU</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片
-
-组合逻辑芯片
-
-一个最基本的CPU主要由两类芯片组成：
-
-  组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算
-  时序芯片（Sequential Chips）：寄存器，计数器，RAM等。这些芯片主要负责暂存数据
-
-
-组合逻辑芯片（下面简称逻辑芯片）可以类比为一个布尔函数，它仅负责处理逻辑运算：输出结果仅依赖于其输入变量的排列组合。逻辑芯片是没有记忆能力的，它们不能维持自身的状态，当逻辑芯片的输入值改变的时候，它们...</div><p><a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Dec 16, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-12-16T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(2/10)--与非门实现CPU的数理基础</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">CPU和布尔函数
-
-CPU本质上是一个函数计算器：
-
-  信号通过输入管脚输入，对应着函数的入参
-  CPU的内部电路是函数的黑盒实现
-  信号通过输出管脚输出，对应着函数的出参
-
-
-
-8086 CPU
-
-大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数...</div><p><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 17, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-17T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(1/10)--从与非门到俄罗斯方块</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">Mark!!! 开始学习课程：From Nand To Tetris
-
-本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。
-
-
-现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架构（同时工业级的计算机每一层的实现也是非常复杂的），封装导致我们往往只能够看到冰山一角，至于水面下的实现原理，特色社会主义下的程序员在996的工作制之下，往往只能靠推测理解，或者通过学习一些零散的技术资料来形成一个不太完整，甚至理解有一些偏差的知识体系（我经常会陷入对某个知识点的理解是不是正确的无限自我...</div><p><a href="/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 16, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-16T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/05/01/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80.html"><h2 itemprop="headline" class="item__header">汇编语言</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机基础：
-* 编码的奥秘（Charles Petzold）
-* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
-* 程序员的自我修养--链接、装载与库 (俞甲子等)
-* 深入理解计算机系统 (Randal E. Bryant)
-* 汇编语言 (王爽)
-
-
-iOS：
-* runtime技术博客 (刘小壮)
-* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)</div><p><a href="/2019/05/01/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>汇编语言</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="汇编语言"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80">汇编语言</a>
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2019</span>
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-05-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="汇编语言"></div>
-      </article></div>
-</div><div class="layout--home"><div class="pagination"><p>9 post articles, 2 pages.</p>
-    <div class="pagination__menu">
-      <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
-            <i class="fas fa-angle-left"></i>
-          </div></li><li>
-              <div class="button button--primary button--circle focus"><span>1</span></div>
-            </li><li>
-                <a class="button button--secondary button--circle" href="/page2"><span>2</span></a>
-              </li><li><a class="button button--secondary button--circle" href="/page2">
-            <i class="fas fa-angle-right"></i>
-          </a></li></ul>
-    </div>
-  </div></div>
-<script>/*(function () {
+    <meta itemprop="keywords" content="汇编语言"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-})();*/
-</script>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>计算机基础：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* 编码的奥秘（Charles Petzold）
+* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
+* 程序员的自我修养--链接、装载与库 (俞甲子等)
+* 深入理解计算机系统 (Randal E. Bryant)
+* 汇编语言 (王爽)
+</code></pre></div></div>
 
+<p>iOS：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* runtime技术博客 (刘小壮)
+* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)
+</code></pre></div></div>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-05-01T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-</div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/02/18/%E4%B9%A6%E5%8D%95.html">技术书单</a></div><div class="next"><span>NEXT</span><a href="/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">从0到1构建计算机(1/10)--从与非门到俄罗斯方块</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
 
 <!-- end custom main bottom snippet --></div>
             </div></div></div><div class="page__footer d-print-none">
@@ -1034,6 +915,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script>
     </div>
     <script>(function () {
