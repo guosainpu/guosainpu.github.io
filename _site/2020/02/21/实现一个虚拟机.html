@@ -477,11 +477,120 @@ pop static 1 		#把栈顶元素弹出，存入static的第二个位置
 <span class="k">end</span>
 </code></pre></div></div>
 
-<h3 id="算数命令">算数命令</h3>
+<h3 id="算数逻辑运算命令">算数逻辑运算命令</h3>
+
+<p>我们还需要实现若干一元或二元的算数&amp;逻辑运算命令，包括二元加减法，两个数的比较，与或非，取反操作。在这里我们没有实现浮点数操作，也没有实现乘除法（后面我们会在软件的层面实现乘除法）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc56ao98qxj30w00k2js2.jpg" width="600" /></center>
+
+<p>我们以下面的伪命令为例，看下如何利用栈来进行算数逻辑运算。运算x+y时，是一种以后缀表达式形式的运算：先把x入栈，sp+1；然后把y入栈，sp+1，然后计算加法，把结果值存入当前x的位置，sp-2。一元运算则更简单，运算-x时：先把x入栈，sp=1，然后取反，把结果值存入当前x的位置，sp-1。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// d=(2-x)*(y+5)
+push 2
+push x
+sub
+push y
+push 5
+add
+mult
+pop d
+</code></pre></div></div>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc56iuqmzsj319g0qu3zg.jpg" width="700" /></center>
+
+<h4 id="实现-1">实现</h4>
+
+<p>在实现上主要思路是利用D寄存器配合SP指针，例如x+y：把y赋值给D，然后SP指向x，然后D=D+M，最后把D再赋值给SP指向的内存。</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">arithmetic</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">""</span>
+	<span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'add'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>		<span class="c1">#D=y</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=D+M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=x+y</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>		<span class="c1">#sp重置</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'sub'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M-D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=x-y</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'neg'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=-D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#M=-D</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'eq'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">compare</span><span class="p">(</span><span class="s2">"JEQ"</span><span class="p">)</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'gt'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">compare</span><span class="p">(</span><span class="s2">"JGT"</span><span class="p">)</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'lt'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">compare</span><span class="p">(</span><span class="s2">"JLT"</span><span class="p">)</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'and'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=D&amp;M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=x&amp;y</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'or'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=D|M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=x|y</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">resetSP</span><span class="p">()</span>
+	<span class="k">elsif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">'not'</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passYtoD</span><span class="p">()</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=!D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="k">end</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">passYtoD</span>				<span class="c1">#y赋值给D寄存器</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>	<span class="c1">#sp-1后指向y</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=y</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">resetSP</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D+1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#SP指针重置</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> 			<span class="c1">#xy大小比较。</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M-D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#D=x-y</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@branchLabel_</span><span class="si">#{</span><span class="vi">@branchIndex</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D;</span><span class="si">#{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=0"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#0代表false</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@mergeLabel_</span><span class="si">#{</span><span class="vi">@mergeIndex</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"0;JMP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"(branchLabel_</span><span class="si">#{</span><span class="vi">@branchIndex</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#-1代表true</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"(mergeLabel_</span><span class="si">#{</span><span class="vi">@mergeIndex</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@branchIndex</span> <span class="o">=</span> <span class="vi">@branchIndex</span> <span class="o">+</span> <span class="mi">1</span>
+	<span class="vi">@mergeIndex</span> <span class="o">=</span> <span class="vi">@mergeIndex</span> <span class="o">+</span> <span class="mi">1</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="程序流程控制命令">程序流程控制命令</h3>
 
+<h4 id="实现-2">实现</h4>
+
 <h3 id="子程序调用命令">子程序调用命令</h3>
+
+<h4 id="实现-3">实现</h4>
 
 <h3 id="从中学到什么">从中学到什么</h3>
 
