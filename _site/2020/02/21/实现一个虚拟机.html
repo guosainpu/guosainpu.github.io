@@ -380,11 +380,100 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <h3 id="内存划分">内存划分</h3>
 
 <p>内存划分是Hack虚拟机中另一个重要主题。虚拟机操纵8个独立的<strong>虚拟内存段</strong>。在这里虚拟内存是一个很重要的技巧，内存段都有各自的用途，在程序执行过程中，每个函数都可以通过固定的几个指针（R0-R15）来访问这些内存段，看上去每个内存段都是它们独享的（有些是共享的），而不必关心他们的物理地址在哪里，是否会和其他函数冲突等。这本质上也是一种封装，这种封装向上提供一种标准的内存访问方式，向下了实现虚拟内存和物理内存的映射和管理（类似于操作系统中进程地址空间的映射）。这大大降低了虚拟机使用者的难度，把复杂的工作交给了虚拟机本身。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4bnrpe9fj30wf0u0djx.jpg" width="800" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4bnrpe9fj30wf0u0djx.jpg" width="700" /></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4c6ry36pj30zq0u0q44.jpg" width="800" /></center>
+<p>我们来看一下代码和内存段的关系。一个类被编译成一个.VM文件，其中包含了若干个函数实现f1, f2, f3。temp和const段是进程级别共享的；static段是类级别共享的；argument、local、this、that、pointer是函数级别的独享的，每个函数都有自己的这5个内存段，但每个函数访问它们的方式却是一致的（即通过R1-R5指针）</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4c6ry36pj30zq0u0q44.jpg" width="700" /></center>
 
 <h3 id="内存访问命令">内存访问命令</h3>
+
+<p>所有的内存段访问都通过2条命令实现：</p>
+<ul>
+  <li>push segement index 		将segement[index]的值压入堆栈</li>
+  <li>pop  segement index 		将栈顶元素弹出，然后存入segement[index]</li>
+</ul>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>push locol 0 		#把locol段第一个位置的值压入堆栈
+push constant 123 	#把常数123压入堆栈
+pop static 1 		#把栈顶元素弹出，存入static的第二个位置
+</code></pre></div></div>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc51adti2gj31000gumxq.jpg" width="700" /></center>
+
+<h4 id="实现">实现</h4>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writePushPop</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s1">''</span>
+	<span class="n">segment</span> <span class="o">=</span> <span class="vi">@table</span><span class="p">[</span><span class="s2">"</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+	<span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">'C_PUSH'</span> <span class="o">&amp;&amp;</span> <span class="n">segment</span> <span class="o">==</span><span class="s1">'constant'</span> 		<span class="c1">#push const</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">pushConstant</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+	<span class="k">elsif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">'C_PUSH'</span> 							
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passArgsAddressToA</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> 	<span class="c1">#A=段地址+偏移地址</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span> <span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 			<span class="c1">#段内存的值存到D</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">pushDtoStack</span><span class="p">()</span>			<span class="c1">#push D到栈顶，sp+1</span>
+	<span class="k">elsif</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">'C_POP'</span> 							
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">passArgsAddressToA</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> 	<span class="c1">#A=段地址+偏移地址</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">getStackTopToD</span><span class="p">()</span>			<span class="c1">#栈顶的值存到D</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 			<span class="c1">#pop D到段内存</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=M-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 			<span class="c1">#sp减1</span>
+	<span class="k">end</span>
+
+	<span class="k">if</span> <span class="n">asm_cmd</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+		<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+	<span class="k">end</span>	
+<span class="k">end</span>
+</code></pre></div></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">pushConstant</span><span class="p">(</span><span class="n">const</span><span class="p">)</span> 		<span class="c1">#实现简单的push const</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">const</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">pushDtoStack</span><span class="p">()</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">pushDtoStack</span>			<span class="c1">#把D寄存器的值push到栈顶，sp+1</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=M+1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">getStackTopToD</span>			<span class="c1">#把栈顶的值存到D寄存器，sp不变</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@R13"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#先把A的值暂存到R13，后面在还原A寄存器（保存现场）</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#取出值放入D</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@R13"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#恢复A</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">passArgsAddressToA</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>		<span class="c1">#把内存地址存到A</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s1">''</span>
+	<span class="k">if</span>  <span class="n">segment</span> <span class="o">==</span> <span class="s2">"static"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="vi">@source_file_name</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#文件名+index作为static的符号</span>
+		<span class="k">return</span> <span class="n">asm_cmd</span>
+	<span class="k">end</span>
+
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 		<span class="c1">#D=index偏移量</span>
+	<span class="k">if</span>  <span class="n">segment</span> <span class="o">==</span> <span class="s2">"temp"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@R5"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=temp地址+偏移量</span>
+		<span class="nb">puts</span> <span class="s2">"执行了</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span>
+	<span class="k">elsif</span> <span class="n">segment</span> <span class="o">==</span> <span class="s2">"pointer"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@THIS"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=THIS+偏移量</span>
+	<span class="k">else</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=段地址指针指向的段地址+偏移量</span>
+	<span class="k">end</span>
+	<span class="k">return</span> <span class="n">asm_cmd</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="算数命令">算数命令</h3>
 
