@@ -401,7 +401,9 @@ pop static 1 		#把栈顶元素弹出，存入static的第二个位置
 
 <h4 id="实现">实现</h4>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writePushPop</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+<p>push和pop指令的作用就是在栈顶内存和段内存之间互相搬运数值。SP指针用于标识栈顶内存，segement基地址+偏移量用于标识段内存，然后通过一系列寄存器和内存操作（利用A寄存器定位内存地址，D寄存器暂存数值等操作）实现这两个命令。</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writePushPop</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>			<span class="c1">#实现push, pop命令</span>
 	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s1">''</span>
 	<span class="n">segment</span> <span class="o">=</span> <span class="vi">@table</span><span class="p">[</span><span class="s2">"</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
 	<span class="k">if</span> <span class="n">command</span> <span class="o">==</span> <span class="s1">'C_PUSH'</span> <span class="o">&amp;&amp;</span> <span class="n">segment</span> <span class="o">==</span><span class="s1">'constant'</span> 		<span class="c1">#push const</span>
@@ -469,7 +471,7 @@ pop static 1 		#把栈顶元素弹出，存入static的第二个位置
 		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=THIS+偏移量</span>
 	<span class="k">else</span>
 		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
-		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=段地址指针指向的段地址+偏移量</span>
+		<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M+D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 	<span class="c1">#A=段内存指针指向的段基地址+偏移量</span>
 	<span class="k">end</span>
 	<span class="k">return</span> <span class="n">asm_cmd</span>
 <span class="k">end</span>
