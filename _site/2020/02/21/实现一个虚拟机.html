@@ -365,8 +365,36 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p>我们把上面的C程序在Mac上编译成可执行文件，然后看一下这个它在x86_64架构下的汇编代码。我们看到它的汇编代码并不复杂，它被编译成了两个函数，然后通过一些的push, pop, mov, add, call, return等指令完成。这些指令就是Hack的虚拟机需要参考和实现的。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc44fal8vmj30zj0u0tbs.jpg" width="800" /></center>
+<p>我们把上面的C程序在Mac上编译成可执行文件，然后看一下这个它在x86_64架构下的汇编代码。我们看到它的汇编代码并不复杂，它被编译成了两个函数，然后通过一些的push, pop, mov, add, call, return等指令完成。这些指令就是Hack的虚拟机需要参考和实现的。从这一点上来看，Hack的虚拟机更接近我们常用的CPU。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc44fal8vmj30zj0u0tbs.jpg" width="700" /></center>
+
+<h3 id="stack">Stack</h3>
+
+<p>无论是x86_64架构下的汇编指令，还是我们需要实现的Hack虚拟机，都需要支持四种基本操作：<strong>算数逻辑操作，内存访问操作，程序流程控制，子程序调用</strong>。想要方便的实现这些操作，我们需要借助一种常用的数据结构：堆栈（stack）。<strong>经证明，通过堆栈操作，能够实现任何数学或逻辑表达式；任何程序，无论用什么语言编写，都能够被翻译成等价的堆栈机语言</strong>。</p>
+
+<h3 id="push--pop">Push &amp; Pop</h3>
+
+<p>既然是栈的使用，那肯定少不了Push和Pop操作。SP（Stack Pointer）指针是这两项操作的关键，<strong>SP指针实时地指向栈顶</strong>：Push操作把一个数（可以是内存中的某个数）压入栈顶，然后SP加1（如果栈从上向下生长就减1）；Pop操作把栈顶的数弹出（可以弹出到某个内存地址），然后SP减1。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc49n0apfxj31a60oqdgh.jpg" width="700" /></center>
+
+<h3 id="内存划分">内存划分</h3>
+
+<p>内存划分是Hack虚拟机中另一个重要主题。虚拟机操纵8个独立的<strong>虚拟内存段</strong>。在这里虚拟内存是一个很重要的技巧，内存段都有各自的用途，在程序执行过程中，每个函数都可以通过固定的几个指针（R0-R15）来访问这些内存段，看上去每个内存段都是它们独享的（有些是共享的），而不必关心他们的物理地址在哪里，是否会和其他函数冲突等。这本质上也是一种封装，这种封装向上提供一种标准的内存访问方式，向下了实现虚拟内存和物理内存的映射和管理（类似于操作系统中进程地址空间的映射）。这大大降低了虚拟机使用者的难度，把复杂的工作交给了虚拟机本身。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4bnrpe9fj30wf0u0djx.jpg" width="800" /></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4c6ry36pj30zq0u0q44.jpg" width="800" /></center>
+
+<h3 id="内存访问命令">内存访问命令</h3>
+
+<h3 id="算数命令">算数命令</h3>
+
+<h3 id="程序流程控制命令">程序流程控制命令</h3>
+
+<h3 id="子程序调用命令">子程序调用命令</h3>
+
+<h3 id="从中学到什么">从中学到什么</h3>
+
+<h3 id="总结">总结</h3>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-21T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html">从0到1构建计算机(6/10)--汇编语言与汇编器</a></div></div></div>
