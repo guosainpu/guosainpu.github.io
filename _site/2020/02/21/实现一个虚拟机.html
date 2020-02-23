@@ -736,7 +736,7 @@ goto f 			//跳转到f
 
 <h5 id="function指令">function指令</h5>
 
-<p>function f m 指令比较简单。m 代表函数 f 中有 m 个局部变量，所以只需要连续push m 次0即可：开辟了 m 个内存空间，并将其初始化为0（我们日常使用的高级语言中，不同类型的变量占的字节数可能不同。Hack进行了简化，所有基本类型的变量都占用一个字）。</p>
+<p>function f m 指令比较简单。m 代表函数 f 中有 m 个局部变量，所以只需要连续push m 次0即可：开辟了 m 个内存空间，并将其初始化为0（我们日常使用的高级语言中，不同类型的变量占的字节数可能不同。Hack进行了简化，所有基本类型的变量都占用一个字的内存）。</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writeFunction</span><span class="p">(</span><span class="n">funtionName</span><span class="p">,</span> <span class="n">numArgs</span><span class="p">)</span>
 	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"(</span><span class="si">#{</span><span class="n">funtionName</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="c1">#首先用（funtionName）来标识函数地址</span>
@@ -750,6 +750,69 @@ goto f 			//跳转到f
 </code></pre></div></div>
 
 <h5 id="return指令">return指令</h5>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pop argument 0 	//pop返回值到caller的argument 0
+SP = ARG + 1 	//重置SP指针
+restore THAT 	//恢复寄存器指针
+restore THIS
+restore ARG
+restore LCL
+goto RET 	//跳转到返回地址
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writeReturn</span>
+	<span class="n">saveReturnAddress</span><span class="p">()</span>
+	<span class="n">writePushPop</span><span class="p">(</span><span class="s2">"C_POP"</span><span class="p">,</span> <span class="s2">"argument"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">)</span>
+	<span class="n">restoreSP</span><span class="p">()</span>
+	<span class="n">restoreSegement</span><span class="p">(</span><span class="s2">"THAT"</span><span class="p">)</span>
+	<span class="n">restoreSegement</span><span class="p">(</span><span class="s2">"THIS"</span><span class="p">)</span>
+	<span class="n">restoreSegement</span><span class="p">(</span><span class="s2">"ARG"</span><span class="p">)</span>
+	<span class="n">restoreSegement</span><span class="p">(</span><span class="s2">"LCL"</span><span class="p">)</span>
+	<span class="n">gotoReturnAddress</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="c1"># 暂存return地址到R14（最后取return地址时需要用LCL-5来定位，而途中LCL会被修改，所以需要先把return地址暂存起来，R13被getStackTopToD占用了）</span>
+<span class="k">def</span> <span class="nf">saveReturnAddress</span><span class="p">()</span> 
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@5"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@LCL"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M-D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@R14"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 重置SP指针</span>
+<span class="k">def</span> <span class="nf">restoreSP</span><span class="p">()</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@ARG"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M+1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 恢复寄存器指针</span>
+<span class="k">def</span> <span class="nf">restoreSegement</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 
+	<span class="n">table</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"THAT"</span><span class="o">=&gt;</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"THIS"</span><span class="o">=&gt;</span><span class="s2">"2"</span><span class="p">,</span> <span class="s2">"ARG"</span><span class="o">=&gt;</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"LCL"</span><span class="o">=&gt;</span><span class="s2">"4"</span><span class="p">}</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">table</span><span class="p">[</span><span class="n">segment</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@LCL"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M-D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># return到上一级函数继续执行</span>
+<span class="k">def</span> <span class="nf">gotoReturnAddress</span><span class="p">()</span> 
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@R14"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="c1"># 从R14取出缓存的return地址</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"0;JMP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="从中学到什么">从中学到什么</h3>
 
