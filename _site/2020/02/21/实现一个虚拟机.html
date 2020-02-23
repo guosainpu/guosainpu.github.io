@@ -751,7 +751,11 @@ goto f 			//跳转到f
 
 <h5 id="return指令">return指令</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pop argument 0 	//pop返回值到caller的argument 0
+<p>return指令首先需要把返回值pop到argument 0，即调用者的栈顶；然后重置一系列寄存器指针；最后跳转到返回地址。这里比较复杂的地方是如何安排各个数值的恢复顺序，因为顺序不当可能导致一些值被破坏。例如途中LCL被恢复了，导致最后取不到return的地址，我在这里的解决方案是先把return地址寄存到一个通用寄存器，后面再取出来。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>return 伪代码
+--------------------
+pop argument 0 	//pop返回值到argument 0
 SP = ARG + 1 	//重置SP指针
 restore THAT 	//恢复寄存器指针
 restore THIS
