@@ -656,8 +656,8 @@ if_goto label：先弹出并判断栈顶值，非0时跳转，否则线性执行
 4.为被调用函数分配局部变量空间并初始化
 5.执行被调用函数指令序列
 6.被调用函数将回参传递给调用函数
-7.回收被调用函数使用的内存空间
-8.恢复调用函数的状态
+7.恢复调用函数的状态
+8.回收被调用函数使用的内存空间
 9.返回到之前调用函数的下一条指令执行
 </code></pre></div></div>
 
@@ -668,6 +668,88 @@ if_goto label：先弹出并判断栈顶值，非0时跳转，否则线性执行
 <center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc6e1rab8xj31tq0su76b.jpg" width="1000" /></center>
 
 <h4 id="实现-3">实现</h4>
+<h5 id="call指令">call指令</h5>
+
+<p>实现call指令，首先需要push调用者的返回地址，返回地址用“符号名+index”的方式标识，index的目的是防止返回地址重名，每翻译一次call指令后index需要+1；然后保存几个寄存器的状态；然后更新ARG和LCL，其中ARG=SP-n-5（参考上面的内存分布图），LCL = SP；最后执行goto跳转指令。因为调用函数return后还要返回goto指令的下一条指令标继续执行，所以需要在最后补充一个返回地址label。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>call f n 伪代码
+--------------------
+push return-address 	//返回地址入栈
+push LCL 		//保存寄存器指针
+push ARG
+push THIS
+push THAT
+ARG = SP-n-5 		//重置ARG，第一个入参的位置是当前SP指针减n再减5
+LCL = SP 		//重置LCL，第一个局部变量的位置是当前SP的位置
+goto f 			//跳转到f
+(return-address) 	//label标识，return后返回这里执行
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writeCall</span><span class="p">(</span><span class="n">functionName</span><span class="p">,</span> <span class="n">numArgs</span><span class="p">)</span>
+	<span class="n">writePushPop</span><span class="p">(</span><span class="s2">"C_PUSH"</span><span class="p">,</span> <span class="s2">"constant"</span><span class="p">,</span> <span class="s2">"callLabel</span><span class="si">#{</span><span class="vi">@callIndex</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+	<span class="n">saveSegment</span><span class="p">(</span><span class="s2">"LCL"</span><span class="p">)</span>
+	<span class="n">saveSegment</span><span class="p">(</span><span class="s2">"ARG"</span><span class="p">)</span>
+	<span class="n">saveSegment</span><span class="p">(</span><span class="s2">"THIS"</span><span class="p">)</span>
+	<span class="n">saveSegment</span><span class="p">(</span><span class="s2">"THAT"</span><span class="p">)</span>
+	<span class="n">resetARG</span><span class="p">(</span><span class="mi">5</span><span class="o">+</span><span class="n">numArgs</span><span class="p">.</span><span class="nf">to_i</span><span class="p">)</span>
+	<span class="n">resetLCL</span><span class="p">()</span>
+	<span class="n">callJump</span><span class="p">(</span><span class="n">functionName</span><span class="p">,</span> <span class="s2">"callLabel</span><span class="si">#{</span><span class="vi">@callIndex</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+	<span class="vi">@callIndex</span> <span class="o">=</span> <span class="vi">@callIndex</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="c1"># 保存寄存器的值</span>
+<span class="k">def</span> <span class="nf">saveSegment</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span> 	
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">segment</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="n">pushDtoStack</span><span class="p">()</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># ARG设置为SP指针向前移动step步</span>
+<span class="k">def</span> <span class="nf">resetARG</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> 		
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">steps</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=D-A"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@ARG"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 重置LCL，第一个局部变量的位置是当前SP的位置</span>
+<span class="k">def</span> <span class="nf">resetLCL</span><span class="p">()</span> 			
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@LCL"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=D"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 跳转执行</span>
+<span class="k">def</span> <span class="nf">callJump</span><span class="p">(</span><span class="n">functionName</span><span class="p">,</span> <span class="n">returnLabel</span><span class="p">)</span> 	
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">functionName</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"0;JMP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"(</span><span class="si">#{</span><span class="n">returnLabel</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h5 id="function指令">function指令</h5>
+
+<p>function f m 指令比较简单。m 代表函数 f 中有 m 个局部变量，所以只需要连续push m 次0即可：开辟了 m 个内存空间，并将其初始化为0（我们日常使用的高级语言中，不同类型的变量占的字节数可能不同。Hack进行了简化，所有基本类型的变量都占用一个字）。</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writeFunction</span><span class="p">(</span><span class="n">funtionName</span><span class="p">,</span> <span class="n">numArgs</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"(</span><span class="si">#{</span><span class="n">funtionName</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="c1">#首先用（funtionName）来标识函数地址</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+	<span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">numArgs</span><span class="p">.</span><span class="nf">to_i</span>
+		<span class="n">writePushPop</span><span class="p">(</span><span class="s2">"C_PUSH"</span><span class="p">,</span> <span class="s2">"constant"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">)</span>
+		<span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+	<span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h5 id="return指令">return指令</h5>
 
 <h3 id="从中学到什么">从中学到什么</h3>
 
