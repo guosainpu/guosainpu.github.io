@@ -386,13 +386,20 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
  2048-16383：堆
 16384-24575：I/O内存映像
 </code></pre></div></div>
+<p>0-15位内存和寄存器的映射关系如下：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"SP"=&gt;"000000000000000", "LCL"=&gt;"000000000000001", "ARG"=&gt;"000000000000010", "THIS"=&gt;"000000000000011", "THAT"=&gt;"000000000000100", 
+"R0"=&gt;"000000000000000", "R1"=&gt;"000000000000001", "R2"=&gt;"000000000000010", "R3"=&gt;"000000000000011", 
+"R4"=&gt;"000000000000100", "R5"=&gt;"000000000000101", "R6"=&gt;"000000000000110", "R7"=&gt;"000000000000111", 
+"R8"=&gt;"000000000001000", "R9"=&gt;"000000000001001", "R10"=&gt;"000000000001010", "R11"=&gt;"000000000001011", 
+"R12"=&gt;"000000000001100", "R13"=&gt;"000000000001101", "R14"=&gt;"000000000001110", "R15"=&gt;"000000000001111",
+"SCREEN"=&gt;"100000000000000", "KBD"=&gt;"110000000000000"
+</code></pre></div></div>
 
 <p>虚拟机操纵8个独立的<strong>虚拟内存段</strong>。在这里虚拟内存是一个很重要的技巧，内存段都有各自的用途，在程序执行过程中，每个函数都可以通过固定的几个指针（R0-R15）来访问这些内存段，看上去每个内存段都是它们独享的（有些是共享的），而不必关心他们的物理地址在哪里，是否会和其他函数冲突等。这本质上也是一种封装，这种封装向上提供一种标准的内存访问方式，向下了实现虚拟内存和物理内存的映射和管理（类似于操作系统中进程地址空间的映射）。这大大降低了虚拟机使用者的难度，把复杂的工作交给了虚拟机本身。</p>
 <center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4bnrpe9fj30wf0u0djx.jpg" width="700" /></center>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc65mb1xdwj31kg0m4did.jpg" width="700" /></center>
 
 <p>我们来看一下代码和内存段的关系。一个类被编译成一个.VM文件，其中包含了若干个函数实现f1, f2, f3。temp和const段是进程级别共享的；static段是类级别共享的；argument、local、this、that、pointer是函数级别的独享的，每个函数都有自己的这5个内存段，但每个函数访问它们的方式却是一致的（即通过R1-R5指针）</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc662w328yj31900n4di2.jpg" width="700" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc4c6ry36pj30zq0u0q44.jpg" width="700" /></center>
 
 <h3 id="内存访问命令">内存访问命令</h3>
 
@@ -595,9 +602,48 @@ pop d
 
 <h3 id="程序流程控制命令">程序流程控制命令</h3>
 
+<p>计算机默认的执行顺序是线性的，程序流程控制这一节我们需要实现跳转功能和分支功能，即以下三个指令：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	label：用于标识指令地址
+   goto label：无条件跳转到指令地址
+if_goto label：先弹出并判断栈顶值，非0时跳转，否则线性执行
+</code></pre></div></div>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc69u6g16cj30vo0pywfi.jpg" width="500" /></center>
+
 <h4 id="实现-2">实现</h4>
+<p>这三条指令的实现非常简单。原因是这里label扮演了重要的功能，由于下层的汇编器支持把label识别成指令地址，所以这里我们就不必再关心需要跳转的具体地址，省去了很多工作。这里我们看到只要下层设计封装的好，就会大大降低上层的实现难度。</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">writeLabel</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"(</span><span class="si">#{</span><span class="n">label</span><span class="si">}</span><span class="s2">)"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">writeGoto</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"0;JMP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>	<span class="c1">#无条件跳转</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">writeIf</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+	<span class="n">asm_cmd</span> <span class="o">=</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"A=A-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D=M"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>		<span class="c1">#栈顶值存到D</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@SP"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"M=M-1"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>   	<span class="c1">#指针减1</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"@</span><span class="si">#{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+	<span class="n">asm_cmd</span> <span class="o">&lt;&lt;</span> <span class="s2">"D;JNE"</span><span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>	<span class="c1">#D非0时跳转</span>
+	<span class="vi">@sam_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">asm_cmd</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="子程序调用命令">子程序调用命令</h3>
+
+<p>子程序调用是Hack虚拟机实现最复杂的一节。程序的执行过程就是一系列函数的调用过程，每个函数执行若干指令，操作函数中的参数变量、本地变量、静态变量三种变量。如果程序只有一个函数，那么这个工作并不复杂，因为参数变量、本地变量、静态变量都是静态的，提前分配好的，直接去使用就行了；但是如果程序是由多个函数组成的，那么这些变量在栈上就是动态的（参数变量、本地变量是动态的，静态变量还是静态的），它们的个数，分配的位置都是在动态变化的，处理起来就非常复杂。Hack虚拟机中子程序调用部分的任务就是<strong>把这种动态再转变成静态</strong>：当函数被调用时，为它构建一个私有空间（frame），把它封闭在一个“与世隔绝的自我世界”（该世界只包括已经初始化的参数变量、本地变量和一个空的栈空间），然后该函数在这个私有空间内直接自己的命令。从该函数的角度来看，它不感知其他函数的存在，就好像程序只有一个函数一样，又变成了静态。</p>
+
+<p>这一节我们需要实现以下3个指令：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function f n：下面是一段函数名为f的代码，该函数有n个参数
+    call f m：调用函数f，且调用前已将m个参数压入栈
+      return：返回到调用者
+</code></pre></div></div>
 
 <h4 id="实现-3">实现</h4>
 
