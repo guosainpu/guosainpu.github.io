@@ -336,8 +336,19 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80%E4%B8%8E%E7%BC%96%E8%AF%91%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(8/10)--高级语言与编译器</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">TODO…</div><p><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80%E4%B8%8E%E7%BC%96%E8%AF%91%E5%99%A8.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+          <header><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(8/10)--高级语言：Jack</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">前一篇我们实现了Hack虚拟机，定义了虚拟机指令，本篇我们将设计一门高级语言：Jack。Jack是基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性。本篇的内容非常简单，主要是介绍Jack的一些语法。
+
+Jack-Hello, World
+
+学习新语言第一步，写一个Hello, World。一个Jack程序一定要有一个Main类，且包含main方法，这是程序的入口函数。
+
+class Main {
+    function void main() {
+       do Output.printString("Hello, World");
+       do Output.println(); //换行
+       return;
+  ...</div><p><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
             </li><li>
