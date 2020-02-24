@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-24T11:40:10+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-02-24T11:42:57+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
 </subtitle><author><name>Your Name</name></author><entry><title type="html">从0到1构建计算机(7/10)–实现一个虚拟机</title><link href="http://localhost:4000/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html" rel="alternate" type="text/html" title="从0到1构建计算机(7/10)--实现一个虚拟机" /><published>2020-02-21T00:00:00+08:00</published><updated>2020-02-21T00:00:00+08:00</updated><id>http://localhost:4000/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA</id><content type="html" xml:base="http://localhost:4000/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html">&lt;p&gt;计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算机科学中“封装”的强大力量。&lt;/p&gt;
 
 &lt;p&gt;虚拟机可能有多种解释，我们要实现的虚拟机是一种程序虚拟机（类似于Java虚拟机），主要是用来支持运行平台无关的计算机程序。其他概念的虚拟机还有系统虚拟机，完全虚拟一个操作系统出来，例如VMWare，iOS模拟器等。&lt;/p&gt;
@@ -480,6 +480,8 @@ goto RET 	//跳转到返回地址
 &lt;p&gt;我们看到了程序虚拟机的工作方式，它本质上是一个翻译机：向上提供一种新的语言接口，然后把虚拟机语言翻译成所在平台的计算机语言，因此我们也可以在其它平台上实现Hack虚拟机，只不过翻译的实现细节会发生改变。Hack虚拟机和Java虚拟机本质上相同的，Hack虚拟机是一个纯的静态翻译器，而Java虚拟机作为一个进程运行，是动态翻译的，此外Java虚拟机还有类加载器，内存回收等强大功能。&lt;/p&gt;
 
 &lt;p&gt;我们也学到了一些重要的编程思想：如果在本层实现逻辑过于复杂，可以考虑把一些复杂的逻辑抽象出来，交给下层来实现，即把复杂的问题分层化。尽量让动态的，变化的，需要被编程的，面向程序员的部分变得标准和简单，把复杂的逻辑封装在静态的，底层的，不面向程序员的地方。目的是让开发者能把主要精力放在解决问题的算法之上，而不用考虑让人头疼的底层的实现细节。这是一个程序员的重要基本功。&lt;/p&gt;
+
+&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/0082zybpgy1gc7ccatyh7j30z00sg45t.jpg&quot; width=&quot;500&quot; /&gt;&lt;/center&gt;
 
 &lt;h3 id=&quot;next&quot;&gt;NEXT&lt;/h3&gt;
 
