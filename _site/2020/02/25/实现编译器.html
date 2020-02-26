@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(1/10)--从与非门到俄罗斯方块 - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(9/10)--实现编译器 - 一只草履虫</title>
 
-<meta name="description" content="Mark!!! 开始学习课程：From Nand To Tetris本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机...">
-<link rel="canonical" href="/2019/10/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则...">
+<link rel="canonical" href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -334,34 +334,37 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(1/10)--从与非门到俄罗斯方块</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(1/10)--从与非门到俄罗斯方块"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(9/10)--实现编译器</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(9/10)--实现编译器"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
             </li><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 16, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-16T00:00:00+08:00">
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 25, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-25T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p><img src="/post_image/nand_start/adam_god_nand.png" alt="adam_god_nand" /></p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。</p>
 
-<p>Mark!!! 开始学习课程：<a href="https://www.nand2tetris.org/">From Nand To Tetris</a></p>
+<p>高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则的语法（上下文无关语法）组织的，结构上层次化的语言。程序的每个类，每条语句都是符合某种语法规则的，所以我们反过来能够使用这些语法规则对其进行准确地解析，而我们日常使用的自然语言则不太受语法的严格的约束，所以用算法解释自然语言会更困难。</p>
 
-<p>本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc0kvqha75j31140mcgn0.jpg" width="800" /></center>
+<h3 id="词法分析">词法分析</h3>
 
-<p>现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架构（同时工业级的计算机每一层的实现也是非常复杂的），封装导致我们往往只能够看到冰山一角，至于水面下的实现原理，特色社会主义下的程序员在996的工作制之下，往往只能靠推测理解，或者通过学习一些零散的技术资料来形成一个不太完整，甚至理解有一些偏差的知识体系（我经常会陷入对某个知识点的理解是不是正确的无限自我怀疑之中）。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc0mo58x1fj30nq0w6467.jpg" width="300" /></center>
+<p>程序基本上由语句组成，语句由单词和符号组成，每个单词或符号都有它要表达的含义：或是某种预算操作，或是某块内存的指针，或是指明当前语句是那种类型等等。编译器要做的第一件事情就是把语句拆解成一个个单词或符号，即词法分析。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc9yj7rudwj314q0h4q3a.jpg" width="600" /></center>
 
-<p>我们把将要构建的这个计算机命名为Hack，Hack是一个麻雀虽小，但五脏俱全的冯·诺依曼架构的现代计算机。Hack极其精简，它只保留了计算机最基本的功能，一方面降低了我们的实现成本，更重要的是它把我们从计算机科学中众多复杂的实现细节中解脱出来，瞄准计算机工作的原理和本质。我们在构建Hack的同时，也加深了自己对计算机理解的准确性和系统性。</p>
+<p>Jack语法由一下五类单词构成：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. 关键字：多用于指明当前语句的类型、属性。
+2. 符号：算数逻辑运算符号、功能符号等。
+3. 整型数字：0...32767
+4. 字符创：“”括起来的字符串。
+5. 字面量：类名、变量名等。
+</code></pre></div></div>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc9yj6vuonj319g0m0abl.jpg" width="800" /></center>
 
-<p>还有一篇类似课程：<a href="https://www.youtube.com/watch?v=WqrNphu6HaU&amp;list=PLdYq_l3Bzf1elCyzIfx2JgHfSMTsWbnfg&amp;index=1">计算机科学速成课</a></p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-25T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<p>😀😀😀</p>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-10-16T00:00:00+08:00"><!-- start custom article footer snippet -->
-
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/05/01/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80.html">汇编语言</a></div><div class="next"><span>NEXT</span><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">从0到1构建计算机(2/10)--与非门实现CPU的数理基础</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div></div></div>
 
 </div>
 
