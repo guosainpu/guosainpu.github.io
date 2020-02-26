@@ -362,6 +362,108 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 </code></pre></div></div>
 <center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc9yj6vuonj319g0m0abl.jpg" width="800" /></center>
 
+<p>下面以一个程序举例：</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc9z75lt1nj31160u0jvx.jpg" width="800" /></center>
+
+<h4 id="实现">实现</h4>
+
+<p>词法分析的过程并不复杂。先删除输入程序中的注释代码，然后通过一些正则操作把源程序拆解成以上五种类型的单词即可。关键代码如下：</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vg">$KEYWORDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"class"</span><span class="p">,</span> <span class="s2">"method"</span><span class="p">,</span> <span class="s2">"function"</span><span class="p">,</span> <span class="s2">"constructor"</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"boolean"</span><span class="p">,</span> <span class="s2">"char"</span><span class="p">,</span> <span class="s2">"void"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"static"</span><span class="p">,</span> <span class="s2">"field"</span><span class="p">,</span> <span class="s2">"let"</span><span class="p">,</span> <span class="s2">"do"</span><span class="p">,</span> <span class="s2">"if"</span><span class="p">,</span> <span class="s2">"else"</span><span class="p">,</span> <span class="s2">"while"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">,</span> <span class="s2">"null"</span><span class="p">,</span> <span class="s2">"this"</span><span class="p">]</span>
+<span class="vg">$SYMBOL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"{"</span><span class="p">,</span> <span class="s2">"}"</span><span class="p">,</span> <span class="s2">"("</span><span class="p">,</span> <span class="s2">")"</span><span class="p">,</span> <span class="s2">"["</span><span class="p">,</span> <span class="s2">"]"</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">","</span><span class="p">,</span> <span class="s2">";"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"&amp;"</span><span class="p">,</span> <span class="s2">"|"</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"="</span><span class="p">,</span> <span class="s2">"~"</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">JackTokenizer</span>
+
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">fileName</span><span class="p">)</span>
+  <span class="o">...</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">analysizeFile</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+  <span class="c1">#删除所有注释</span>
+  <span class="n">file</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))/</span><span class="p">,</span> <span class="s1">''</span><span class="p">).</span><span class="nf">split</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
+
+  <span class="c1">#代码转成token</span>
+  <span class="vi">@tokens</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">scanTextToToken</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">writeTokensTofile</span><span class="p">(</span><span class="vi">@tokens</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">scanTextToToken</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+  <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="n">scanner</span> <span class="o">=</span> <span class="no">StringScanner</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+  <span class="k">while</span> <span class="o">!</span><span class="n">scanner</span><span class="p">.</span><span class="nf">eos?</span>
+    <span class="c1"># 扫描字符串类型</span>
+    <span class="n">stringToken</span> <span class="o">=</span> <span class="n">scanner</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="sr">/"[^"]*"/</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stringToken</span>
+      <span class="n">tokens</span> <span class="o">&lt;&lt;</span> <span class="n">stringToken</span>
+      <span class="n">scanner</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">)</span>
+      <span class="k">next</span>
+    <span class="k">end</span>
+
+    <span class="c1"># 扫描symbol</span>
+    <span class="n">symbolToken</span> <span class="o">=</span> <span class="n">scanner</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="sr">/\{|\}|\(|\)|\[|\]|\.|\,|\;|\+|\-|\*|\/|\&amp;|\||\&lt;|\&gt;|\=|\~/</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbolToken</span>
+      <span class="n">tokens</span> <span class="o">&lt;&lt;</span> <span class="n">symbolToken</span>
+      <span class="n">scanner</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">)</span>
+      <span class="k">next</span>
+    <span class="k">end</span>
+
+    <span class="c1"># 扫描其他tokenotherToken</span>
+    <span class="n">otherToken</span> <span class="o">=</span> <span class="n">scanner</span><span class="p">.</span><span class="nf">scan_until</span><span class="p">(</span><span class="sr">/\s+|\{|\}|\(|\)|\[|\]|\.|\,|\;|\+|\-|\*|\/|\&amp;|\||\&lt;|\&gt;|\=|\~/</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">otherToken</span>
+      <span class="n">otherToken</span> <span class="o">=</span> <span class="n">otherToken</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">otherToken</span><span class="p">.</span><span class="nf">length</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">scanner</span><span class="p">.</span><span class="nf">pos</span> <span class="o">=</span> <span class="n">scanner</span><span class="p">.</span><span class="nf">pos</span><span class="o">-</span><span class="mi">1</span>
+      <span class="n">tokens</span> <span class="o">&lt;&lt;</span> <span class="n">otherToken</span>
+      <span class="n">scanner</span><span class="p">.</span><span class="nf">scan</span><span class="p">(</span><span class="sr">/\s+/</span><span class="p">)</span>
+      <span class="k">next</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">return</span> <span class="n">tokens</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">writeTokensTofile</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+  <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;tokens&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+  <span class="n">tokens</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">token</span><span class="o">|</span>
+    <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="nf">isKeyword</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;keyword&gt; </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> &lt;/keyword&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">elsif</span> <span class="nb">self</span><span class="p">.</span><span class="nf">isString</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="n">token</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">token</span><span class="p">.</span><span class="nf">length</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+      <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;stringConstant&gt; </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> &lt;/stringConstant&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">elsif</span> <span class="nb">self</span><span class="p">.</span><span class="nf">isSymbol</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="n">token</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">convertSymbol</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;symbol&gt; </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> &lt;/symbol&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">elsif</span> <span class="nb">self</span><span class="p">.</span><span class="nf">isNumber</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+      <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;integerConstant&gt; </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> &lt;/integerConstant&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;identifier&gt; </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> &lt;/identifier&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/tokens&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@tokenOutputFile</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">isKeyword</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+  <span class="k">return</span> <span class="vg">$KEYWORDS</span><span class="p">.</span><span class="nf">include?</span> <span class="n">token</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">isSymbol</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+  <span class="k">return</span> <span class="vg">$SYMBOL</span><span class="p">.</span><span class="nf">include?</span> <span class="n">token</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">isNumber</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">token</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="sr">/\d+/</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">isString</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">token</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="sr">/"[^"]*"/</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">end</span>
+</code></pre></div></div>
+
+<h3 id="语法分析">语法分析</h3>
+
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-25T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div></div></div>
