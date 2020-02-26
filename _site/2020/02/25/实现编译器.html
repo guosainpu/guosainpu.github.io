@@ -367,7 +367,21 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="实现">实现</h4>
 
-<p>词法分析的过程并不复杂。先删除输入程序中的注释代码，然后通过一些正则操作把源程序拆解成以上五种类型的单词即可。关键代码如下：</p>
+<p>词法分析的过程并不复杂。先删除输入程序中的注释代码，然后通过使用Ruby的StringScanner工具和一些正则操作把源程序拆解成以上五种类型的单词即可。我们用JackTokenizer来实现Jack的词法分析：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>JackTokenizer接口设计：
+constructor：输入源程序，完成词法分析
+hasMoreToken：是否还是token
+advance：token游标前进一位
+tokenType：当前token类型
+keyword：返回当前关键字类型的token
+symbol：返回当前symbol类型的token
+intValue：返回当前int类型的token
+stringValue：返回当前string类型的token
+indentifier：返回当前indentifier类型的token
+
+</code></pre></div></div>
+<p>词法分析关键代码如下：</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vg">$KEYWORDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"class"</span><span class="p">,</span> <span class="s2">"method"</span><span class="p">,</span> <span class="s2">"function"</span><span class="p">,</span> <span class="s2">"constructor"</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"boolean"</span><span class="p">,</span> <span class="s2">"char"</span><span class="p">,</span> <span class="s2">"void"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"static"</span><span class="p">,</span> <span class="s2">"field"</span><span class="p">,</span> <span class="s2">"let"</span><span class="p">,</span> <span class="s2">"do"</span><span class="p">,</span> <span class="s2">"if"</span><span class="p">,</span> <span class="s2">"else"</span><span class="p">,</span> <span class="s2">"while"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"false"</span><span class="p">,</span> <span class="s2">"null"</span><span class="p">,</span> <span class="s2">"this"</span><span class="p">]</span>
 <span class="vg">$SYMBOL</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"{"</span><span class="p">,</span> <span class="s2">"}"</span><span class="p">,</span> <span class="s2">"("</span><span class="p">,</span> <span class="s2">")"</span><span class="p">,</span> <span class="s2">"["</span><span class="p">,</span> <span class="s2">"]"</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">","</span><span class="p">,</span> <span class="s2">";"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="s2">"*"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">,</span> <span class="s2">"&amp;"</span><span class="p">,</span> <span class="s2">"|"</span><span class="p">,</span> <span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">,</span> <span class="s2">"="</span><span class="p">,</span> <span class="s2">"~"</span><span class="p">]</span>
