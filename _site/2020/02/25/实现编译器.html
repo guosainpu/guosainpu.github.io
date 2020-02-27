@@ -474,6 +474,20 @@ indentifier：返回当前indentifier类型的token
 
 <h3 id="语法分析">语法分析</h3>
 
+<p>我们的编译器很聪明，已经掌握了Jack的单词，接下来该学习语法了。语法分析的任务分析源程序类、方法的结构和每条语句的组成，分析的结果可以以抽象语法书的方式呈现，有的编译器会显示地构造出抽象语法树（用于进一步代码生成和错误报告），有的编译器则隐式地构造抽象语法树，即实时的生成代码和错误报告，不必在内存中维护整个树的数据结构，我们的编译器属于后者（但我们在实现的过程中仍会生成一个xml格式的抽象语法树，用于验证我们的语法分析程序是否正确）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gcayvbwgqfj310k0u0q82.jpg" width="800" /></center>
+
+<h4 id="上下文无关语法">上下文无关语法</h4>
+
+<p>几乎所有的编程语言，以及大多数用于描述复杂文件的其他形式的语言，都可以使用上下文无关语法描述。<strong>上下文无关语法是一组递归式的，树状结构的语法规则，用来指定语法中的语法元素如何由更简单的元素组成</strong>。上下文无关语法由终结符和非终结符两种元素构成，例如针对语句：while (count &lt;= 100) { count ++; …}。while、(、count、++ 等符号都属于终结符，因为它们已经无法再继续分割，是上下文无关语法世界的原子级存在；同时终结符也可以互相组合成更高级的非终结符，例如 count &lt;= 100 组成了一个expression，count ++; 组成了一个statement，多个statement又可以组成statementSequence等，expression、statement、statementSequence都属于非终结符，他们是可以再向下分割的。<strong>语法分析过程就是揭示程序中非终结符与非终结符，非终结符与终结符关系的过程</strong>。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gcazdzfktbj31ac0sgq4h.jpg" width="800" /></center>
+
+<h4 id="jack的非终结符">Jack的非终结符</h4>
+
+<h4 id="递归下降算法">递归下降算法</h4>
+
+<h4 id="实现-1">实现</h4>
+
 <h3 id="语义分析和代码生成">语义分析和代码生成</h3>
 
 <h3 id="学到了什么">学到了什么</h3>
@@ -482,7 +496,7 @@ indentifier：返回当前indentifier类型的token
 
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-25T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div><div class="next"><span>NEXT</span><a href="/2020/02/27/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html">从0到1构建计算机(10/10)--简单的操作系统</a></div></div></div>
 
 </div>
 
