@@ -505,10 +505,169 @@ indentifier：返回当前indentifier类型的token
 
 <h4 id="递归下降算法">递归下降算法</h4>
 
-<p>有很多算法可以用来构建语法分析树，递归下降算法是比较明显和简单的一种。语法分析程序从左到右的读取词法分析器的token输出，遇到非终结符则对齐进行相应的展开，如果该非终结符仍由其他非终结符构成，则深度优先的递归这些非终结符，直至非终结符全部由终结符构成为止。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gcb14smxp3j31900u0gus.jpg" width="800" /></center>
+<p>有很多算法可以用来构建语法分析树，递归下降算法是比较明显和简单的一种。语法分析程序从左到右的读取词法分析器的token输出，遇到非终结符则对其进行展开，如果该非终结符仍由其他非终结符构成，则深度优先的递归展开这些非终结符，直至非终结符全部由终结符构成为止。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gcazzd2l1kj318p0u0780.jpg" width="800" /></center>
 
 <h4 id="实现-1">实现</h4>
+<p>完成实现较长，这里只举几个非终结符的语法分析过程。</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CompilationEngine</span>
+  <span class="c1">#compile method</span>
+  <span class="c1">#编译整个类</span>
+  <span class="k">def</span> <span class="nf">compileClass</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;class&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeKeyword</span><span class="p">()</span> <span class="c1">#class</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeIndentifier</span><span class="p">()</span> <span class="c1">#className</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#{</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileClassVarDec</span><span class="p">()</span> <span class="c1">#classVarDec*</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileSubroutine</span><span class="p">()</span> <span class="c1">#subroutine*</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#}</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/class&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="c1">#编译静态变量或成员变量的声明</span>
+  <span class="k">def</span> <span class="nf">compileClassVarDec</span>
+    <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"static"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"field"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">isVar</span>
+      <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;classVarDec&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeKeyword</span><span class="p">()</span> <span class="c1">#(static|field)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeType</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeVar</span><span class="p">()</span> <span class="c1">#varName or varNames</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"static"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"field"</span><span class="p">)</span>
+      <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/classVarDec&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">return</span>
+  <span class="k">end</span>
+
+  <span class="c1">#编译局部变量</span>
+  <span class="k">def</span> <span class="nf">compileVarDec</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileSubroutine</span>
+    <span class="n">isSubroutine</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"constructor"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"function"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"method"</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">isSubroutine</span>
+      <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;subroutineDec&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeKeyword</span><span class="p">()</span> <span class="c1">#(method type)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"int"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"char"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"boolean"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"void"</span><span class="p">)</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">writeKeyword</span><span class="p">()</span> <span class="c1">#(basic type)</span>
+      <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"IDENTIFIER"</span>
+        <span class="nb">self</span><span class="p">.</span><span class="nf">writeIndentifier</span><span class="p">()</span> <span class="c1">#(class type)</span>
+      <span class="k">end</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeIndentifier</span><span class="p">()</span> <span class="c1">#method name</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#(</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileParameterList</span><span class="p">()</span> <span class="c1">#parameterList</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileSubroutineBody</span><span class="p">()</span> <span class="c1">#subroutineBody</span>
+      <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/subroutineDec&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="n">isSubroutine</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"constructor"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"function"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"method"</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span>
+  <span class="k">end</span>
+
+  <span class="c1">#编译参数列表</span>
+  <span class="k">def</span> <span class="nf">compileParameterList</span><span class="p">()</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="c1">#编译函数体</span>
+  <span class="k">def</span> <span class="nf">compileSubroutineBody</span><span class="p">()</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileStatements</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileLet</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileIF</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileWhile</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileReturn</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;returnStatement&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeKeyword</span><span class="p">()</span> <span class="c1">#return</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">";"</span> <span class="c1">#数组</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#;</span>
+    <span class="k">else</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#;</span>
+    <span class="k">end</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/returnStatement&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileDo</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileSubroutineCall</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">writeIndentifier</span><span class="p">()</span> <span class="c1">#方法名或类对象或实例对象</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"("</span> <span class="c1">#调内部方法分支</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#(</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#;</span>
+    <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"."</span> <span class="c1">#调外部方法分支</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#.</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeIndentifier</span><span class="p">()</span> <span class="c1">#方法名</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileExpression</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;expression&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
+    <span class="n">termEnd</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="vg">$OPETATOR</span><span class="p">.</span><span class="nf">include?</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">())</span>
+    <span class="k">if</span> <span class="o">!</span><span class="n">termEnd</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">writeSymbol</span><span class="p">()</span> <span class="c1">#操作符</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
+      <span class="n">termEnd</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="vg">$OPETATOR</span><span class="p">.</span><span class="nf">include?</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">())</span>
+    <span class="k">end</span>
+    <span class="vi">@outputfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"&lt;/expression&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileExpressionList</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">compileTerm</span>
+  <span class="o">...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="语义分析和代码生成">语义分析和代码生成</h3>
 
@@ -516,6 +675,7 @@ indentifier：返回当前indentifier类型的token
 
 <h3 id="总结">总结</h3>
 
+<p>本篇完整实现放在了:<a href="https://github.com/guosainpu/Nand2Tetris">github</a></p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-25T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div><div class="next"><span>NEXT</span><a href="/2020/02/27/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html">从0到1构建计算机(10/10)--简单的操作系统</a></div></div></div>
