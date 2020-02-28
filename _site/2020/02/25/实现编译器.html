@@ -855,7 +855,7 @@ if exp = f(exp1 ... expN)       then compileExpression(exp1), ..., compileExpres
 </code></pre></div></div>
 
 <h4 id="表达式实现">表达式实现</h4>
-<p>用程序表达后缀表达式的算法本身比较简答，但表达式本身比较复杂，在Jack中很多种类型或组合都可以被当做一个表达式，例如一个表达式可以是一个关键字，一个数字，一个变量；也可以是数组中的某个值；也可使函数调用；也可以是用（）括起来的另一个表达式。我们把这些可能统称为一个term。表达式实现的关键代码如下：</p>
+<p>用程序表达后缀表达式的算法本身比较简答，但表达式本身比较复杂，在Jack中很多符号或符号的组合都可以被当做一个表达式，例如一个表达式可以是一个关键字，一个数字，一个变量；也可以是数组中的某个值；也可以是函数调用；也可以是用（）括起来的另一个表达式等，我们把这些可能的方式都统称为一个term。表达式实现的关键代码如下：</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileExpression</span>
   <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
   <span class="n">termEnd</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="vg">$OPETATOR</span><span class="p">.</span><span class="nf">include?</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">())</span>
