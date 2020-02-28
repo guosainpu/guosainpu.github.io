@@ -845,14 +845,122 @@ indexOf        ：某符号的index
 
 <p>用程序表达后缀表达式的算法如下：</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compileExpression(exp)
+{
 if exp 是数字 n                  then push n
 if exp 是变量 v                  then push v
 if exp = (exp1 op exp2)         then compileExpression(exp1), compileExpression(exp2), compile op 
 if exp = op(exp1)               then compileExpression(exp1), compile op 
 if exp = f(exp1 ... expN)       then compileExpression(exp1), ..., compileExpression(expn), call f
+}
 </code></pre></div></div>
 
-<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcc8y8j1z0j313i09y7cn.jpg" width="800" /></center>
+<h4 id="表达式实现">表达式实现</h4>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileExpression</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
+  <span class="n">termEnd</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="vg">$OPETATOR</span><span class="p">.</span><span class="nf">include?</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">())</span>
+  <span class="k">if</span> <span class="o">!</span><span class="n">termEnd</span>
+    <span class="n">opretator</span> <span class="o">=</span> <span class="vg">$OPTOCMD</span><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="nf">getSymbol</span><span class="p">()]</span> <span class="c1">#操作符</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="n">opretator</span><span class="p">)</span>
+    <span class="n">termEnd</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="vg">$OPETATOR</span><span class="p">.</span><span class="nf">include?</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">())</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compileTerm</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"-"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"~"</span> <span class="c1">#unary term</span>
+    <span class="n">opetator</span> <span class="o">=</span> <span class="vg">$UNARYCMD</span><span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="nf">getSymbol</span><span class="p">()]</span> 
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileTerm</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="n">opetator</span><span class="p">)</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span>
+    <span class="n">keyword</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getKeyword</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">keyword</span> <span class="o">==</span> <span class="s2">"false"</span> <span class="o">||</span> <span class="n">keyword</span> <span class="o">==</span> <span class="s2">"null"</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePushNumber</span><span class="p">(</span><span class="s2">"0"</span><span class="p">)</span>
+    <span class="k">elsif</span> <span class="n">keyword</span> <span class="o">==</span> <span class="s2">"true"</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePushNumber</span><span class="p">(</span><span class="s2">"0"</span><span class="p">)</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="s2">"not"</span><span class="p">)</span> <span class="c1">#-1代表true</span>
+    <span class="k">elsif</span> <span class="n">keyword</span> <span class="o">==</span> <span class="s2">"this"</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="k">raise</span> <span class="s2">"</span><span class="si">#{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">是不可识别符号（只识别ture, false, null）"</span>
+    <span class="k">end</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"INT-CONST"</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getNumber</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePushNumber</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"STRING-CONST"</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getString</span><span class="p">()</span>
+    <span class="nb">puts</span> <span class="s2">"发现string：</span><span class="si">#{</span><span class="n">string</span><span class="si">}</span><span class="s2">"</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">processString</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"("</span> <span class="c1">#(expression)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">else</span> <span class="c1">#varName | varName[expression] | subroutineCall</span>
+    <span class="n">firstToken</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">identifier</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">secondToken</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"["</span> <span class="o">&amp;&amp;</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"("</span> <span class="o">&amp;&amp;</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"."</span> <span class="c1">#varName</span>
+      <span class="n">varName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">pushVarName</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">elsif</span> <span class="n">secondToken</span> <span class="o">==</span> <span class="s2">"["</span> <span class="c1">#varName[expression]</span>
+      <span class="n">varName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">pushVarName</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="s2">"add"</span><span class="p">)</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">#修改That</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"that"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">elsif</span> <span class="n">secondToken</span> <span class="o">==</span> <span class="s2">"("</span> <span class="o">||</span> <span class="n">secondToken</span> <span class="o">==</span> <span class="s2">"."</span> <span class="c1">#subroutineCall</span>
+      <span class="n">firstSymbol</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"("</span> <span class="c1">#调内部方法分支</span>
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+        <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+        <span class="n">methodName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="vi">@className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">firstSymbol</span><span class="si">}</span><span class="s2">"</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#调用实例方法，先push自己</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">methodName</span><span class="p">,</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"."</span> <span class="c1">#调外部方法分支</span>
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+        <span class="n">className</span> <span class="o">=</span> <span class="n">firstSymbol</span>
+        <span class="n">methodName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span> 
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+        <span class="n">symbolKind</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">kindOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+        <span class="n">symbolIndex</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+        <span class="n">isInstanceMethod</span> <span class="o">=</span> <span class="n">symbolKind</span> <span class="o">!=</span> <span class="s2">"NONE"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolIndex</span> <span class="o">!=</span> <span class="s2">"NONE"</span>
+        <span class="k">if</span>  <span class="n">isInstanceMethod</span> <span class="c1">#调用实例的方法</span>
+          <span class="k">if</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"field"</span>
+            <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"this"</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span> <span class="c1">#push this</span>
+          <span class="k">else</span>
+            <span class="k">if</span> <span class="vi">@curFunctionType</span> <span class="o">==</span> <span class="s2">"method"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"argument"</span>
+              <span class="n">symbolIndex</span> <span class="o">=</span> <span class="n">symbolIndex</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">end</span>
+            <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="n">symbolKind</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span>
+          <span class="k">end</span>
+          <span class="n">className</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">typeOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+        <span class="k">end</span>
+        <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">isInstanceMethod</span>
+          <span class="n">paramCount</span> <span class="o">=</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">end</span>
+        <span class="n">callName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="n">className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">methodName</span><span class="si">}</span><span class="s2">"</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">callName</span><span class="p">,</span> <span class="n">paramCount</span><span class="p">)</span>
+        <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h4 id="程序流程控制">程序流程控制</h4>
 
