@@ -962,7 +962,115 @@ if exp = f(exp1 ... expN)       then compileExpression(exp1), ..., compileExpres
 <span class="k">end</span>
 </code></pre></div></div>
 
-<h4 id="程序流程控制">程序流程控制</h4>
+<h4 id="分支流程控制">分支流程控制</h4>
+
+<p>这里的分支流程控制指的就是Jack中的if语句和while语句。分支流程控制的编译相对更直观一点，就是把if和while语句编译成更低级的goto和if-goto语句。它们的实现算法如下：</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcchm1dj93j31di0u00ug.jpg" width="800" /></center>
+
+<p>关键代码实现如下，这里值得思考的是：如何保证label L1, label L2等label名不互相冲突；且if和while是可以具备嵌套结构的，我们也需要确保进入或退出时更深一级if或while语句时，label的对应关系不会混乱。</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileIF</span>
+  <span class="vi">@ifBackTrace</span> <span class="o">&lt;&lt;</span> <span class="vi">@ifCount</span>
+  <span class="vi">@ifTotle</span> <span class="o">=</span> <span class="vi">@ifTotle</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="vi">@ifCount</span> <span class="o">=</span> <span class="vi">@ifTotle</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeIf</span><span class="p">(</span><span class="s2">"IF_TRUE</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeGoto</span><span class="p">(</span><span class="s2">"IF_FALSE</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"IF_TRUE</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileStatements</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"else"</span> <span class="c1">#compile else</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeGoto</span><span class="p">(</span><span class="s2">"IF_END</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"IF_FALSE</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileStatements</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"IF_END</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span> <span class="c1">#返回到}处</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"IF_FALSE</span><span class="si">#{</span><span class="vi">@ifCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="vi">@ifCount</span> <span class="o">=</span> <span class="vi">@ifBackTrace</span><span class="p">.</span><span class="nf">pop</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compileWhile</span>
+  <span class="vi">@whileBackTrace</span> <span class="o">&lt;&lt;</span> <span class="vi">@whileCount</span>
+  <span class="vi">@whileTotle</span> <span class="o">=</span> <span class="vi">@whileTotle</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="vi">@whileCount</span> <span class="o">=</span> <span class="vi">@whileTotle</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"WHILE_EXP</span><span class="si">#{</span><span class="vi">@whileCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="s2">"not"</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeIf</span><span class="p">(</span><span class="s2">"WHILE_END</span><span class="si">#{</span><span class="vi">@whileCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileStatements</span><span class="p">()</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeGoto</span><span class="p">(</span><span class="s2">"WHILE_EXP</span><span class="si">#{</span><span class="vi">@whileCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeLabel</span><span class="p">(</span><span class="s2">"WHILE_END</span><span class="si">#{</span><span class="vi">@whileCount</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="vi">@whileCount</span> <span class="o">=</span> <span class="vi">@whileBackTrace</span><span class="p">.</span><span class="nf">pop</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<h4 id="函数调用和返回">函数调用和返回</h4>
+
+<p>在调用VM函数之前，调用者必须将函数的参入压入栈，且如果被调用的VM函数是自己实例方法，那么首先入栈的参数是该方法操作对象的引用（进入函数后这个对象引用变为this指针）。return方法的实现则很简单，不过当return的类型为void时，我们也需要返回一个常量0作为返回值。</p>
+
+<p>代码关键实现如下：</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileSubroutineCall</span>
+  <span class="n">isVoid</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="n">firstSymbol</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"("</span> <span class="c1">#调内部方法分支</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#调用实例方法，先push this</span>
+    <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+    <span class="n">methodName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="vi">@className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">firstSymbol</span><span class="si">}</span><span class="s2">"</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">methodName</span><span class="p">,</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"."</span> <span class="c1">#调外部方法分支</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">className</span> <span class="o">=</span> <span class="n">firstSymbol</span>
+    <span class="n">methodName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span> 
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">symbolKind</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">kindOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="n">symbolIndex</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="n">isInstanceMethod</span> <span class="o">=</span> <span class="n">symbolKind</span> <span class="o">!=</span> <span class="s2">"NONE"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolIndex</span> <span class="o">!=</span> <span class="s2">"NONE"</span>
+    <span class="k">if</span>  <span class="n">isInstanceMethod</span> <span class="c1">#调用实例的方法</span>
+      <span class="k">if</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"field"</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"this"</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span> <span class="c1">#push this</span>
+      <span class="k">else</span>
+        <span class="k">if</span> <span class="vi">@curFunctionType</span> <span class="o">==</span> <span class="s2">"method"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"argument"</span>
+          <span class="n">symbolIndex</span> <span class="o">=</span> <span class="n">symbolIndex</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">end</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="n">symbolKind</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="n">className</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">typeOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">isInstanceMethod</span>
+      <span class="n">paramCount</span> <span class="o">=</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">end</span>
+    <span class="n">callName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="n">className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">methodName</span><span class="si">}</span><span class="s2">"</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">callName</span><span class="p">,</span> <span class="n">paramCount</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compileReturn</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">";"</span> <span class="c1">#数组</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePushNumber</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#默认push0</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeReturn</span><span class="p">()</span> <span class="c1">#return</span>
+  <span class="k">else</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeReturn</span><span class="p">()</span> <span class="c1">#return</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="对象访问">对象访问</h3>
 
