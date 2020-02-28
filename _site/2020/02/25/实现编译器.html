@@ -697,8 +697,15 @@ indentifier：返回当前indentifier类型的token
   <li>通过 that index 的方式来访问数组</li>
 </ol>
 
-<h4 id="实现-2">实现</h4>
+<h4 id="符号表实现">符号表实现</h4>
 <p>符号表的实现比较简单，主要是支持符号的新增和查询功能，且需要管理每个段的index（段中新增了变量后index需要+1）。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>startSubroutine：符号表重置，开辟新的子程序作用域
+define         ：新增一条符号
+varCount       ：符号表中某Kind的变量数量
+kindOf         ：某符号的kind
+typeOf         ：某符号的type
+indexOf        ：某符号的index
+</code></pre></div></div>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SymbolTable</span>
   <span class="k">def</span> <span class="nf">initialize</span><span class="p">()</span>
     <span class="vi">@classTable</span> <span class="o">=</span> <span class="p">{}</span>
@@ -768,6 +775,61 @@ indentifier：返回当前indentifier类型的token
     <span class="nb">puts</span> <span class="s2">"subroutineTable: </span><span class="si">#{</span><span class="vi">@subroutineTable</span><span class="si">}</span><span class="s2">"</span>
     <span class="nb">puts</span> <span class="s2">"symbolIndex: </span><span class="si">#{</span><span class="vi">@symbolIndex</span><span class="si">}</span><span class="s2">"</span>
   <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>由于Jack的适当设计，我们不会遇到在嵌套的作用域中使用变量的情况，所以不会遇到变量冲突的问题。在其他高级语言中，我们可能会随时开辟一个新的作用域（例如用{}括起来），这时候我们需要用符号表的链表这种数据结构来解决这个问题，每增加一层作用域都会新增一个新的符号表节点。</p>
+
+<h4 id="处理符号">处理符号</h4>
+<p>下面截取了一段符号处理的实现（把符号加入符号表），可以看到语义分析和代码生成的阶段是融合在语法分析的过程当中的，是对语法分析程序的扩展。在语法分析过程中，当我们遇到一个新符号，我们先解析它的type和kind，然后把它写到符号表中。</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#编译静态变量或成员变量的声明</span>
+<span class="k">def</span> <span class="nf">compileClassVarDec</span>
+  <span class="n">varCount</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"static"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"field"</span><span class="p">)</span>
+  <span class="k">while</span> <span class="n">isVar</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">getKeyword</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">type</span> <span class="o">=</span> <span class="n">getType</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">varCount</span> <span class="o">=</span> <span class="n">varCount</span> <span class="o">+</span> <span class="nb">self</span><span class="p">.</span><span class="nf">writeVarToSymbolTable</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">type</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"static"</span> <span class="o">||</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"field"</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="k">return</span>
+<span class="k">end</span>
+
+<span class="c1">#编译局部变量</span>
+<span class="k">def</span> <span class="nf">compileVarDec</span>
+  <span class="n">varCount</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"var"</span>
+  <span class="k">while</span> <span class="n">isVar</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">getKeyword</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">type</span> <span class="o">=</span> <span class="n">getType</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">varCount</span> <span class="o">=</span> <span class="n">varCount</span> <span class="o">+</span> <span class="nb">self</span><span class="p">.</span><span class="nf">writeVarToSymbolTable</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">type</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">isVar</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"KEYWORD"</span> <span class="o">&amp;&amp;</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">keyword</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"var"</span>
+  <span class="k">end</span>
+  <span class="k">return</span> <span class="n">varCount</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">writeVarToSymbolTable</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">type</span><span class="p">)</span>
+  <span class="n">varCount</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">firstVarName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+  <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">define</span><span class="p">(</span><span class="n">firstVarName</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+  <span class="n">varCount</span> <span class="o">=</span> <span class="n">varCount</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="n">isSemicolon</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"SYMBOL"</span> <span class="o">&amp;&amp;</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">";"</span>
+  <span class="k">while</span> <span class="o">!</span><span class="n">isSemicolon</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">nextVarName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+    <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">define</span><span class="p">(</span><span class="n">nextVarName</span><span class="p">,</span> <span class="n">type</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+    <span class="n">varCount</span> <span class="o">=</span> <span class="n">varCount</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">isSemicolon</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">tokenType</span> <span class="o">==</span> <span class="s2">"SYMBOL"</span> <span class="o">&amp;&amp;</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">";"</span>
+  <span class="k">end</span>
+  <span class="k">return</span> <span class="n">varCount</span>
 <span class="k">end</span>
 </code></pre></div></div>
 
