@@ -1074,7 +1074,165 @@ if exp = f(exp1 ... expN)       then compileExpression(exp1), ..., compileExpres
 
 <h3 id="对象访问">对象访问</h3>
 
+<p>上述我们讲的操作都是发生在栈空间，而对象和数组存储的内存位置在堆空间。对象和数组的处理方式很类似，都是在内存中为其分配一块连续的内存，然后通过一个指向起始地址的指针来进行访问。</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcd3nvaw6kj30ke11g75d.jpg" width="300" /></center>
+
+<p>this指针在对象访问中起到了重要作用，在构造函数中，我们通过系统的Memory.alloc()函数来为对象分配内存，Memory.alloc()返回指向对象起始地址的指针，然后我们把这个指针赋值给THIS段，返回给调用者。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">constructor</span> <span class="nc">Ball</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">,</span>
+                     <span class="kt">int</span> <span class="nc">AleftWall</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">ArightWall</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">AtopWall</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">AbottomWall</span><span class="o">)</span> <span class="o">{</span>      
+  <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Ax</span><span class="o">;</span>   
+  <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Ay</span><span class="o">;</span>
+  <span class="n">let</span> <span class="n">leftWall</span> <span class="o">=</span> <span class="nc">AleftWall</span><span class="o">;</span>
+  <span class="n">let</span> <span class="n">rightWall</span> <span class="o">=</span> <span class="nc">ArightWall</span> <span class="o">-</span> <span class="mi">6</span><span class="o">;</span>
+  <span class="n">let</span> <span class="n">topWall</span> <span class="o">=</span> <span class="nc">AtopWall</span><span class="o">;</span> 
+  <span class="n">let</span> <span class="n">bottomWall</span> <span class="o">=</span> <span class="nc">AbottomWall</span> <span class="o">-</span> <span class="mi">6</span><span class="o">;</span>
+  <span class="n">let</span> <span class="n">wall</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="k">do</span> <span class="nf">show</span><span class="o">();</span>
+
+  <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 编译构造函数，开辟实例内存</span>
+<span class="k">def</span> <span class="nf">compileConstructor</span>
+  <span class="n">filedCount</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">varCount</span><span class="p">(</span><span class="s2">"field"</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePushNumber</span><span class="p">(</span><span class="n">filedCount</span><span class="p">)</span>       <span class="c1">#首先我们要知道对象需要多大的内存，即需要存储多少个变量</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="s2">"Memory.alloc"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>            <span class="c1">#把实例内存地址pop到THIS</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>当我们调用对象的实例方法时，需要先push实例方法的入参，但我们首先需要push一个额外的隐含参数，就是调用对象本身，这个参数在函数内部我们同样通过this指针来访问。可以看到通过虚拟内存段this，我们简化了对象访问操作。</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileDo</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileSubroutineCall</span><span class="p">()</span>
+  <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"temp"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#do语句总是调用返回类型为void的函数，所以最后弹出(并忽略)调用函数的返回值</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compileSubroutineCall</span>
+  <span class="n">isVoid</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="n">firstSymbol</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"("</span> <span class="c1">#调内部方法分支</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">#调用实例方法，先push this</span>
+    <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+    <span class="n">methodName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="vi">@className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">firstSymbol</span><span class="si">}</span><span class="s2">"</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">methodName</span><span class="p">,</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">elsif</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"."</span> <span class="c1">#调外部方法分支</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">className</span> <span class="o">=</span> <span class="n">firstSymbol</span>
+    <span class="n">methodName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span> 
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">symbolKind</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">kindOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="n">symbolIndex</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="n">isInstanceMethod</span> <span class="o">=</span> <span class="n">symbolKind</span> <span class="o">!=</span> <span class="s2">"NONE"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolIndex</span> <span class="o">!=</span> <span class="s2">"NONE"</span>
+    <span class="k">if</span>  <span class="n">isInstanceMethod</span> <span class="c1">#调用实例的方法</span>
+      <span class="k">if</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"field"</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"this"</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span> <span class="c1">#push this</span>
+      <span class="k">else</span>
+        <span class="k">if</span> <span class="vi">@curFunctionType</span> <span class="o">==</span> <span class="s2">"method"</span> <span class="o">&amp;&amp;</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"argument"</span>
+          <span class="n">symbolIndex</span> <span class="o">=</span> <span class="n">symbolIndex</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">end</span>
+        <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="n">symbolKind</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="n">className</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">typeOf</span><span class="p">(</span><span class="n">firstSymbol</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">paramCount</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpressionList</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">isInstanceMethod</span>
+      <span class="n">paramCount</span> <span class="o">=</span> <span class="n">paramCount</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">end</span>
+    <span class="n">callName</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="n">className</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">methodName</span><span class="si">}</span><span class="s2">"</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeCall</span><span class="p">(</span><span class="n">callName</span><span class="p">,</span> <span class="n">paramCount</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
 <h3 id="数组访问">数组访问</h3>
+
+<p>对象的访问我们使用了this指针，那么数组的访问我们会用上最后一个虚拟内存段：that指针。例如在访问数组对象array[index]时，先计算array指向的首地址+index，得出的值就是要访问的元素，然后把这个值赋值给that指针，这里面用到了temp 0来保存临时变量，为了防止that指针在使用时冲突。that指针的存在也是为了简化代码的结构。</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcd3wstnv3j316p0u0q3y.jpg" width="700" /></center>
+<p>关键代码实现如下：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="nc">Array</span> <span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">;</span>
+    
+    <span class="n">let</span> <span class="n">a</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+    
+    <span class="n">let</span> <span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">a</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">a</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">b</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">]]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">+</span> <span class="mi">3</span><span class="o">;</span>  <span class="c1">// b[2] = 5</span>
+    <span class="n">let</span> <span class="n">a</span><span class="o">[</span><span class="n">b</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">]]]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="mi">5</span><span class="o">]]</span> <span class="o">*</span> <span class="n">b</span><span class="o">[((</span><span class="mi">7</span> <span class="o">-</span> <span class="n">a</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span> <span class="o">-</span> <span class="nc">Main</span><span class="o">.</span><span class="na">double</span><span class="o">(</span><span class="mi">2</span><span class="o">))</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>  <span class="c1">// a[5] = 8 * 5 = 40</span>
+    <span class="n">let</span> <span class="n">c</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+    
+    <span class="o">......</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compileLet</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="n">varName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="n">isArray</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="k">if</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"["</span> <span class="c1">#数组</span>
+    <span class="n">isArray</span> <span class="o">=</span> <span class="kp">true</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">pushVarName</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="s2">"add"</span><span class="p">)</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>    
+  <span class="k">end</span>
+  <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+  <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+  <span class="k">if</span> <span class="n">isArray</span>                                 
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"temp"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>            <span class="c1">#temp0 = expression above</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>         <span class="c1">#that指向数组</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"temp"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"that"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">symbolKind</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">kindOf</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+    <span class="n">symbolIndex</span> <span class="o">=</span> <span class="vi">@symbolTable</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"argument"</span> <span class="o">||</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"local"</span> <span class="o">||</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"static"</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="n">symbolKind</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span> <span class="c1"># 把expression的值pop到var</span>
+    <span class="k">elsif</span> <span class="n">symbolKind</span> <span class="o">==</span> <span class="s2">"field"</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"this"</span><span class="p">,</span> <span class="n">symbolIndex</span><span class="p">)</span> <span class="c1"># 把expression的值pop到this段</span>
+    <span class="k">else</span>
+      <span class="k">raise</span> <span class="s2">"不能识别"</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">compileTerm</span>
+  <span class="o">......</span>
+  <span class="k">else</span> <span class="c1">#varName | varName[expression] | subroutineCall</span>
+    <span class="n">firstToken</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">identifier</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">secondToken</span> <span class="o">=</span> <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
+    <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"["</span> <span class="o">&amp;&amp;</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"("</span> <span class="o">&amp;&amp;</span> <span class="n">secondToken</span> <span class="o">!=</span> <span class="s2">"."</span> <span class="c1">#varName</span>
+      <span class="n">varName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">pushVarName</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">elsif</span> <span class="n">secondToken</span> <span class="o">==</span> <span class="s2">"["</span> <span class="c1">#varName[expression]</span>
+      <span class="n">varName</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="nf">getIndentifier</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">compileExpression</span><span class="p">()</span>
+      <span class="nb">self</span><span class="p">.</span><span class="nf">pushVarName</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writeArithmetic</span><span class="p">(</span><span class="s2">"add"</span><span class="p">)</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePop</span><span class="p">(</span><span class="s2">"pointer"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">#修改That</span>
+      <span class="vi">@vmWriter</span><span class="p">.</span><span class="nf">writePush</span><span class="p">(</span><span class="s2">"that"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="vi">@tokenizer</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="k">elsif</span> 
+      <span class="o">......</span> 
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
 <h3 id="学到了什么">学到了什么</h3>
 
@@ -1083,7 +1241,7 @@ if exp = f(exp1 ... expN)       then compileExpression(exp1), ..., compileExpres
 <p>本篇完整实现放在了:<a href="https://github.com/guosainpu/Nand2Tetris">github</a></p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-25T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div><div class="next"><span>NEXT</span><a href="/2020/02/27/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html">从0到1构建计算机(10/10)--简单的操作系统</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">从0到1构建计算机(8/10)--高级语言：Jack</a></div><div class="next"><span>NEXT</span><a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8%E7%9A%84%E5%89%AF%E6%9C%AC.html">从0到1构建计算机(10/10)--简单的操作系统</a></div></div></div>
 
 </div>
 
