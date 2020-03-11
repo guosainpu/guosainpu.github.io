@@ -356,11 +356,133 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="乘法">乘法</h4>
 
+<p>对于乘法 sum=x*y，最简单的方法是把 sum=sum+x 重复运算 y 次，算法的时间复杂度为 O(n)。另一种方式是模拟小学运算乘法的竖式方式：用 shiftedx 去乘 y 的每一位，如果 y 的这位为1，则把结果加到 sum 中，如果为0则舍弃；处理完 y 的当前位后，处理 y 的下一位，此时需要操作 shiftedx=shiftedx*2（此操作可以通过加法实现，或者通过移位实现，移位效率更高，虽然Hack不支持移位操作）。第二种方式效率更高，算法的时间复杂度为 log2(n)。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq3caoxlhj30ra09mq2w.jpg" width="500" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq2u7z2gtj31220bijrp.jpg" width="600" /></center>
+
+<p>实现：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="kd">static</span> <span class="kt">int</span> <span class="n">powers_of_two</span><span class="o">;</span>
+   
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">16</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">=</span> <span class="mi">16</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">=</span> <span class="mi">32</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span> <span class="o">=</span> <span class="mi">64</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span> <span class="o">=</span> <span class="mi">128</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span> <span class="o">=</span> <span class="mi">256</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span> <span class="o">=</span> <span class="mi">512</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">10</span><span class="o">]</span> <span class="o">=</span> <span class="mi">1024</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">11</span><span class="o">]</span> <span class="o">=</span> <span class="mi">2048</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">12</span><span class="o">]</span> <span class="o">=</span> <span class="mi">4096</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">13</span><span class="o">]</span> <span class="o">=</span> <span class="mi">8192</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">14</span><span class="o">]</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="mi">15</span><span class="o">]</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">+</span><span class="mi">16384</span><span class="o">;</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 判断x的第n位是否为1</span>
+    <span class="n">function</span> <span class="kt">boolean</span> <span class="nf">bit</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">~((</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="n">n</span><span class="o">])</span> <span class="o">=</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">multiply</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">sum</span><span class="o">,</span> <span class="n">shiftedX</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">j</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">shiftedX</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">16</span> <span class="o">)</span> <span class="o">{</span>   <span class="c1">// 16-bit numbers</span>
+            <span class="k">if</span><span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">bit</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">let</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">shiftedX</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">let</span> <span class="n">shiftedX</span> <span class="o">=</span> <span class="n">shiftedX</span> <span class="o">+</span> <span class="n">shiftedX</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">sum</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
 <h4 id="除法">除法</h4>
+
+<p>对于除法 d=x/y，容易想到的方法是重复计算 x=x-y，每计算一次后 d=d+1，直至 x-y&lt;0 为止，算法的复杂度最高为 O(x)。另一种算法是</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq2u7z2gtj31220bijrp.jpg" width="600" /></center>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">function</span> <span class="kt">int</span> <span class="nf">divide</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">neg_x</span><span class="o">,</span> <span class="n">neg_y</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">q</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">result</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">neg_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">neg_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">x</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">y</span><span class="o">);</span>
+
+        <span class="k">if</span><span class="o">(</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">divide</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">+</span><span class="n">y</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">x</span><span class="o">-(</span><span class="mi">2</span><span class="o">*</span><span class="n">q</span><span class="o">*</span><span class="n">y</span><span class="o">)</span> <span class="o">&lt;</span> <span class="n">y</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">q</span><span class="o">+</span><span class="n">q</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">result</span> <span class="o">=</span> <span class="n">q</span><span class="o">+</span><span class="n">q</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span><span class="o">(</span> <span class="n">neg_x</span> <span class="o">=</span> <span class="n">neg_y</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">result</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
 
 <h4 id="开平方">开平方</h4>
 
-<h4 id="绝对值最大值最小值">绝对值、最大值、最小值</h4>
+<h4 id="绝对值最大值最小值取模">绝对值、最大值、最小值、取模</h4>
+
+<p>这些运算就比较简单了</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">function</span> <span class="kt">int</span> <span class="nf">max</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">a</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">b</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">min</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">a</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">b</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">abs</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="o">-</span><span class="n">x</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">mod</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">q</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">divide</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="o">(</span><span class="n">q</span><span class="o">*</span><span class="n">y</span><span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
 
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-29T00:00:00+08:00"><!-- start custom article footer snippet -->
 
