@@ -356,7 +356,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="乘法">乘法</h4>
 
-<p>对于乘法 sum=x*y，最简单的方法是把 sum=sum+x 重复运算 y 次，算法的时间复杂度为 O(n)。另一种方式是模拟小学运算乘法的竖式方式：用 shiftedx 去乘 y 的每一位，如果 y 的这位为1，则把结果加到 sum 中，如果为0则舍弃；处理完 y 的当前位后，处理 y 的下一位，此时需要操作 shiftedx=shiftedx*2（此操作可以通过加法实现，或者通过移位实现，移位效率更高，虽然Hack不支持移位操作）。第二种方式效率更高，算法的时间复杂度为 log2(n)。</p>
+<p>对于乘法 sum=x*y，最简单的方法是把 sum=sum+x 重复运算 y 次，算法的时间复杂度为 O(n)。另一种方式是模拟小学运算乘法的竖式方式：用 shiftedx 去乘 y 的每一位，如果 y 的这位为1，则把结果加到 sum 中，如果为0则舍弃；处理完 y 的当前位后，处理 y 的下一位，此时需要操作 shiftedx=shiftedx*2（此操作可以通过加法实现，或者通过移位实现，移位效率更高，虽然Hack不支持移位操作）。第二种方式效率更高，算法的时间复杂度为 O(log2(n))。</p>
 
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq3caoxlhj30ra09mq2w.jpg" width="500" /></center>
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq2u7z2gtj31220bijrp.jpg" width="600" /></center>
@@ -411,7 +411,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="除法">除法</h4>
 
-<p>对于除法 d=x/y，容易想到的方法是重复计算 x=x-y，每计算一次后 d=d+1，直至 x-y&lt;0 为止。在这种情况下，最坏的情况是 y=1 的情况，此时的步长最短，需要重复计算x次，时间复杂度为 O(x)。我们可以进一步优化，增加步长，每次不是减去y，而是减去2y，而且是递归的进行下去，直至 x&lt;y 时返回，此时最坏的时间复杂度为 log2(n)。</p>
+<p>对于除法 d=x/y，容易想到的方法是重复计算 x=x-y，每计算一次后 d=d+1，直至 x-y&lt;0 为止。在这种情况下，最坏的情况是 y=1 的情况，此时的步长最短，需要重复计算x次，时间复杂度为 O(x)。我们可以进一步优化，增加步长，每次不是减去y，而是减去2y，而且是递归的进行下去，直至 x&lt;y 时返回，此时最坏的时间复杂度为 O(log2(n))。</p>
 
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcq7h7f8ezj311m0bk3yt.jpg" width="600" /></center>
 
@@ -447,9 +447,15 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="开平方">开平方</h4>
 
-<p>这个开平方函数返回入参 x 开平方后结果的整数部分。算法可以使用二分查找的方式，找到 $y^2\leq x&lt;(y+1)^2$ 即可，</p>
+<p>这个开平方函数返回入参 x 开平方后结果的整数部分。算法可以使用二分查找的方式，找到 $y^2\leq x&lt;(y+1)^2$ 即可。该算法的时间复杂度为O(log2(n))，但由于我们计算的 x 大小有上限（$2^{16}-1$），所以真实执行时循环的次数是固定的 n/2 (n=16)，复杂度是O(n/2)。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">function</span> <span class="kt">int</span> <span class="nf">sqrt</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="err">伪代码：</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">...</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">y</span><span class="o">+</span><span class="mi">2</span><span class="o">^</span><span class="n">j</span><span class="o">)^</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="n">then</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">^</span><span class="n">j</span>
+    <span class="k">return</span> <span class="n">y</span>
+
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">sqrt</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="n">y</span><span class="o">;</span>
         <span class="kt">var</span> <span class="kt">int</span> <span class="n">approx</span><span class="o">;</span>
         <span class="kt">var</span> <span class="kt">int</span> <span class="n">approx_squared</span><span class="o">;</span>
