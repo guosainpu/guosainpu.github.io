@@ -447,6 +447,27 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="开平方">开平方</h4>
 
+<p>这个开平方函数返回入参 x 开平方后结果的整数部分。算法可以使用二分查找的方式，找到 $y^2\leq x&lt;(y+1)^2$ 即可，</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">function</span> <span class="kt">int</span> <span class="nf">sqrt</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="n">y</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">approx</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">approx_squared</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">7</span><span class="o">;</span>      <span class="c1">// = #bits / 2 - 1</span>
+        <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">approx</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">powers_of_two</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+            <span class="n">let</span> <span class="n">approx_squared</span> <span class="o">=</span> <span class="n">approx</span> <span class="o">*</span> <span class="n">approx</span><span class="o">;</span>
+            <span class="k">if</span><span class="o">(</span> <span class="o">~(</span><span class="n">approx_squared</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">approx_squared</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>    <span class="c1">// in case of overflow</span>
+                <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">approx</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">y</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
 <h4 id="绝对值最大值最小值取模">绝对值、最大值、最小值、取模</h4>
 
 <p>这些运算就比较简单了</p>
@@ -1108,7 +1129,12 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
     window.pageAsideAffix = affix;
   });
 })();
+</script><script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};_config.TeX = { equationNumbers: { autoNumber: "all" } };MathJax.Hub.Config(_config);
 </script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
     </div>
     <script>(function () {
   var $root = document.getElementsByClassName('root')[0];
