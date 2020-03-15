@@ -654,6 +654,28 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h3 id="内存管理">内存管理</h3>
 
+<p>使用高级语言，最大的方便之一就是开发者几乎不用关注内存管理的细节，所有复杂琐碎的工作都又操作系统，编译器，虚拟机，汇编器等底层来负责实现。不同变量类型的内存在程序声明周期中的不同时刻被分配，例如，静态变量在编译期由编译器为其分配内存；局部变量则在每个函数运行的时候分配在栈内存上；其他内存则是在程序运行时被动态地分配在堆内存上，这些内存就需要借助操作系统来管理了。操作系统可能使用不同的方式来管理内存的分配和回收，通常都是用alloc()和deAlloc()这两个函数中实现的。</p>
+
+<h4 id="最简单的内存管理算法">最简单的内存管理算法</h4>
+
+<p>使用一个单一的指针 free 指向还未使用过的内存的基地址。这种方式只是简单的向前分配内存，不负责回收内存。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 伪代码</span>
+<span class="n">initialize</span> <span class="n">free</span> <span class="o">=</span> <span class="n">heapBase</span>
+
+<span class="c1">// 分配一块大小为 size 的内存</span>
+<span class="n">alloc</span><span class="o">(</span><span class="n">size</span><span class="o">)</span>
+  <span class="n">pointer</span> <span class="o">=</span> <span class="n">free</span>
+  <span class="n">free</span> <span class="o">=</span> <span class="n">free</span> <span class="o">+</span> <span class="n">size</span> 
+  <span class="k">return</span> <span class="n">pointer</span>
+
+<span class="c1">// 回收object的内存</span>
+<span class="n">deAlloc</span><span class="o">(</span><span class="n">object</span><span class="o">)</span>
+<span class="k">do</span> <span class="n">nothing</span>        <span class="c1">// 不做内存回收处理</span>
+</code></pre></div></div>
+
+<h4 id="算法改进">算法改进</h4>
+
 <h3 id="输入输出管理">输入输出管理</h3>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-29T00:00:00+08:00"><!-- start custom article footer snippet -->
 
