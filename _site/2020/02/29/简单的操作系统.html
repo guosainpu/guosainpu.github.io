@@ -714,66 +714,57 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
     <span class="kd">static</span> <span class="nc">Array</span> <span class="n">freeList</span><span class="o">;</span>
     <span class="kd">static</span> <span class="nc">Array</span> <span class="no">NO_BLOCK</span><span class="o">;</span>
     
-    <span class="c1">// Free block structure:</span>
-    <span class="c1">// word 0: free block size including 2 header words</span>
-    <span class="c1">// word 1: Next free block ptr</span>
-    <span class="kd">static</span> <span class="kt">int</span> <span class="no">FL_LENGTH</span><span class="o">;</span> <span class="c1">// freeList.length index</span>
-    <span class="kd">static</span> <span class="kt">int</span> <span class="no">FL_NEXT</span><span class="o">;</span>   <span class="c1">// freeList.next index</span>
+    <span class="kd">static</span> <span class="kt">int</span> <span class="no">FL_LENGTH</span><span class="o">;</span>  <span class="c1">// freeList长度在segement上的index，值为为0</span>
+    <span class="kd">static</span> <span class="kt">int</span> <span class="no">FL_NEXT</span><span class="o">;</span>    <span class="c1">// freeListnext指针在segement上的ndex，值为为1</span>
+    <span class="kd">static</span> <span class="kt">int</span> <span class="no">ALLOC_SIZE</span><span class="o">;</span> <span class="c1">// 分配的block的size，在block上的index，值为-1</span>
     
-    <span class="c1">// Alloc block structure:</span>
-    <span class="c1">// word 0: alloc block size including 1 header word</span>
-    <span class="c1">// word 1..size: allocated block</span>
-    <span class="kd">static</span> <span class="kt">int</span> <span class="no">ALLOC_SIZE</span><span class="o">;</span><span class="c1">// alloc block size index relative to start of allocated block</span>
-    
-    <span class="cm">/** Initializes memory parameters. */</span>
+    <span class="cm">/** 初始化 */</span>
     <span class="n">function</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">let</span> <span class="n">memory</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-        <span class="n">let</span> <span class="n">freeList</span> <span class="o">=</span> <span class="mi">2048</span><span class="o">;</span>
-        <span class="n">let</span> <span class="no">NO_BLOCK</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">;</span>   <span class="c1">// means no block found</span>
+        <span class="n">let</span> <span class="n">freeList</span> <span class="o">=</span> <span class="mi">2048</span><span class="o">;</span>    <span class="c1">// heap基地址</span>
+        <span class="n">let</span> <span class="no">NO_BLOCK</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">;</span>   
         <span class="n">let</span> <span class="no">FL_LENGTH</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
         <span class="n">let</span> <span class="no">FL_NEXT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
         <span class="n">let</span> <span class="no">ALLOC_SIZE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
-        <span class="n">let</span> <span class="n">freeList</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">-</span><span class="mi">2048</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">freeList</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="mi">16384</span><span class="o">-</span><span class="mi">2048</span><span class="o">;</span>   <span class="c1">//初始化freeList，此时free的内存为整个heap</span>
         <span class="n">let</span> <span class="n">freeList</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         <span class="k">return</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="cm">/** Returns the value of the main memory at the given address. */</span>
+    <span class="cm">/** 返回地址为address的内存单元的内容 */</span>
     <span class="n">function</span> <span class="kt">int</span> <span class="nf">peek</span><span class="o">(</span><span class="kt">int</span> <span class="n">address</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">memory</span><span class="o">[</span><span class="n">address</span><span class="o">];</span>
     <span class="o">}</span>
 
-    <span class="cm">/** Sets the value of the main memory at this address
-     *  to the given value. */</span>
+    <span class="cm">/** 把数值value存储到地址为address的内存单元中 */</span>
     <span class="n">function</span> <span class="kt">void</span> <span class="nf">poke</span><span class="o">(</span><span class="kt">int</span> <span class="n">address</span><span class="o">,</span> <span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">let</span> <span class="n">memory</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
         <span class="k">return</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="cm">/** finds and allocates from the heap a memory block of the 
-     *  specified size and returns a reference to its base address. */</span>
+    <span class="cm">/** 从可用内存中寻找一块合适的内存块，返回内存块的基地址 */</span>
     <span class="n">function</span> <span class="nc">Array</span> <span class="nf">alloc</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">prev_block</span><span class="o">;</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">found_block</span><span class="o">;</span>
         
-        <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">best_fit</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>             <span class="c1">// prev_block is the block before the found block</span>
+        <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">best_fit</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>   <span class="c1">// prev_block 是目标 block 的前一个block</span>
         <span class="k">if</span><span class="o">(</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="no">NO_BLOCK</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>    <span class="c1">// none found</span>
+            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>               <span class="c1">// 未找到</span>
         <span class="o">}</span>
         <span class="k">else</span> <span class="o">{</span>
             <span class="k">if</span><span class="o">(</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>
-                <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">freeList</span><span class="o">;</span>                 <span class="c1">// New block is at the beginning of the freeList</span>
-                <span class="n">let</span> <span class="n">freeList</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">do_alloc</span><span class="o">(</span><span class="n">found_block</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span> <span class="c1">// Free list now starts a new first free block</span>
+                <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">freeList</span><span class="o">;</span>       <span class="c1">// 目标 block 是 freeList 的第一个节点</span>
+                <span class="n">let</span> <span class="n">freeList</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">do_alloc</span><span class="o">(</span><span class="n">found_block</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span> <span class="c1">// 分配内存，并更新freeList</span>
             <span class="o">}</span>
             <span class="k">else</span> <span class="o">{</span>
                 <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
-                <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">do_alloc</span><span class="o">(</span><span class="n">found_block</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span>
+                <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">do_alloc</span><span class="o">(</span><span class="n">found_block</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span> <span class="c1">// 分配内存，并更新freeList</span>
             <span class="o">}</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">found_block</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
     <span class="o">}</span>
     
-    <span class="c1">// Find the block with the best fit</span>
+    <span class="cm">/** 最优匹配算法 */</span>
     <span class="n">function</span> <span class="nc">Array</span> <span class="nf">best_fit</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">best_block</span><span class="o">;</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">prev_block</span><span class="o">;</span>
@@ -786,52 +777,53 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="n">let</span> <span class="n">cur_block</span> <span class="o">=</span> <span class="n">freeList</span><span class="o">;</span>
         <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
         
+        <span class="c1">// 遍历freeList，找到可用内存大于sie，且其中最小的block</span>
         <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">cur_block</span> <span class="o">=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">cur_size</span> <span class="o">=</span> <span class="n">cur_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]-</span><span class="mi">1</span><span class="o">;</span>  <span class="c1">// Number of usable words</span>
+            <span class="n">let</span> <span class="n">cur_size</span> <span class="o">=</span> <span class="n">cur_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]-</span><span class="mi">1</span><span class="o">;</span>
             <span class="k">if</span><span class="o">(</span> <span class="o">~(</span><span class="n">cur_size</span> <span class="o">&lt;</span> <span class="n">size</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">cur_size</span> <span class="o">&lt;</span> <span class="n">best_size</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
-                <span class="c1">// Found new best block</span>
-                <span class="n">let</span> <span class="n">best_block</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">;</span>    <span class="c1">// Remember block before best block</span>
+                <span class="n">let</span> <span class="n">best_block</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">;</span>
                 <span class="n">let</span> <span class="n">best_size</span> <span class="o">=</span> <span class="n">cur_size</span><span class="o">;</span>
             <span class="o">}</span>
             <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="n">cur_block</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">cur_block</span> <span class="o">=</span> <span class="n">cur_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
         <span class="o">}</span>
         
-        <span class="k">return</span> <span class="n">best_block</span><span class="o">;</span>  <span class="c1">// block just before best fit</span>
+        <span class="k">return</span> <span class="n">best_block</span><span class="o">;</span>  <span class="c1">// 返回最优block的前一个block</span>
     <span class="o">}</span>
 
-    <span class="c1">// Allocate the found block and adjust free and alloc block headers</span>
+    <span class="cm">/** 分配内存，并填充block header的值（值为block的长度）*/</span>
     <span class="n">function</span> <span class="nc">Array</span> <span class="nf">do_alloc</span><span class="o">(</span><span class="nc">Array</span> <span class="n">found_block</span><span class="o">,</span> <span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">next_block</span><span class="o">;</span>
         <span class="kt">var</span> <span class="kt">int</span> <span class="n">block_size</span><span class="o">;</span>
         
-        <span class="k">if</span><span class="o">(</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">&gt;</span> <span class="o">(</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span> <span class="c1">// block can hold free hdr + alloc hdr + alloc block + more</span>
-            <span class="n">let</span> <span class="n">next_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>  <span class="c1">// Leave room for the alloc hdr</span>
-            <span class="n">let</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">&gt;</span> <span class="o">(</span><span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>          <span class="c1">// block内存大于申请内内存，分配block的一部分</span>
+            <span class="n">let</span> <span class="n">next_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>           <span class="c1">// next_block的位置</span>
+            <span class="n">let</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>  <span class="c1">// next_block重置block信息</span>
             <span class="n">let</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">-</span> <span class="o">(</span><span class="n">next_block</span> <span class="o">-</span> <span class="n">found_block</span><span class="o">);</span>
-            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>      <span class="c1">// Point just after the alloc hdr</span>
-            <span class="n">let</span> <span class="n">found_block</span><span class="o">[</span><span class="no">ALLOC_SIZE</span><span class="o">]</span> <span class="o">=</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="c1">// Size includes alloc hdr</span>
+            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>               <span class="c1">// found_block重置block信息</span>
+            <span class="n">let</span> <span class="n">found_block</span><span class="o">[</span><span class="no">ALLOC_SIZE</span><span class="o">]</span> <span class="o">=</span> <span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>            
         <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>      <span class="c1">// Need to allocate the entire block</span>
+        <span class="k">else</span> <span class="o">{</span>                                               <span class="c1">// 把整块内存都分配给申请者</span>
             <span class="n">let</span> <span class="n">next_block</span> <span class="o">=</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
             <span class="n">let</span> <span class="n">block_size</span> <span class="o">=</span> <span class="n">found_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">];</span>
-            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>      <span class="c1">// Point just after the alloc hdr</span>
+            <span class="n">let</span> <span class="n">found_block</span> <span class="o">=</span> <span class="n">found_block</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>               <span class="c1">// found_block重置block信息</span>
             <span class="n">let</span> <span class="n">found_block</span><span class="o">[</span><span class="no">ALLOC_SIZE</span><span class="o">]</span> <span class="o">=</span> <span class="n">block_size</span><span class="o">;</span>
         <span class="o">}</span>
         
         <span class="k">return</span> <span class="n">next_block</span><span class="o">;</span>
     <span class="o">}</span>
-    <span class="cm">/** De-allocates the given object and frees its space. */</span>
+
+    <span class="cm">/** 释放内存 */</span>
     <span class="n">function</span> <span class="kt">void</span> <span class="nf">deAlloc</span><span class="o">(</span><span class="nc">Array</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="kt">int</span> <span class="n">alloc_size</span><span class="o">;</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">prev_block</span><span class="o">;</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">next_block</span><span class="o">;</span>
         
         <span class="n">let</span> <span class="n">alloc_size</span> <span class="o">=</span> <span class="n">object</span><span class="o">[</span><span class="no">ALLOC_SIZE</span><span class="o">];</span>
-        <span class="n">let</span> <span class="n">object</span> <span class="o">=</span> <span class="n">object</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>        <span class="c1">// point to the beginning of the block</span>
-        <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">find_prev_free</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">object</span> <span class="o">=</span> <span class="n">object</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>        
+        <span class="n">let</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">find_prev_free</span><span class="o">(</span><span class="n">object</span><span class="o">);</span>     <span class="c1">// 找到prev_block</span>
         
-        <span class="k">if</span><span class="o">(</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>       <span class="c1">// object becomes new start of freeList</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">prev_block</span> <span class="o">=</span> <span class="kc">null</span> <span class="o">)</span> <span class="o">{</span>                           <span class="c1">// object成为新的首节点</span>
             <span class="n">let</span> <span class="n">object</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">alloc_size</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">object</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">freeList</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">freeList</span> <span class="o">=</span> <span class="n">object</span><span class="o">;</span>
@@ -839,11 +831,11 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="o">}</span>
         <span class="k">else</span> <span class="o">{</span>
             <span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">prev_block</span> <span class="o">+</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">])</span> <span class="o">=</span> <span class="n">object</span> <span class="o">)</span> <span class="o">{</span>
-                <span class="c1">// join prev free block with alloc block.</span>
+                <span class="c1">// 如果 prev_block 和 object 相连，则合并两个block</span>
                 <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">+</span> <span class="n">alloc_size</span><span class="o">;</span>
             <span class="o">}</span>
             <span class="k">else</span> <span class="o">{</span>
-                <span class="c1">// link prev free block to alloc block</span>
+                <span class="c1">// 链接两个block</span>
                 <span class="n">let</span> <span class="n">object</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">alloc_size</span><span class="o">;</span>
                 <span class="n">let</span> <span class="n">object</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
                 <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">object</span><span class="o">;</span>
@@ -852,7 +844,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="o">}</span>
         
         <span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">prev_block</span> <span class="o">+</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">])</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="c1">// join prev free with next free.</span>
+            <span class="c1">// 尝试合并prev_block和next_block</span>
             <span class="n">let</span> <span class="n">next_block</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
             <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">+</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">];</span>
             <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
@@ -860,6 +852,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="k">return</span><span class="o">;</span>
     <span class="o">}</span>    
     
+    <span class="cm">/** 返回block的prev_block */</span>
     <span class="n">function</span> <span class="nc">Array</span> <span class="nf">find_prev_free</span><span class="o">(</span><span class="nc">Array</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">var</span> <span class="nc">Array</span> <span class="n">block</span><span class="o">;</span>
         
