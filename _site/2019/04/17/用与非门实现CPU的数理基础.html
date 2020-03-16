@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>技术书单 - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(2/12)--与非门实现CPU的数理基础 - 一只草履虫</title>
 
-<meta name="description" content="计算机基础：* 编码的奥秘（Charles Petzold）* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)* 程序员的自我修养--链接、装载与库 (俞甲子等)* 深入理解计算机系统 (Randal E. Bryant)* 汇编语言 (王爽)* 编译...">
-<link rel="canonical" href="http://localhost:4000/2019/02/18/%E4%B9%A6%E5%8D%95.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="CPU和布尔函数CPU本质上是一个函数计算器：  信号通过输入管脚输入，对应着函数的入参  CPU的内部电路是函数的黑盒实现  信号通过输出管脚输出，对应着函数的出参8086 CPU大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在...">
+<link rel="canonical" href="http://localhost:4000/2019/04/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -334,29 +334,76 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>技术书单</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="技术书单"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(2/12)--与非门实现CPU的数理基础</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(2/12)--与非门实现CPU的数理基础"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E6%8A%80%E6%9C%AF%E4%B9%A6%E5%8D%95">技术书单</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 18, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-02-18T00:00:00+08:00">
-    <meta itemprop="keywords" content="技术书单"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Apr 17, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-04-17T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>计算机基础：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* 编码的奥秘（Charles Petzold）
-* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
-* 程序员的自我修养--链接、装载与库 (俞甲子等)
-* 深入理解计算机系统 (Randal E. Bryant)
-* 汇编语言 (王爽)
-* 编译原理（龙书）（Alfred V.Fho等）
-</code></pre></div></div>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="cpu和布尔函数">CPU和布尔函数</h3>
 
-<p>iOS：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* runtime技术博客 (刘小壮)
-* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)
-</code></pre></div></div>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-02-18T00:00:00+08:00"><!-- start custom article footer snippet -->
+<p>CPU本质上是一个函数计算器：</p>
+<ul>
+  <li>信号通过输入管脚输入，对应着函数的入参</li>
+  <li>CPU的内部电路是函数的黑盒实现</li>
+  <li>信号通过输出管脚输出，对应着函数的出参</li>
+</ul>
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="next"><span>NEXT</span><a href="/2019/04/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">从0到1构建计算机(1/12)--从与非门到俄罗斯方块</a></div></div></div>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdjx10y6yj31gu0och04.jpg" width="600" /></center>
+<center><figcaption>8086 CPU</figcaption></center>
+
+<p>大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑运算集但却能够以超高速方式运行的特点。英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。</p>
+
+<h3 id="布尔函数">布尔函数</h3>
+
+<p><strong>布尔函数：</strong>布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。</p>
+
+<p>布尔函数的两种表示方法：</p>
+
+<p>1.<strong>真值表：</strong>枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921635xlzj30d00d2wed.jpg" width="300" /></center>
+<center><figcaption>真值表</figcaption></center>
+<p>2.<strong>布尔表达式：</strong>使用布尔操作符（And，Or，Not等）表达，上面的真值表可以用此表达式表示：</p>
+<center>f(x, y, z) = (x And y) Or (Not(x) And z)</center>
+
+<h3 id="布尔函数和门">布尔函数和门</h3>
+<p><strong>门（gate）</strong>是用来实现布尔函数的物理设备，例如与门，或门，非门，与非门等。门是基本的电子元器件，复杂的门电路就构成了CPU</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921661g24j30u004at8o.jpg" width="600" /></center>
+
+<p>门有输入管脚和输出管脚，对应着布尔函数的入参和出参；门电路的具体实现方式则对应着布尔函数的运算规则。复杂的布尔函数就对应的复杂的门电路</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g92165tk1lj311g0d63yy.jpg" width="600" /></center>
+
+<p>布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。<strong>一个复杂的CPU物理实现对应着一个复杂的布尔函数设计，可以说CPU的实现是建立在布尔函数之上的。</strong></p>
+
+<h3 id="用与非门实现cpu的数理基础">用与非门实现CPU的数理基础</h3>
+
+<p>布尔函数的一些数学结论：</p>
+<ol>
+  <li>任何一个布尔函数，无论多复杂，都可以只用三种布尔操作符And，Or，Not完全表达。</li>
+  <li>And，Or，Not运算都可以只用Nand（与非）一种运算来代替实现，或者只用Nor（或非）一种运算来代替实现。</li>
+  <li>由1、2可得：仅使用Nand运算，就能够构建任何布尔函数。</li>
+</ol>
+
+<p><em>以上证明方法可以自行Google</em></p>
+
+<p>有了上面的数理基础做支撑，我们可以得出结论：<strong>一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。</strong></p>
+
+<h3 id="用软件实现硬件">用软件实现硬件</h3>
+
+<p>今天，硬件设计者们也不再亲手制作硬件了，而是用软件来实现设计：通过编写硬件描述语言（HDL）来描述芯片结构，并能通过测试用例来验证设计。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921650gf9j313r0u077e.jpg" width="800" /></center>
+
+<p>好了，下面就让我们用Nand来实现一个CPU吧~</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-04-17T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/04/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">从0到1构建计算机(1/12)--从与非门到俄罗斯方块</a></div><div class="next"><span>NEXT</span><a href="/2019/06/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU</a></div></div></div>
 
 </div>
 

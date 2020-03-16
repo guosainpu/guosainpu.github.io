@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>技术书单 - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU - 一只草履虫</title>
 
-<meta name="description" content="计算机基础：* 编码的奥秘（Charles Petzold）* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)* 程序员的自我修养--链接、装载与库 (俞甲子等)* 深入理解计算机系统 (Randal E. Bryant)* 汇编语言 (王爽)* 编译...">
-<link rel="canonical" href="http://localhost:4000/2019/02/18/%E4%B9%A6%E5%8D%95.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片组合逻辑芯片一个最基本的CPU主要由两类芯片组成：  组合逻辑芯片（Combinational Chips）：...">
+<link rel="canonical" href="http://localhost:4000/2019/06/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -334,29 +334,361 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>技术书单</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="技术书单"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E6%8A%80%E6%9C%AF%E4%B9%A6%E5%8D%95">技术书单</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 18, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-02-18T00:00:00+08:00">
-    <meta itemprop="keywords" content="技术书单"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 16, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-06-16T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>计算机基础：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* 编码的奥秘（Charles Petzold）
-* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
-* 程序员的自我修养--链接、装载与库 (俞甲子等)
-* 深入理解计算机系统 (Randal E. Bryant)
-* 汇编语言 (王爽)
-* 编译原理（龙书）（Alfred V.Fho等）
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片</p>
+
+<h3 id="组合逻辑芯片">组合逻辑芯片</h3>
+
+<p>一个最基本的CPU主要由两类芯片组成：</p>
+<ul>
+  <li>组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算</li>
+  <li>时序芯片（Sequential Chips）：寄存器，计数器，RAM等。这些芯片主要负责暂存数据</li>
+</ul>
+
+<p>组合逻辑芯片（下面简称逻辑芯片）可以类比为一个布尔函数，它仅负责处理逻辑运算：输出结果仅依赖于其输入变量的排列组合。逻辑芯片是没有记忆能力的，它们不能维持自身的状态，当逻辑芯片的输入值改变的时候，它们的输出值也会实时地改变。</p>
+
+<p>hack所需要的逻辑芯片有以下四种：基本逻辑门、多通道逻辑门、加法器、ALU（算数逻辑单元）。</p>
+
+<h3 id="基本逻辑门">基本逻辑门</h3>
+<p>基本逻辑门是一些简单的布尔函数的实现，我们需要的基本逻辑门如下，有1位和多位（16位）之分。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1g9yzjn8lngj30qe0mgwew.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<p>我们所有组合逻辑芯片都是基于Nand实现的，下面是Nand的真值表：只有当两个输入都为1时输出为0，其余输出为1反，然后输出。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga16e7ws5tj30b007s3yd.jpg" width="300" /></center>
+<center><figcaption>Nand真值表</figcaption></center>
+
+<p>首先我们用Nand实现一个Not。Not很简单，对其输入取反，然后输出。下面是我自己的实现方式：</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga21uf1wocj30s609e3yh.jpg" width="600" /></center>
+<center><figcaption>Not电路图</figcaption></center>
+
+<p>HDL实现：硬件描述语言实现。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Not HDL实现
+ * Not gate:
+ * out = not in
+ */
+
+CHIP Not {
+    IN in;
+    OUT out;
+
+    PARTS:
+    Nand(a=in, b=in, out=out); 
+}
 </code></pre></div></div>
 
-<p>iOS：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* runtime技术博客 (刘小壮)
-* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)
-</code></pre></div></div>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-02-18T00:00:00+08:00"><!-- start custom article footer snippet -->
+<p>然后我们继续用刚刚实现的Not和Nand组合使用，再实现一个And。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga221fwwf3j310m08mgll.jpg" width="800" /></center>
+<center><figcaption>And电路图</figcaption></center>
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="next"><span>NEXT</span><a href="/2019/04/16/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">从0到1构建计算机(1/12)--从与非门到俄罗斯方块</a></div></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * And gate: 
+ * out = 1 if (a == 1 and b == 1)
+ *       0 otherwise
+ */
+
+CHIP And {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    Nand(a=a, b=b, out=nandOut);
+    Not(in=nandOut, out=out);
+}
+</code></pre></div></div>
+
+<p>多位基本逻辑门是1位基本逻辑门的简单组合，以16位And为例，用16个1位And组合成16位And.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 16-bit bitwise And:
+ * for i = 0..15: out[i] = (a[i] and b[i])
+ */
+
+CHIP And16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    And(a=a[0], b=b[0], out=out[0]);
+    And(a=a[1], b=b[1], out=out[1]);
+    And(a=a[2], b=b[2], out=out[2]);
+    And(a=a[3], b=b[3], out=out[3]);
+    And(a=a[4], b=b[4], out=out[4]);
+    And(a=a[5], b=b[5], out=out[5]);
+    And(a=a[6], b=b[6], out=out[6]);
+    And(a=a[7], b=b[7], out=out[7]);
+    And(a=a[8], b=b[8], out=out[8]);
+    And(a=a[9], b=b[9], out=out[9]);
+    And(a=a[10], b=b[10], out=out[10]);
+    And(a=a[11], b=b[11], out=out[11]);
+    And(a=a[12], b=b[12], out=out[12]);
+    And(a=a[13], b=b[13], out=out[13]);
+    And(a=a[14], b=b[14], out=out[14]);
+    And(a=a[15], b=b[15], out=out[15]);
+}
+</code></pre></div></div>
+<p><strong>以此类推，我们可以一步步实现其他所有基本逻辑门。</strong></p>
+
+<h3 id="加法器">加法器</h3>
+<p>有了上面实现的这些基本逻辑门，我们就可以实现CPU中一个非常重要的基本芯片：加法器。实现加法器的顺序是：半加器-&gt;全加器-&gt;16位加法器</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyn6tzgj30va0d8glt.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<p>第一步：实现一个半加器，半加器负责计算两个一位二进制相加，输出sum和carry（进位）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xb8b2xej30sc09m74d.jpg" width="600" /></center>
+<center><figcaption>半加器</figcaption></center>
+
+<p>虽然半加器看上去跳出了布尔运算，升级到的小学数学，但其仍然可以用真值表表示，所以也就可以用基本逻辑门实现，我们用一个Xor和And就可以实现半加器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2c9rhu5bj30sa0ge3yo.jpg" width="600" /></center>
+<center><figcaption>半加器电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 半加器
+ * Computes the sum of two bits.
+ */
+
+CHIP HalfAdder {
+    IN a, b;    // 1-bit inputs
+    OUT sum,    // Right bit of a + b 
+        carry;  // Left bit of a + b
+
+    PARTS:
+    Xor(a=a, b=b, out=sum);
+    And(a=a, b=b, out=carry);
+}
+
+</code></pre></div></div>
+
+<p>半加器只能计算两个一位二进制数相加，接着我们在输入端再加入一个进位管脚（代表低位做加法时进过来的进位），就成为了一个全加器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xom01j9j30u80de0sv.jpg" width="600" /></center>
+<center><figcaption>全加器</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cemdwywj318g0gu0t1.jpg" width="600" /></center>
+<center><figcaption>全加器电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 全加器
+ * Computes the sum of three bits.
+ */
+
+CHIP FullAdder {
+    IN a, b, c;  // 1-bit inputs
+    OUT sum,     // Right bit of a + b + c
+        carry;   // Left bit of a + b + c
+
+    PARTS:
+    HalfAdder(a=a, b=b, carry=carryA, sum=sumA);
+    HalfAdder(a=sumA, b=c, carry=carryB, sum=sum);
+    Or(a=carryA, b=carryB, out=carry);
+}
+</code></pre></div></div>
+
+<p>最后我们利用全加器实现16位加法器，有了16位加法器，我们就可以进行2个不大于2^16的整数的加法了。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xrljwy9j30te06sdfv.jpg" width="600" /></center>
+<center><figcaption>16位加法器</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 16位加法器
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ */
+
+CHIP Add16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    FullAdder(a=a[0], b=b[0], c=false, sum=out[0], carry=ca0);
+    FullAdder(a=a[1], b=b[1], c=ca0, sum=out[1], carry=ca1);
+    FullAdder(a=a[2], b=b[2], c=ca1, sum=out[2], carry=ca2);
+    FullAdder(a=a[3], b=b[3], c=ca2, sum=out[3], carry=ca3);
+    FullAdder(a=a[4], b=b[4], c=ca3, sum=out[4], carry=ca4);
+    FullAdder(a=a[5], b=b[5], c=ca4, sum=out[5], carry=ca5);
+    FullAdder(a=a[6], b=b[6], c=ca5, sum=out[6], carry=ca6);
+    FullAdder(a=a[7], b=b[7], c=ca6, sum=out[7], carry=ca7);
+    FullAdder(a=a[8], b=b[8], c=ca7, sum=out[8], carry=ca8);
+    FullAdder(a=a[9], b=b[9], c=ca8, sum=out[9], carry=ca9);
+    FullAdder(a=a[10], b=b[10], c=ca9, sum=out[10], carry=ca10);
+    FullAdder(a=a[11], b=b[11], c=ca10, sum=out[11], carry=ca11);
+    FullAdder(a=a[12], b=b[12], c=ca11, sum=out[12], carry=ca12);
+    FullAdder(a=a[13], b=b[13], c=ca12, sum=out[13], carry=ca13);
+    FullAdder(a=a[14], b=b[14], c=ca13, sum=out[14], carry=ca14);
+    FullAdder(a=a[15], b=b[15], c=ca14, sum=out[15], carry=ignorCa); 
+}
+</code></pre></div></div>
+
+<p>有了加法器，我们再实现一个累加器，它对输入数据进行加1，然后输出。累加器是后面CPU中程序计数器的重要部分。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 累加器
+ * 16-bit incrementer:
+ * out = in + 1 (arithmetic addition)
+ */
+
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    Add16(a=in, b[0]=true, b[1]=false, b[2]=false, b[3]=false, b[4]=false, b[5]=false, b[6]=false, b[7]=false, b[8]=false, b[9]=false, b[10]=false, b[11]=false, b[12]=false, b[13]=false, b[14]=false, b[15]=false, out=out);
+}     
+</code></pre></div></div>
+
+<h3 id="多通道逻辑门">多通道逻辑门</h3>
+<p>我们看到基本逻辑门负责计算布尔运算，但其只能根据输入计算出输出，缺少控制能力。下面我们介绍的多通道逻辑门则在逻辑控制方面扮演了重要角色，因为多通道逻辑门具有<strong>选择功能</strong>。多通道逻辑门在CPU和RAM中起到了重要作用。多通道逻辑门分为以下两种：</p>
+
+<ul>
+  <li><strong>Multiplexor:</strong> 有多路输入，一路输出，选择输入中的一路作为输出</li>
+  <li><strong>DMultiplexor:</strong> 有一路输入，多路输出，在输出路中选择一路降输入值输出</li>
+</ul>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyl836uj30v60meaaw.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y8t42i3j30p60dq0sv.jpg" width="600" /></center>
+<center><figcaption>Multiplexor</figcaption></center>
+
+<center>&lt;img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg" width="600&gt;</center>
+<center><figcaption>DMultiplexor</figcaption></center>
+
+<p>这里我们实现一个2路1位的Mux。a，b是两路1位信号输入，sel是选择位。如果sel == 0，out管脚输出a的值，否则输出b的值。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1zhhi4a2j30rm0kuq36.jpg" width="600" /></center>
+<center><figcaption>2路1位Mux电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** 
+ * 2路1位Mux
+ * Multiplexor:
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    Not(in= sel, out=NotSel);
+    And(a=a, b=NotSel, out=AndAOut);
+    And(a=b, b=sel, out=AndBOut);
+    Or(a=AndAOut, b=AndBOut, out=out);
+}
+</code></pre></div></div>
+
+<p>当然除了2路选择器，还有4路、8路、16路等多路选择器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yd61q3mj30ze09at8v.jpg" width="800" /></center>
+<center><figcaption>多路Mux</figcaption></center>
+
+<p>下面是4路16位选择器的一种实现方式</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+    OUT out[16];
+
+    PARTS:
+    Mux16(a=a, b=b, sel=sel[0], out=outA);
+    Mux16(a=c, b=d, sel=sel[0], out=outB);
+    Mux16(a=outA, b=outB, sel=sel[1], out=out);
+}
+</code></pre></div></div>
+
+<h3 id="alu">ALU</h3>
+<p>有了多通道逻辑门，我们就可以进一步实现一个更为复杂的芯片：ALU。ALU是CPU的三大基本模块之一（ALU、寄存器、程序计数器）。基本逻辑门只能计算一种布尔逻辑，而ALU可以通过改变控制位输入变量的组合（zx,nz,zy,ny,f,no），可以控制实现多种计算逻辑。这类似于一个CPU可以执行指令集中的众多指令一样（当然这其中就依赖于ALU）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cylk4d8j30uo05i3yg.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf3rz82j30pi0i0dg1.jpg" width="600" /></center>
+<center><figcaption>ALU</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg" width="600" /></center>
+<center><figcaption>ALU真值表</figcaption></center>
+
+<p>下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&amp;y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output &lt; 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x &amp; y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out &lt; 0) set ng = 1
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x &amp; y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out &lt; 0),  0 otherwise
+
+    PARTS:
+    Mux16(a=x, b=false, sel=zx, out=zSelX);
+    Not16(in=zSelX, out=notZSelx);
+    Mux16(a=zSelX, b=notZSelx, sel=nx, out=outX);
+
+    Mux16(a=y, b=false, sel=zy, out=zSelY);
+    Not16(in=zSelY, out=notZSelY);
+    Mux16(a=zSelY, b=notZSelY, sel=ny, out=outY);
+
+    Add16(a=outX, b=outY, out=outAdd); // X+Y
+    And16(a=outX, b=outY, out=outAnd); // X&amp;Y
+
+    Mux16(a=outAnd, b=outAdd, sel=f, out=outF);
+    Not16(in=outF, out=notF);
+
+    Mux16(a=outF, b=notF, sel=no, out=out, out[0..7]=outZrA, out[8..15]=outZrB, out[15]=outMSB);
+
+    Or8Way(in=outZrA, out=zrL);
+    Or8Way(in=outZrB, out=zrH);
+    Or(a=zrL, b=zrH, out=notZr);
+    Not(in=notZr, out=zr);
+
+    And(a=true, b=outMSB, out=ng);
+}
+</code></pre></div></div>
+
+<h3 id="补码">补码</h3>
+<p>最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：<strong>任何两个用补码表示的有符号数的加法和正数的加法完全相同</strong>，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-06-16T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/04/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">从0到1构建计算机(2/12)--与非门实现CPU的数理基础</a></div><div class="next"><span>NEXT</span><a href="/2019/07/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器</a></div></div></div>
 
 </div>
 
