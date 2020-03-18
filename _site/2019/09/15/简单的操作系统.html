@@ -849,7 +849,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">=</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">]</span> <span class="o">+</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_LENGTH</span><span class="o">];</span>
             <span class="n">let</span> <span class="n">prev_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">]</span> <span class="o">=</span> <span class="n">next_block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
         <span class="o">}</span>
-        <span class="k">return</span><span class="o">;</span>
+        <span class="k">return</span>
     <span class="o">}</span>    
     
     <span class="cm">/** 返回block的prev_block */</span>
@@ -869,7 +869,113 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <span class="o">}</span>
 </code></pre></div></div>
 
-<h3 id="输入输出管理">输入输出管理</h3>
+<h3 id="io">I/O</h3>
+
+<p>计算机一般会连接一些输入输出设备，例如：显示器、鼠标、键盘、硬盘、网卡等，这些I/O设备都有自己的特性，在这些设备上进行读写操作也是很复杂的，但对于程序员而言，我们可以通过操作系统来操作它们，操作系统使用一组驱动程序来处理各个I/O设备的操作细节，然后向上提供一组封装好的API接口。</p>
+
+<p>I/O设备对于CPU和操作系统而言，其实是一段内存和一组BIOS驱动程序（在Hack中没有这些驱动程序，需要我们自己写），当操作系统想要和I/O设备交互时，就通过这些程序从相应的内存中读取或写入数据。在Hack中，我们只有两个I/O设备：显示器和键盘，
+显示器的内存映射是从16384开始的连续的 8K*2byte 地址空间（因此该显示器的分辨率是：512*256= 8K*2byte）；键盘更简单，它只映射24576这一个地址单元的地址空间（因为足以容纳所有英文字符和符号）</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcycyqes1sj30ww0p4jsi.jpg" width="700" /></center>
+
+<h3 id="键盘">键盘</h3>
+
+<p>当我们敲击键盘时，敲击的字符的sacii码会写入到地址为24576的内存中。我们的驱动程序要做的事情就是，完成一组特定的API，他们可以从24576号地址中读取字符（读取单个字符或者先组合成字符串）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcycyp9d74j315i0f6dgw.jpg" width="700" /></center>
+
+<h4 id="监测键盘输入">监测键盘输入</h4>
+
+<p>第一件事需要做的是，监测到键盘的输入。该方法的核心就是从键盘的内存映像中读出当前按下的字符的ascii码，当读取的值不为0的时候，代表有字符输入。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// keyPress() 伪代码</span>
+<span class="k">if</span> <span class="err">有按键按下</span>
+    <span class="k">return</span> <span class="err">该键的</span><span class="n">sacii</span><span class="err">码</span>
+<span class="k">else</span> 
+    <span class="k">return</span> <span class="mi">0</span>
+
+<span class="c1">// Jack实现</span>
+<span class="n">function</span> <span class="kt">char</span> <span class="nf">keyPressed</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">keyboard</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="读取单个字符">读取单个字符</h4>
+
+<p>读取单个字符时我们需要面对两个问题。第一个，什么情况下才叫用户输入了一个单个字符呢？这里我们定义用户按下一个按键，然后松开按键，这过程会输入一个字符（即使长时间按住再松开也是输入一个），所以我们需要做的事情是等待用户输入，然后记录数值，然后等待用户松开，完成本次单个字符读取。第二个，给用户一个可视化反馈，当用户输入一个字符后，需要在屏幕上回显出来，并且辅助以光标提示（虽然这个操作看似理所当然，但其中经过的过程并不简单）。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// readChar() 伪代码</span>
+
+<span class="k">while</span> <span class="err">没有任何按键按下</span>
+    <span class="err">等待</span><span class="o">...</span><span class="err">直到有按键按下</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="err">当前按下的按键值</span>
+
+<span class="k">while</span> <span class="err">当前按键还处于按下状态</span>
+    <span class="err">等待</span><span class="o">...</span><span class="err">直到按键松开</span>
+
+<span class="n">print</span> <span class="n">c</span> <span class="c1">// 把字符回显到屏幕上</span>
+<span class="err">将光标右移一格</span>
+
+<span class="k">return</span> <span class="n">c</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// jack实现</span>
+<span class="n">function</span> <span class="kt">char</span> <span class="nf">readChar</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">char</span> <span class="n">key</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">keyPressed</span><span class="o">()</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{}</span>
+    <span class="n">let</span> <span class="n">key</span> <span class="o">=</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">keyPressed</span><span class="o">();</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="nc">Keyboard</span><span class="o">.</span><span class="na">keyPressed</span><span class="o">()</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{}</span>
+    <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printChar</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">key</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="读取一行字符">读取一行字符</h4>
+
+<p>然后我们在 readChar() 的基础上扩展出 readLine()，readLine()需要解决两个问题。第一个，把读取的单个字符写入字符串缓冲区，直到输入换行符时结束。第二个，允许用户在输入过程中使用删除键删除</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// readLine() 伪代码</span>
+<span class="n">s</span> <span class="o">=</span> <span class="err">空字符串</span>
+<span class="n">repeat</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">readChar</span><span class="o">()</span>
+    <span class="k">if</span> <span class="n">c</span> <span class="o">=</span> <span class="err">换行符</span>
+        <span class="n">print</span> <span class="err">换行符</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">c</span> <span class="o">=</span> <span class="err">退格键</span>
+        <span class="n">s</span><span class="err">删除最后一个字符</span>
+        <span class="err">光标左移一格</span>
+    <span class="k">else</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">)</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Jack实现</span>
+<span class="n">function</span> <span class="nc">String</span> <span class="nf">readLine</span><span class="o">(</span><span class="nc">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="nc">String</span> <span class="n">line</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
+    
+    <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+    
+    <span class="n">let</span> <span class="n">line</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>     <span class="c1">// max length</span>
+    <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">readChar</span><span class="o">();</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">newLine</span><span class="o">())</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">backSpace</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="n">line</span><span class="o">.</span><span class="na">eraseLastChar</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="n">line</span><span class="o">.</span><span class="na">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">readChar</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">line</span><span class="o">;</span>
+<span class="o">}</span>   
+</code></pre></div></div>
+
+<p>可以看到，键盘输入的设计实现还是基于一系列级联的分层抽象。高级程序readLine()依赖readChar()，readChar()依赖于keyPress()，keyPress()依赖于硬件。可见分层抽象的设计模式贯穿了整个计算机的宏观架构和微观实现，可以说是计算机科学思想的精华所在。</p>
+
+<h3 id="显示图形">显示图形</h3>
+
+<h3 id="显示文字">显示文字</h3>
+
+<h3 id="system">System</h3>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-09-15T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/09/05/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html">从0到1构建计算机(9/12)--实现编译器</a></div><div class="next"><span>NEXT</span><a href="/2019/09/18/%E5%B0%8F%E6%B8%B8%E6%88%8F.html">从0到1构建计算机(11/12)--在Hack上运行小游戏</a></div></div></div>
