@@ -510,150 +510,6 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <span class="o">}</span>
 </code></pre></div></div>
 
-<h3 id="字符串">字符串</h3>
-
-<p>字符串的逻辑比较简单。在Jack中，一个字符串是一个数组，存储内容一串ascii编码（且不需要以\0结尾）。我们用String类来实现，其中最核心的两个方法是构造函数 new(int length) 和 appendChar(char c)，这里我们只支持一个一个地追加字符，不支持直接传入一个字符串😂。附上<a href="https://zh.wikipedia.org/wiki/ASCII">ascii编码表：</a></p>
-
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">String</span> <span class="o">{</span>
-    <span class="n">field</span> <span class="nc">Array</span> <span class="n">buffer</span><span class="o">;</span>
-    <span class="n">field</span> <span class="kt">int</span> <span class="n">buffer_len</span><span class="o">;</span>
-    <span class="n">field</span> <span class="kt">int</span> <span class="n">str_len</span><span class="o">;</span>
-    
-    <span class="n">constructor</span> <span class="nc">String</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxLength</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="n">let</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="n">maxLength</span><span class="o">);</span>
-        <span class="n">let</span> <span class="n">buffer_len</span> <span class="o">=</span> <span class="n">maxLength</span><span class="o">;</span>
-        <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">do</span> <span class="nc">Array</span><span class="o">.</span><span class="na">dispose</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">int</span> <span class="nf">length</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">str_len</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">char</span> <span class="nf">charAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">buffer</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">void</span> <span class="nf">setCharAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">let</span> <span class="n">buffer</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-
-     <span class="o">*</span>  <span class="nc">Returns</span> <span class="k">this</span> <span class="n">string</span> <span class="n">as</span> <span class="n">the</span> <span class="k">return</span> <span class="n">value</span><span class="o">.</span> <span class="o">*/</span>
-    <span class="n">method</span> <span class="nc">String</span> <span class="nf">appendChar</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span> <span class="n">str_len</span> <span class="o">&lt;</span> <span class="n">buffer_len</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">buffer</span><span class="o">[</span><span class="n">str_len</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
-            <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="n">str_len</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">void</span> <span class="nf">eraseLastChar</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">if</span><span class="o">(</span> <span class="n">str_len</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="n">str_len</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/** 返回字符串代表的整数值 */</span>
-    <span class="n">method</span> <span class="kt">int</span> <span class="nf">intValue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kt">var</span> <span class="kt">int</span> <span class="n">int_val</span><span class="o">;</span>
-        <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
-        <span class="kt">var</span> <span class="kt">boolean</span> <span class="n">neg</span><span class="o">;</span>
-        
-        <span class="n">let</span> <span class="n">int_val</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-        
-        <span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">str_len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">45</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>      <span class="c1">// '-'</span>
-            <span class="n">let</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
-            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
-            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-        <span class="o">}</span>
-        
-        <span class="k">while</span><span class="o">(</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">str_len</span><span class="o">)</span> <span class="o">&amp;</span> <span class="nc">String</span><span class="o">.</span><span class="na">is_digit</span><span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">int_val</span> <span class="o">=</span> <span class="o">(</span><span class="n">int_val</span> <span class="o">*</span> <span class="mi">10</span><span class="o">)</span> <span class="o">+</span> <span class="nc">String</span><span class="o">.</span><span class="na">digit_val</span><span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
-            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
-        <span class="o">}</span>
-        
-        <span class="k">if</span><span class="o">(</span> <span class="n">neg</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="o">-</span><span class="n">int_val</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">int_val</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    
-    <span class="n">function</span> <span class="kt">boolean</span> <span class="nf">is_digit</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="o">~(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="mi">48</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="mi">57</span><span class="o">);</span>
-    <span class="o">}</span>
-    
-    <span class="n">function</span> <span class="kt">int</span> <span class="nf">digit_val</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">48</span><span class="o">;</span>
-    <span class="o">}</span>
-    
-    <span class="n">function</span> <span class="kt">char</span> <span class="nf">digit_char</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">48</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/** 以字符串的形式保存整数 */</span>
-    <span class="n">method</span> <span class="kt">void</span> <span class="nf">setInt</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>    <span class="c1">// Clear string</span>
-        
-        <span class="k">if</span><span class="o">(</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="n">let</span> <span class="n">number</span> <span class="o">=</span> <span class="o">-</span><span class="n">number</span><span class="o">;</span>
-            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="mi">45</span><span class="o">);</span>      <span class="c1">// leading '-'</span>
-        <span class="o">}</span>
-        
-        <span class="k">do</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">method</span> <span class="kt">void</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kt">var</span> <span class="kt">int</span> <span class="n">q</span><span class="o">;</span>
-        <span class="kt">var</span> <span class="kt">int</span> <span class="n">mod</span><span class="o">;</span>
-        <span class="kt">var</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
-        
-        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="n">number</span> <span class="o">/</span> <span class="mi">10</span><span class="o">;</span>
-        <span class="n">let</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">number</span> <span class="o">-</span> <span class="o">(</span><span class="n">q</span><span class="o">*</span><span class="mi">10</span><span class="o">);</span>
-        <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">digit_char</span><span class="o">(</span><span class="n">mod</span><span class="o">);</span>
-        
-        <span class="k">if</span><span class="o">(</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">)</span> <span class="o">{</span>
-            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>
-            <span class="k">do</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="n">q</span><span class="o">);</span>
-            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-    
-    <span class="n">function</span> <span class="kt">char</span> <span class="nf">newLine</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="mi">128</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">function</span> <span class="kt">char</span> <span class="nf">backSpace</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="mi">129</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/** 双引号 */</span>
-    <span class="n">function</span> <span class="kt">char</span> <span class="nf">doubleQuote</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="mi">34</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></div>
-
-<h3 id="数组">数组</h3>
-
 <h3 id="内存管理">内存管理</h3>
 
 <p>使用高级语言，最大的方便之一就是开发者几乎不用关注内存管理的细节，所有复杂琐碎的工作都又操作系统，编译器，虚拟机，汇编器等底层来负责实现。不同变量类型的内存在程序声明周期中的不同时刻被分配，例如，静态变量在编译期由编译器为其分配内存；局部变量则在每个函数运行的时候分配在栈内存上；其他内存则是在程序运行时被动态地分配在堆内存上，这些内存就需要借助操作系统来管理了。操作系统可能使用不同的方式来管理内存的分配和回收，通常都是用alloc()和deAlloc()这两个函数中实现的。</p>
@@ -867,6 +723,165 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             <span class="n">let</span> <span class="n">block</span> <span class="o">=</span> <span class="n">block</span><span class="o">[</span><span class="no">FL_NEXT</span><span class="o">];</span>
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">block</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="数组">数组</h3>
+
+<p>数组很简单，需要实现的操作就是申请和释放一块连续的内存（通过Memory类来实现）。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Array</span> <span class="o">{</span>
+
+    <span class="n">function</span> <span class="nc">Array</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">alloc</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">deAlloc</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="字符串">字符串</h3>
+
+<p>字符串的逻辑比较简单。在Jack中，一个字符串是一个数组，存储内容一串ascii编码（且不需要以\0结尾）。我们用String类来实现，其中最核心的两个方法是构造函数 new(int length) 和 appendChar(char c)，这里我们只支持一个一个地追加字符，不支持直接传入一个字符串😂。附上<a href="https://zh.wikipedia.org/wiki/ASCII">ascii编码表：</a></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">String</span> <span class="o">{</span>
+    <span class="n">field</span> <span class="nc">Array</span> <span class="n">buffer</span><span class="o">;</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">buffer_len</span><span class="o">;</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">str_len</span><span class="o">;</span>
+    
+    <span class="n">constructor</span> <span class="nc">String</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxLength</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">let</span> <span class="n">buffer</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="n">maxLength</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">buffer_len</span> <span class="o">=</span> <span class="n">maxLength</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Array</span><span class="o">.</span><span class="na">dispose</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">int</span> <span class="nf">length</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">str_len</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">char</span> <span class="nf">charAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">buffer</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">setCharAt</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">buffer</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+     <span class="o">*</span>  <span class="nc">Returns</span> <span class="k">this</span> <span class="n">string</span> <span class="n">as</span> <span class="n">the</span> <span class="k">return</span> <span class="n">value</span><span class="o">.</span> <span class="o">*/</span>
+    <span class="n">method</span> <span class="nc">String</span> <span class="nf">appendChar</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">str_len</span> <span class="o">&lt;</span> <span class="n">buffer_len</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">buffer</span><span class="o">[</span><span class="n">str_len</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="n">str_len</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">eraseLastChar</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">str_len</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="n">str_len</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 返回字符串代表的整数值 */</span>
+    <span class="n">method</span> <span class="kt">int</span> <span class="nf">intValue</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">int_val</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">boolean</span> <span class="n">neg</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">int_val</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        
+        <span class="k">if</span><span class="o">(</span> <span class="o">(</span><span class="n">str_len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="mi">45</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>      <span class="c1">// '-'</span>
+            <span class="n">let</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">neg</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+        <span class="k">while</span><span class="o">(</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">str_len</span><span class="o">)</span> <span class="o">&amp;</span> <span class="nc">String</span><span class="o">.</span><span class="na">is_digit</span><span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">int_val</span> <span class="o">=</span> <span class="o">(</span><span class="n">int_val</span> <span class="o">*</span> <span class="mi">10</span><span class="o">)</span> <span class="o">+</span> <span class="nc">String</span><span class="o">.</span><span class="na">digit_val</span><span class="o">(</span><span class="n">buffer</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span><span class="o">(</span> <span class="n">neg</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">int_val</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">int_val</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    
+    <span class="n">function</span> <span class="kt">boolean</span> <span class="nf">is_digit</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">~(</span><span class="n">c</span> <span class="o">&lt;</span> <span class="mi">48</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="mi">57</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="n">function</span> <span class="kt">int</span> <span class="nf">digit_val</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">48</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="n">function</span> <span class="kt">char</span> <span class="nf">digit_char</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">48</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 以字符串的形式保存整数 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">setInt</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">str_len</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>    <span class="c1">// Clear string</span>
+        
+        <span class="k">if</span><span class="o">(</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">number</span> <span class="o">=</span> <span class="o">-</span><span class="n">number</span><span class="o">;</span>
+            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="mi">45</span><span class="o">);</span>      <span class="c1">// leading '-'</span>
+        <span class="o">}</span>
+        
+        <span class="k">do</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">q</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">mod</span><span class="o">;</span>
+        <span class="kt">var</span> <span class="kt">char</span> <span class="n">c</span><span class="o">;</span>
+        
+        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="n">number</span> <span class="o">/</span> <span class="mi">10</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">number</span> <span class="o">-</span> <span class="o">(</span><span class="n">q</span><span class="o">*</span><span class="mi">10</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">digit_char</span><span class="o">(</span><span class="n">mod</span><span class="o">);</span>
+        
+        <span class="k">if</span><span class="o">(</span> <span class="n">number</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="nf">do_set_int</span><span class="o">(</span><span class="n">q</span><span class="o">);</span>
+            <span class="k">do</span> <span class="nf">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="n">function</span> <span class="kt">char</span> <span class="nf">newLine</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">128</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">char</span> <span class="nf">backSpace</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">129</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 双引号 */</span>
+    <span class="n">function</span> <span class="kt">char</span> <span class="nf">doubleQuote</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">34</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
