@@ -941,7 +941,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="n">print</span> <span class="err">换行符</span>
         <span class="k">return</span> <span class="n">s</span>
     <span class="k">else</span> <span class="k">if</span> <span class="n">c</span> <span class="o">=</span> <span class="err">退格键</span>
-        <span class="n">s</span><span class="err">删除最后一个字符</span>
+        <span class="n">s</span> <span class="err">删除最后一个字符</span>
         <span class="err">光标左移一格</span>
     <span class="k">else</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">c</span><span class="o">)</span>
@@ -959,6 +959,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
     <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">newLine</span><span class="o">())</span> <span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span><span class="o">(</span> <span class="n">c</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">backSpace</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
             <span class="k">do</span> <span class="n">line</span><span class="o">.</span><span class="na">eraseLastChar</span><span class="o">();</span>
+            <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">backSpace</span><span class="o">();</span>
         <span class="o">}</span>
         <span class="k">else</span> <span class="o">{</span>
             <span class="k">do</span> <span class="n">line</span><span class="o">.</span><span class="na">appendChar</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
