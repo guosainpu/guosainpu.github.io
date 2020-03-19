@@ -1130,7 +1130,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gczghjqsrsj314m0fqgmc.jpg" width="700" /></center>
 
-<p>算法思想如上述，我们下面要做的就是实现它的普遍适用（不同方向的斜线）的代码</p>
+<p>算法思想如上述，我们下面要做的就是实现它的普遍适用版本（不同方向的斜线）。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawDiagonalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dx</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dy</span> <span class="o">)</span> <span class="o">{</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">;</span>
@@ -1141,20 +1141,20 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
     <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
     
-    <span class="k">if</span><span class="o">(</span> <span class="n">dy</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">dy</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 斜线方向</span>
         <span class="n">let</span> <span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
     <span class="o">}</span>
     <span class="k">else</span> <span class="o">{</span>
         <span class="n">let</span> <span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">dx</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">dy</span><span class="o">))</span> <span class="o">|</span> <span class="o">((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">dy</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">dx</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">dy</span><span class="o">))</span> <span class="o">|</span> <span class="o">((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">dy</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 是否画到了终点</span>
         <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawPixel</span><span class="o">(</span> <span class="n">x1</span><span class="o">+</span><span class="n">a</span><span class="o">,</span> <span class="n">y1</span><span class="o">+</span><span class="n">b</span> <span class="o">);</span>
-        <span class="k">if</span><span class="o">(</span> <span class="n">adyMinusbdx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">adyMinusbdx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 如果斜率偏大，向右画</span>
             <span class="n">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">+</span> <span class="o">(</span><span class="n">dy</span><span class="o">*</span><span class="n">y_incr</span><span class="o">);</span>
         <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>
+        <span class="k">else</span> <span class="o">{</span>                   <span class="c1">// 如果斜率偏小，向上（下）画</span>
             <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">y_incr</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">-</span> <span class="n">dx</span><span class="o">;</span>
         <span class="o">}</span>
