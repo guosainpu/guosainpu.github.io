@@ -874,7 +874,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <p>计算机一般会连接一些输入输出设备，例如：显示器、鼠标、键盘、硬盘、网卡等，这些I/O设备都有自己的特性，在这些设备上进行读写操作也是很复杂的，但对于程序员而言，我们可以通过操作系统来操作它们，操作系统使用一组驱动程序来处理各个I/O设备的操作细节，然后向上提供一组封装好的API接口。</p>
 
 <p>I/O设备对于CPU和操作系统而言，其实是一段内存和一组BIOS驱动程序（在Hack中没有这些驱动程序，需要我们自己写），当操作系统想要和I/O设备交互时，就通过这些程序从相应的内存中读取或写入数据。在Hack中，我们只有两个I/O设备：显示器和键盘，
-显示器的内存映射是从16384开始的连续的 8K*2byte 地址空间（因此该显示器的分辨率是：512*256= 8K*2byte）；键盘更简单，它只映射24576这一个地址单元的地址空间（因为足以容纳所有英文字符和符号）</p>
+显示器的内存映射是从16384开始的连续的 8K 地址空间（该显示器的分辨率是：512*256）；键盘更简单，它只映射24576这一个地址单元的地址空间（因为足以容纳所有英文字符和符号）</p>
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcycyqes1sj30ww0p4jsi.jpg" width="700" /></center>
 
 <h3 id="键盘">键盘</h3>
@@ -970,13 +970,208 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 <span class="o">}</span>   
 </code></pre></div></div>
 
-<p>可以看到，键盘输入的设计实现还是基于一系列级联的分层抽象。高级程序readLine()依赖readChar()，readChar()依赖于keyPress()，keyPress()依赖于硬件。可见分层抽象的设计模式贯穿了整个计算机的宏观架构和微观实现，可以说是计算机科学思想的精华所在。</p>
+<p>可以看到，键盘输入的设计实现还是基于一系列级联的分层抽象。高级程序readLine()依赖readChar()，readChar()依赖于keyPress()，keyPress()依赖于硬件。可见分层抽象的设计模式贯穿了整个计算机的宏观架构和微观实现，可以说是计算机科学的精华思想。</p>
 
 <h3 id="图形显示">图形显示</h3>
+
+<p>现代计算机大多使用位图（bitmap）或称光栅（raster）的技术来显示图形或文字。屏幕由一组二维的平面点组成，每个点是一个像素（pixel），每个像素点对应到显存中的某个地址，计算机要做的就是给每个像素点赋上一个颜色的值，Hack只支持黑和白，因此只占1bit，如果显示器支持彩色显示，那么每个像素就会占用更多bit的内存。</p>
+
+<p>Hack的屏幕分辨率是512*256，即屏幕上有131072个像素点。像素点和显存的对应关系如下：现存中每个Bit对应一个像素点（1代表黑色，0代表白色），一行512个像素需要对应 32*16bit（一个word），32word/行*256行=8192word，正好是8K地址空间。因此存在对应关系：第r行第c列的像素点，对应地址为 Screen[r*32+c/16] 的word的第 c%16 的bit。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcz4oayk2sj30tq0dg74b.jpg" width="700" /></center>
+
+<h4 id="点">点</h4>
+
+<p>了解了上面像素点和内存bit的对应关系后，我们就可以写出给单一像素点赋值的方法了。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 画像素点 (x, y) */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">drawPixel</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">address</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">mask</span><span class="o">;</span>
+
+    <span class="n">let</span> <span class="n">address</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span><span class="o">*</span><span class="mi">32</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">x</span><span class="o">/</span><span class="mi">16</span><span class="o">);</span>       <span class="c1">// 先找到第几个word</span>
+    <span class="n">let</span> <span class="n">mask</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">two_to_the</span><span class="o">(</span><span class="n">x</span> <span class="o">&amp;</span> <span class="mi">15</span><span class="o">);</span>  <span class="c1">// 再找到该word的第几个bit，并转成掩码的形式。例如第4个bit，对应0000000000000100</span>
+
+    <span class="k">if</span><span class="o">(</span> <span class="n">cur_colour</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">=</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">|</span> <span class="n">mask</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">=</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 清除屏幕 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">clearScreen</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">8192</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">screen</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">white</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 设置将要使用的color white = false, black = true. */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">setColor</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">let</span> <span class="n">cur_colour</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="线">线</h4>
+
+<p>点很容易画，线则复杂很多。由于像素点是一个个矩形的小方块，所以除了横线和竖线，我们无法画出完全笔直的线（斜线都是带锯齿毛边的），当然通过缩小像素点的大小我们可以无限逼近笔直（当像素点小到人眼无法分辨时就可以了，即所谓的视网膜屏幕）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcz5056jtyj30j00cyq2x.jpg" width="500" /></center>
+
+<p>我们在画线的时候，分为3种场景：横线、竖线和斜线。其中横线和竖线都比较容易实现，画斜线则复杂一些，需要借助特定的算法。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 从 (x1, y1) 到 (x2, y2) 画一条线 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">drawLine</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">dx</span><span class="o">,</span> <span class="n">dy</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+    
+    <span class="c1">// 保证 x1 &lt;= x2</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">x1</span> <span class="o">&gt;</span> <span class="n">x2</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">x1</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x2</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">y1</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y2</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">let</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="o">;</span>
+    
+    <span class="k">if</span><span class="o">(</span> <span class="n">dx</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawVerticalLine</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">y1</span><span class="o">,</span> <span class="n">y2</span> <span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span> <span class="k">if</span><span class="o">(</span> <span class="n">dy</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawHorizontalLine</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">x2</span><span class="o">,</span> <span class="n">y1</span> <span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawDiagonalLine</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">y1</span><span class="o">,</span> <span class="n">x2</span><span class="o">,</span> <span class="n">y2</span><span class="o">,</span> <span class="n">dx</span><span class="o">,</span> <span class="n">dy</span> <span class="o">);</span>
+    <span class="o">}}</span>
+    
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h5 id="竖线">竖线</h5>
+
+<p>画竖线较容易，调用 drawPixel() 方法，从 y1 画到 y2 即可（y1&lt;=y2）。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawVerticalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
+    
+    <span class="c1">// 保证 y1 &lt;= y2</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">y1</span> <span class="o">&gt;</span> <span class="n">y2</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">y1</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y2</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">y1</span> <span class="o">&gt;</span> <span class="n">y2</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawPixel</span><span class="o">(</span> <span class="n">x</span><span class="o">,</span> <span class="n">y1</span> <span class="o">);</span>
+        <span class="n">let</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h5 id="横线">横线</h5>
+
+<p>横线的实现方式可以和竖线一样，一个个像素的画完即可。但这里我们做一个小优化，一条横线会横跨n个word，除了头和尾，中间的word都是连续的，所有我们可以为这些word一次性赋值16个bit，这样循环的次数会缩短16倍。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawHorizontalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">start_addr</span><span class="o">,</span> <span class="n">end_addr</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">x1mod16</span><span class="o">,</span> <span class="n">x2mod16</span><span class="o">;</span>
+    
+    <span class="n">let</span> <span class="n">x1mod16</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">&amp;</span> <span class="mi">15</span><span class="o">;</span>               <span class="c1">// 线在一个word内的偏移量</span>
+    <span class="n">let</span> <span class="n">x2mod16</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">&amp;</span> <span class="mi">15</span><span class="o">;</span>               <span class="c1">// 线在最后一个word内的偏移量</span>
+    <span class="n">let</span> <span class="n">start_addr</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span><span class="o">*</span><span class="mi">32</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">x1</span><span class="o">/</span><span class="mi">16</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">end_addr</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span><span class="o">*</span><span class="mi">32</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">x2</span><span class="o">/</span><span class="mi">16</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">x2mod16</span><span class="o">=</span><span class="mi">0</span><span class="o">);</span>
+
+    <span class="k">if</span><span class="o">(</span> <span class="n">start_addr</span> <span class="o">=</span> <span class="n">end_addr</span> <span class="o">)</span> <span class="o">{</span>        <span class="c1">// 线的长度在一个word内</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">draw_short_horizontal_line</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">x2</span><span class="o">,</span> <span class="n">y</span> <span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span> 
+        <span class="k">if</span><span class="o">(</span> <span class="o">~(</span><span class="n">x1mod16</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>           <span class="c1">// 线在第一个Word内的一小段</span>
+            <span class="n">let</span> <span class="n">start_addr</span> <span class="o">=</span> <span class="n">start_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">draw_short_horizontal_line</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">x1</span><span class="o">+</span><span class="mi">16</span><span class="o">-</span><span class="n">x1mod16</span><span class="o">,</span> <span class="n">y</span> <span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span><span class="o">(</span> <span class="o">~(</span><span class="n">x2mod16</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>           <span class="c1">// 线在最后个Word内的一小段</span>
+            <span class="n">let</span> <span class="n">end_addr</span> <span class="o">=</span> <span class="n">end_addr</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">draw_short_horizontal_line</span><span class="o">(</span> <span class="n">x2</span><span class="o">-</span><span class="n">x2mod16</span><span class="o">,</span> <span class="n">x2</span><span class="o">,</span> <span class="n">y</span> <span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">start_addr</span> <span class="o">&gt;</span> <span class="n">end_addr</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>     <span class="c1">// 中间的若干段word</span>
+            <span class="n">let</span> <span class="n">screen</span><span class="o">[</span><span class="n">start_addr</span><span class="o">]</span> <span class="o">=</span> <span class="n">cur_colour</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">start_addr</span> <span class="o">=</span> <span class="n">start_addr</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">draw_short_horizontal_line</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">x1</span> <span class="o">&gt;</span> <span class="n">x2</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawPixel</span><span class="o">(</span> <span class="n">x1</span><span class="o">,</span> <span class="n">y</span> <span class="o">);</span>
+        <span class="n">let</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h5 id="斜线">斜线</h5>
+
+<p>斜线的画法比直线复杂，因为我们在画像素点的时候只能向上、下、左、右四个方向画，而不能斜着画，所以我们只能尽量让我们的斜线和目标斜线近似。为了完成画斜线，我们需要引入斜率来辅助：如下图所示，我们在画斜线时，新画的像素点的运动位置是像蛇一样左右蜿蜒前进的，我们的算法的目的就是别让这条蛇跑偏，当前斜率小于目标斜率时，我们就向上画像素点以增大斜率；当前斜率大于目标斜率时，我们就向右画像素点以减小斜率。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gczghjqsrsj314m0fqgmc.jpg" width="700" /></center>
+
+<p>算法思想如上述，我们下面要做的就是实现它的普遍适用（不同方向的斜线）的代码</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawDiagonalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dx</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dy</span> <span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">adyMinusbdx</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">y_incr</span><span class="o">;</span>
+
+    <span class="n">let</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    
+    <span class="k">if</span><span class="o">(</span> <span class="n">dy</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">dx</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">dy</span><span class="o">))</span> <span class="o">|</span> <span class="o">((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">dy</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawPixel</span><span class="o">(</span> <span class="n">x1</span><span class="o">+</span><span class="n">a</span><span class="o">,</span> <span class="n">y1</span><span class="o">+</span><span class="n">b</span> <span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">adyMinusbdx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">+</span> <span class="o">(</span><span class="n">dy</span><span class="o">*</span><span class="n">y_incr</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">y_incr</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">-</span> <span class="n">dx</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h4 id="矩形">矩形</h4>
+
+<h4 id="圆">圆</h4>
 
 <h3 id="文字显示">文字显示</h3>
 
 <h3 id="system">System</h3>
+
+<p>本篇完整实现放在了:<a href="https://github.com/guosainpu/Nand2Tetris">github</a></p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-09-15T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/09/05/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html">从0到1构建计算机(9/12)--实现编译器</a></div><div class="next"><span>NEXT</span><a href="/2019/09/18/%E5%B0%8F%E6%B8%B8%E6%88%8F.html">从0到1构建计算机(11/12)--在Hack上运行小游戏</a></div></div></div>
