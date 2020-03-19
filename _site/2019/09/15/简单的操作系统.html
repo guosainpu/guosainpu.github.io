@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(10/12)--简单的操作系统 - 一只草履虫</title>
 
-<meta name="description" content="上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置画上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简...">
+<meta name="description" content="上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置绘制上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更...">
 <link rel="canonical" href="http://localhost:4000/2019/09/15/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
@@ -344,7 +344,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-09-15T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置画上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简单一些。</p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置绘制上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简单一些。</p>
 
 <p>操作系统就是用来衔接计算机的硬件系统和软件系统的，以使得计算机对程序员和用户而言更容易使用。本篇的操作系统包含了一个最小规模的操作系统（其实就是一个Jack标准库的集合），主要包括：数学运算、字符串操作、内存管理、文本和图形输出到屏幕、键盘输入处理等功能，不包括：进程管理、磁盘管理、通信等功能。</p>
 
@@ -984,7 +984,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <p>了解了上面像素点和内存bit的对应关系后，我们就可以写出给单一像素点赋值的方法了。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 画像素点 (x, y) */</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 绘制像素点 (x, y) */</span>
 <span class="n">function</span> <span class="kt">void</span> <span class="nf">drawPixel</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">address</span><span class="o">;</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">mask</span><span class="o">;</span>
@@ -1021,12 +1021,12 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="线">线</h4>
 
-<p>点很容易画，线则复杂很多。由于像素点是一个个矩形的小方块，所以除了横线和竖线，我们无法画出完全笔直的线（斜线都是带锯齿毛边的），当然通过缩小像素点的大小我们可以无限逼近笔直（当像素点小到人眼无法分辨时就可以了，即所谓的视网膜屏幕）。</p>
+<p>点很容易绘制，线则复杂很多。由于像素点是一个个矩形的小方块，所以除了横线和竖线，我们无法绘制出完全笔直的线（斜线都是带锯齿毛边的），当然通过缩小像素点的大小我们可以无限逼近笔直（当像素点小到人眼无法分辨时就可以了，即所谓的视网膜屏幕）。</p>
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gcz5056jtyj30j00cyq2x.jpg" width="500" /></center>
 
-<p>我们在画线的时候，分为3种场景：横线、竖线和斜线。其中横线和竖线都比较容易实现，画斜线则复杂一些，需要借助特定的算法。</p>
+<p>我们在绘制线的时候，分为3种场景：横线、竖线和斜线。其中横线和竖线都比较容易实现，绘制斜线则复杂一些，需要借助特定的算法。</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 从 (x1, y1) 到 (x2, y2) 画一条线 */</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 从 (x1, y1) 到 (x2, y2) 绘制一条线 */</span>
 <span class="n">function</span> <span class="kt">void</span> <span class="nf">drawLine</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">dx</span><span class="o">,</span> <span class="n">dy</span><span class="o">;</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
@@ -1060,7 +1060,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h5 id="竖线">竖线</h5>
 
-<p>画竖线较容易，调用 drawPixel() 方法，从 y1 画到 y2 即可（y1&lt;=y2）。</p>
+<p>绘制竖线较容易，调用 drawPixel() 方法，从 y1 绘制到 y2 即可（y1&lt;=y2）。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawVerticalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span> <span class="o">)</span> <span class="o">{</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">temp</span><span class="o">;</span>
@@ -1082,7 +1082,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h5 id="横线">横线</h5>
 
-<p>横线的实现方式可以和竖线一样，一个个像素的画完即可。但这里我们做一个小优化，一条横线会横跨n个word，除了头和尾，中间的word都是连续的，所有我们可以为这些word一次性赋值16个bit，这样循环的次数会缩短16倍。</p>
+<p>横线的实现方式可以和竖线一样，一个个像素的绘制完即可。但这里我们做一个小优化，一条横线会横跨n个word，除了头和尾，中间的word都是连续的，所有我们可以为这些word一次性赋值16个bit，这样循环的次数会缩短16倍。</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawHorizontalLine</span><span class="o">(</span> <span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">)</span> <span class="o">{</span>
     <span class="kt">var</span> <span class="kt">int</span> <span class="n">start_addr</span><span class="o">,</span> <span class="n">end_addr</span><span class="o">;</span>
@@ -1126,7 +1126,7 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h5 id="斜线">斜线</h5>
 
-<p>斜线的画法比直线复杂，因为我们在画像素点的时候只能向上、下、左、右四个方向画，而不能斜着画，所以我们只能尽量让我们的斜线和目标斜线近似。为了完成画斜线，我们需要引入斜率来辅助：如下图所示，我们在画斜线时，新画的像素点的运动位置是像蛇一样左右蜿蜒前进的，我们的算法的目的就是别让这条蛇跑偏，当前斜率小于目标斜率时，我们就向上画像素点以增大斜率；当前斜率大于目标斜率时，我们就向右画像素点以减小斜率。</p>
+<p>斜线的绘制法比直线复杂，因为我们在绘制像素点的时候只能向上、下、左、右四个方向绘制，而不能斜着绘制，所以我们只能尽量让我们的斜线和目标斜线近似。为了完成绘制斜线，我们需要引入斜率来辅助：如下图所示，我们在绘制斜线时，新绘制的像素点的运动位置是像蛇一样左右蜿蜒前进的，我们的算法的目的就是别让这条蛇跑偏，当前斜率小于目标斜率时，我们就向上绘制像素点以增大斜率；当前斜率大于目标斜率时，我们就向右绘制像素点以减小斜率。</p>
 
 <center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gczghjqsrsj314m0fqgmc.jpg" width="700" /></center>
 
@@ -1148,13 +1148,13 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
         <span class="n">let</span> <span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">dx</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">dy</span><span class="o">))</span> <span class="o">|</span> <span class="o">((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">dy</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 是否画到了终点</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">dx</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="n">dy</span><span class="o">))</span> <span class="o">|</span> <span class="o">((</span><span class="n">y_incr</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">~(</span><span class="n">b</span> <span class="o">&lt;</span> <span class="n">dy</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 是否绘制到了终点</span>
         <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawPixel</span><span class="o">(</span> <span class="n">x1</span><span class="o">+</span><span class="n">a</span><span class="o">,</span> <span class="n">y1</span><span class="o">+</span><span class="n">b</span> <span class="o">);</span>
-        <span class="k">if</span><span class="o">(</span> <span class="n">adyMinusbdx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 如果斜率偏大，向右画</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">adyMinusbdx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>  <span class="c1">// 如果斜率偏大，向右绘制</span>
             <span class="n">let</span> <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">+</span> <span class="o">(</span><span class="n">dy</span><span class="o">*</span><span class="n">y_incr</span><span class="o">);</span>
         <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>                   <span class="c1">// 如果斜率偏小，向上（下）画</span>
+        <span class="k">else</span> <span class="o">{</span>                   <span class="c1">// 如果斜率偏小，向上（下）绘制</span>
             <span class="n">let</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">y_incr</span><span class="o">;</span>
             <span class="n">let</span> <span class="n">adyMinusbdx</span> <span class="o">=</span> <span class="n">adyMinusbdx</span> <span class="o">-</span> <span class="n">dx</span><span class="o">;</span>
         <span class="o">}</span>
@@ -1164,6 +1164,20 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 </code></pre></div></div>
 
 <h4 id="矩形">矩形</h4>
+
+<p>矩形的绘制比较简单，就是绘制n条横线即可。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawRectangle</span><span class="o">(</span><span class="kt">int</span> <span class="n">x1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y2</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">y</span><span class="o">;</span>
+    
+    <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y1</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">y2</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawHorizontalLine</span><span class="o">(</span><span class="n">x1</span><span class="o">,</span> <span class="n">x2</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
 <h4 id="圆">圆</h4>
 
