@@ -1181,6 +1181,25 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h4 id="圆">圆</h4>
 
+<p>圆也有一个简单的绘制算法：从上到下一行行的绘制，一种每一行的长度都可以根据半径r和偏移量dy计算出来（涉及到平方和开发运算，我们在Math类汇中已经实现）</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gczk5m3xerj30xo0kg0tb.jpg" width="700" /></center>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="kt">void</span> <span class="nf">drawCircle</span><span class="o">(</span><span class="kt">int</span> <span class="n">cx</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cy</span><span class="o">,</span> <span class="kt">int</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">dx</span><span class="o">,</span> <span class="n">dy</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">r_squared</span><span class="o">;</span>
+    
+    <span class="n">let</span> <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="n">r</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">r_squared</span> <span class="o">=</span> <span class="n">r</span><span class="o">*</span><span class="n">r</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="o">~(</span><span class="n">dy</span> <span class="o">&gt;</span> <span class="n">r</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">dx</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">sqrt</span><span class="o">(</span><span class="n">r_squared</span><span class="o">-(</span><span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="o">));</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawHorizontalLine</span><span class="o">(</span> <span class="n">cx</span><span class="o">-</span><span class="n">dx</span><span class="o">,</span> <span class="n">cx</span><span class="o">+</span><span class="n">dx</span><span class="o">,</span> <span class="n">cy</span><span class="o">+</span><span class="n">dy</span> <span class="o">);</span>
+        <span class="n">let</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
 <h3 id="文字显示">文字显示</h3>
 
 <h3 id="system">System</h3>
