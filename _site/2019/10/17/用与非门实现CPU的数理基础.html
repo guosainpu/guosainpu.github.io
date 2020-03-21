@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器 - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(2/12)--与非门实现CPU的数理基础 - 一只草履虫</title>
 
-<meta name="description" content="上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。反馈电路、时钟系统、D触发器组合逻辑芯片之所以...">
-<link rel="canonical" href="http://localhost:4000/2019/07/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="CPU和布尔函数CPU本质上是一个函数计算器：  信号通过输入管脚输入，对应着函数的入参  CPU的内部电路是函数的黑盒实现  信号通过输出管脚输出，对应着函数的出参8086 CPU大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在...">
+<link rel="canonical" href="http://localhost:4000/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -334,276 +334,76 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(2/12)--与非门实现CPU的数理基础</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(2/12)--与非门实现CPU的数理基础"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
             </li><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 29, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-07-29T00:00:00+08:00">
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 17, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-17T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。</p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="cpu和布尔函数">CPU和布尔函数</h3>
 
-<h3 id="反馈电路时钟系统d触发器">反馈电路、时钟系统、D触发器</h3>
-
-<p>组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（即形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdrumxqvgj30l60740sl.jpg" width="600" /></center>
-
-<p>提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么时钟频率通常被当做衡量计算机性能的重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbeiyf35ixj313e02edft.jpg" width="800" /></center>
-
-<p>在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由R-S锁存器派生而来。（DFF的实现相对复杂，如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc0yzm52nxj317y0iy753.jpg" width="600" /></center>
-<center><figcaption>边沿触发的D型触发器</figcaption></center>
-
-<p>DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbek01supqj30dq05kaa4.jpg" width="250" /></center>
-
-<h3 id="1位寄存器和16位寄存器">1位寄存器和16位寄存器</h3>
-<p>有了DFF的记忆功能，我们接下来先实现最简单1bit寄存器和16bit寄存器。1bit寄存器的接口包括：in输入管脚，负责传输输入数据；load管脚，load管脚是控制位，只有当load为1的时候，才会存储in的输入数据；out管脚输出当前存储的值。接口如下所示：</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbec5aygpzj311i08y3yr.jpg" width="600" /></center>
-
-<p>1bit芯片很好实现，主要是实现load位的控制功能即可，根据芯片描述可以把芯片设计为：load为1时选择输入in的数据，load为0时选择输入上一次寄存器保存的数据。这种选择功能正好是上一篇我们实现的Multiplexor芯片（后面在实现RAM的时候，Multiplexor在地址选择中的作用体现得更加明显）。1bit寄存器内部实现如下：</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbece9ixdnj30gc0ceaa5.jpg" width="400" /></center>
-
-<p>然后我们用硬件描述语言（HDL）实现：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * 1-bit register:
- * If load[t] == 1 then out[t+1] = in[t]
- *                 else out does not change (out[t+1] = out[t])
- */
-
-CHIP Bit {
-    IN in, load;
-    OUT out;
-
-    PARTS:
-    Mux(a=outBack, b=in, sel=load, out=dffIn);
-    DFF(in=dffIn, out=out, out=outBack);
-}
-</code></pre></div></div>
-
-<p>有1bit寄存器，16bit寄存器可以看做是16个1bit寄存器的组合：</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbecp634wwj30h80amdfw.jpg" width="400" /></center>
-
-<p>HDL实现：16bit寄存器</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * 16-bit register:
- * If load[t] == 1 then out[t+1] = in[t]
- * else out does not change
- */
-
-CHIP Register {
-    IN in[16], load;
-    OUT out[16];
-
-    PARTS:
-    Mux(a=outBack0, b=in[0], sel=load, out=dffIn0);
-    DFF(in=dffIn0, out=out[0], out=outBack0);
-
-    Mux(a=outBack1, b=in[1], sel=load, out=dffIn1);
-    DFF(in=dffIn1, out=out[1], out=outBack1);
-
-    Mux(a=outBack2, b=in[2], sel=load, out=dffIn2);
-    DFF(in=dffIn2, out=out[2], out=outBack2);
-
-    Mux(a=outBack3, b=in[3], sel=load, out=dffIn3);
-    DFF(in=dffIn3, out=out[3], out=outBack3);
-
-    Mux(a=outBack4, b=in[4], sel=load, out=dffIn4);
-    DFF(in=dffIn4, out=out[4], out=outBack4);
-
-    Mux(a=outBack5, b=in[5], sel=load, out=dffIn5);
-    DFF(in=dffIn5, out=out[5], out=outBack5);
-
-    // ...6到15
-}
-
-</code></pre></div></div>
-
-<h3 id="ram">RAM</h3>
-<p>接着我们来实现计算机中另一个非常重要的组成部分：RAM。刚才看到，16bit寄存器可以由16个1bit的寄存器组合而成，同理一个mKB的RAM，可以由n个16位寄存器组合而成，16位寄存器就是RAM中的基本存储单元，寄存器的宽度（此处是16位）就是RAM”字”（WORD）的宽度。我们都知道，需要通过地址来访问RAM，RAM中每个寄存器都绑定到一个唯一地址。下图是RAM的接口设计，RAM有三种输入：数据输入，地址输入和加载位。地址指定了当前周期RAM中哪一个寄存器被访问，当进行读操作时（load=0），RAM立即输出被选中的寄存器的值，当进行写操作时（load=1），被选中的寄存器被赋予新的值，从下个周期开始RAM将开始发出新的值。输入和输出的数据宽度就是RAM”字”的宽度。</p>
-
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbedozihymj30ki0lsjro.jpg" width="500" /></center>
-
-<p>接下来我们要实现RAM8，RAM64，RAM512，RAM4K，RAM16K几种内存容量的RAM。RAMn中的n即代表RAM中有n个寄存器。例如RAM16K中有16K个16位寄存器，那么他的内存容量就是16K*(16/2)byte=32Kbyte。想要实现一个RAMn芯片，我们需要在RAMn芯片中集成n个寄存器，外加一些列控制逻辑（处理load）和地址选择逻辑，那么涉及到选择逻辑自然少不了Multiplexor和DMultiplexor。那么下面我们以RAM8为例讲一下我自己的实现方式：</p>
+<p>CPU本质上是一个函数计算器：</p>
 <ul>
-  <li>RAM8中有8个寄存器</li>
-  <li>8个寄存器有8个地址，所以我们的地址位需要2^n=8, n=3位</li>
-  <li>DMux用于解析写入时的地址，用3位sel分离出需要写入的那一路，再和load做与操作后作为寄存器的load位输入，最终通过load位来决定哪一个寄存器被写入In。</li>
-  <li>Mux用于解析读取时的地址，用3位sel在8个寄存器中选择想要读取的那一路数据</li>
+  <li>信号通过输入管脚输入，对应着函数的入参</li>
+  <li>CPU的内部电路是函数的黑盒实现</li>
+  <li>信号通过输出管脚输出，对应着函数的出参</li>
 </ul>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbef8oh05tj31ca0qywfd.jpg" width="800" /></center>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdjx10y6yj31gu0och04.jpg" width="600" /></center>
+<center><figcaption>8086 CPU</figcaption></center>
 
-<p>HDL实现：RAM8</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * Memory of 8 registers, each 16 bit-wide. Out holds the value
- * stored at the memory location specified by address. If load==1, then 
- * the in value is loaded into the memory location specified by address 
- * (the loaded value will be emitted to out from the next time step onward).
- */
+<p>大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数正好完美契合了现代计算机只能执行非常简单的算数逻辑运算集但却能够以超高速方式运行的特点。英国数学家布尔在1854年创立了布尔代数学科，布尔代数本身十分简单，但却为百年之后出现的二进制计算机提供了重要的数学方法和理论基础。</p>
 
-CHIP RAM8 {
-    IN in[16], load, address[3];
-    OUT out[16];
+<h3 id="布尔函数">布尔函数</h3>
 
-    PARTS:
-    DMux8Way(in=true, sel=address, a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h);
+<p><strong>布尔函数：</strong>布尔函数处理布尔数值(它的输入输出都是二进制数值)。布尔函数在数字计算机的芯片设计中扮演基础角色，也在密码学中扮演关键角色。</p>
 
-    And(a=a, b=load, out=load0);
-    And(a=b, b=load, out=load1);
-    And(a=c, b=load, out=load2);
-    And(a=d, b=load, out=load3);
-    And(a=e, b=load, out=load4);
-    And(a=f, b=load, out=load5);
-    And(a=g, b=load, out=load6);
-    And(a=h, b=load, out=load7);
+<p>布尔函数的两种表示方法：</p>
 
-    Register(in=in, load=load0, out=R0);
-    Register(in=in, load=load1, out=R1);
-    Register(in=in, load=load2, out=R2);
-    Register(in=in, load=load3, out=R3);
-    Register(in=in, load=load4, out=R4);
-    Register(in=in, load=load5, out=R5);
-    Register(in=in, load=load6, out=R6);
-    Register(in=in, load=load7, out=R7);
+<p>1.<strong>真值表：</strong>枚举出函数所有输入变量的组合，然后写出每一种组合对应的函数输出值。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921635xlzj30d00d2wed.jpg" width="300" /></center>
+<center><figcaption>真值表</figcaption></center>
+<p>2.<strong>布尔表达式：</strong>使用布尔操作符（And，Or，Not等）表达，上面的真值表可以用此表达式表示：</p>
+<center>f(x, y, z) = (x And y) Or (Not(x) And z)</center>
 
-    Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel=address, out=out);
-}
-</code></pre></div></div>
+<h3 id="布尔函数和门">布尔函数和门</h3>
+<p><strong>门（gate）</strong>是用来实现布尔函数的物理设备，例如与门，或门，非门，与非门等。门是基本的电子元器件，复杂的门电路就构成了CPU</p>
 
-<p>有了RAM8，我们就可以利用8个RAM8的组合实现RAM64，以此类推实现后面容量更大的RAM。</p>
-<ul>
-  <li>实现RAM64的技巧是对地址位的拆分，RAM64需要6个地址位，把6个地址为拆分为3+3</li>
-  <li>和实现RAM8的时候类似，需要引入一组Mux和DMux，这组选择芯片使用6位地址中的高三位，通过高3位把地址初步划分为8个地址段，每个地址段的容量即RAM8中寄存器的数量</li>
-  <li>每个RAM8使用6位地址中的低三位，然后从中定位到目标地址寄存器</li>
-</ul>
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921661g24j30u004at8o.jpg" width="600" /></center>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbeg2r9r8oj30wu0loaab.jpg" width="600" /></center>
+<p>门有输入管脚和输出管脚，对应着布尔函数的入参和出参；门电路的具体实现方式则对应着布尔函数的运算规则。复杂的布尔函数就对应的复杂的门电路</p>
 
-<p>HDL实现：RAM64</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * Memory of 64 registers, each 16 bit-wide. Out holds the value
- * stored at the memory location specified by address. If load==1, then 
- * the in value is loaded into the memory location specified by address 
- * (the loaded value will be emitted to out from the next time step onward).
- */
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g92165tk1lj311g0d63yy.jpg" width="600" /></center>
 
-CHIP RAM64 {
-    IN in[16], load, address[6];
-    OUT out[16];
+<p>布尔函数是门电路的数学表达，门电路是布尔函数的物理实现。<strong>一个复杂的CPU物理实现对应着一个复杂的布尔函数设计，可以说CPU的实现是建立在布尔函数之上的。</strong></p>
 
-    PARTS:
-    DMux8Way(in=true, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h);
+<h3 id="用与非门实现cpu的数理基础">用与非门实现CPU的数理基础</h3>
 
-    And(a=a, b=load, out=load0);
-    And(a=b, b=load, out=load1);
-    And(a=c, b=load, out=load2);
-    And(a=d, b=load, out=load3);
-    And(a=e, b=load, out=load4);
-    And(a=f, b=load, out=load5);
-    And(a=g, b=load, out=load6);
-    And(a=h, b=load, out=load7);
+<p>布尔函数的一些数学结论：</p>
+<ol>
+  <li>任何一个布尔函数，无论多复杂，都可以只用三种布尔操作符And，Or，Not完全表达。</li>
+  <li>And，Or，Not运算都可以只用Nand（与非）一种运算来代替实现，或者只用Nor（或非）一种运算来代替实现。</li>
+  <li>由1、2可得：仅使用Nand运算，就能够构建任何布尔函数。</li>
+</ol>
 
-    RAM8(in=in, load=load0, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R0);
-    RAM8(in=in, load=load1, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R1);
-    RAM8(in=in, load=load2, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R2);
-    RAM8(in=in, load=load3, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R3);
-    RAM8(in=in, load=load4, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R4);
-    RAM8(in=in, load=load5, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R5);
-    RAM8(in=in, load=load6, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R6);
-    RAM8(in=in, load=load7, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R7);
+<p><em>以上证明方法可以自行Google</em></p>
 
-    Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], out=out);
-}
-</code></pre></div></div>
+<p>有了上面的数理基础做支撑，我们可以得出结论：<strong>一旦我们在物理上实现了Nand（与非门），我们就能够实现任何门电路，进而实现一个CPU。</strong></p>
 
-<p>HDL实现：RAM4K</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * Memory of 4K registers, each 16 bit-wide. Out holds the value
- * stored at the memory location specified by address. If load==1, then 
- * the in value is loaded into the memory location specified by address 
- * (the loaded value will be emitted to out from the next time step onward).
- */
+<h3 id="用软件实现硬件">用软件实现硬件</h3>
 
-CHIP RAM4K {
-    IN in[16], load, address[12];
-    OUT out[16];
+<p>今天，硬件设计者们也不再亲手制作硬件了，而是用软件来实现设计：通过编写硬件描述语言（HDL）来描述芯片结构，并能通过测试用例来验证设计。</p>
 
-    PARTS:
-    DMux8Way(in=true, sel[0..2]=address[9..11], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h);
+<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921650gf9j313r0u077e.jpg" width="800" /></center>
 
-    And(a=a, b=load, out=load0);
-    And(a=b, b=load, out=load1);
-    And(a=c, b=load, out=load2);
-    And(a=d, b=load, out=load3);
-    And(a=e, b=load, out=load4);
-    And(a=f, b=load, out=load5);
-    And(a=g, b=load, out=load6);
-    And(a=h, b=load, out=load7);
+<p>好了，下面就让我们用Nand来实现一个CPU吧~</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-10-17T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-    RAM512(in=in, load=load0, address[0..8]=address[0..8], out=R0);
-    RAM512(in=in, load=load1, address[0..8]=address[0..8], out=R1);
-    RAM512(in=in, load=load2, address[0..8]=address[0..8], out=R2);
-    RAM512(in=in, load=load3, address[0..8]=address[0..8], out=R3);
-    RAM512(in=in, load=load4, address[0..8]=address[0..8], out=R4);
-    RAM512(in=in, load=load5, address[0..8]=address[0..8], out=R5);
-    RAM512(in=in, load=load6, address[0..8]=address[0..8], out=R6);
-    RAM512(in=in, load=load7, address[0..8]=address[0..8], out=R7);
-
-    Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0..2]=address[9..11], out=out);
-}
-</code></pre></div></div>
-<p>至此，我们了解了RAM中内存访问的方式。在RAM中的存储单元可以通过解析地址信号来进行随机的访问，而不会受限于存储单元的位置，访问任何位置的存储单元的速度都是相等的，例如访问内存中一个数组中任意下标的数据的速度都是相等的。这也是Random Access Memory概念的由来。</p>
-
-<h3 id="计数器">计数器</h3>
-<p>计数器也是CPU中一个重要的原件，主要用来存储将要执行指令的内存地址。在大多数情况下，计数器每个周期简单的进行+1操作，这时计算机能够获取下一条地址，这和CPU顺序执行指令的模式相符，同时CPU也支持直接跳转到编号为n的指令去执行，因此计数器要支持将其值设置为n的能力。下面我们来看一下计数器的接口设计：计数器芯片有2个附加控制位reset和inc，当inc=1时，计数器在每个时钟周期自加1，其输出值为out(t)=out(t-1)+1；如果想要将计数器置为0，就将reset置为1。如果想要将计数器设置为某个值，则将load置为1，并将数值从in输入。</p>
-
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbeis1709vj30l007it8p.jpg" width="600" /></center>
-
-<p>下图是我对计数器的实现逻辑</p>
-<ul>
-  <li>reset，inc，load用一个Or8way输出，只要其中有一个为1，那么register的load为就为1，register的值会被更新</li>
-  <li>3个Mux串联用于选择自增1、in的输入值、重置0这三种操作</li>
-</ul>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbejy994vbj317g0ra3z0.jpg" width="600" /></center>
-
-<p>HDL实现：计数器</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
- * A 16-bit counter with load and reset control bits.
- * if      (reset[t] == 1) out[t+1] = 0
- * else if (load[t] == 1)  out[t+1] = in[t]
- * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
- * else                    out[t+1] = out[t]
- */
-
-CHIP PC {
-    IN in[16],load,inc,reset;
-    OUT out[16];
-
-    PARTS:
-    Or8Way(in[0]=inc, in[1]=reset, in[2]=load, in[3..7]=false, out=ReLoad);
-
-    Mux16(a=outBack, b=outPlus, sel=inc, out=loadIN);
-    Mux16(a=loadIN, b=in, sel=load, out=resetIN);
-    Mux16(a=resetIN, b=false, sel=reset, out=ReIn);
-
-    Register(in=ReIn, load=ReLoad, out=out, out=outBack);
-    Inc16(in=outBack, out=outPlus);
-}
-</code></pre></div></div>
-
-<p>我们以下图为例，看一下计数器是如何在时钟系统下变化数值的。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbdrw718d4j31be0hiaat.jpg" width="800" /></center>
-
-<h3 id="总结">总结</h3>
-<p>至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。</p>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-07-29T00:00:00+08:00"><!-- start custom article footer snippet -->
-
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/06/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU</a></div><div class="next"><span>NEXT</span><a href="/2019/08/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/10/12/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">从0到1构建计算机(1/12)--从与非门到俄罗斯方块</a></div><div class="next"><span>NEXT</span><a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU</a></div></div></div>
 
 </div>
 

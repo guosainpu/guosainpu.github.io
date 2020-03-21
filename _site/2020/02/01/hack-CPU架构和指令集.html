@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集 - 一只草履虫</title>
 
 <meta name="description" content="经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。计算机架构hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分...">
-<link rel="canonical" href="http://localhost:4000/2019/08/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -340,8 +340,8 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
             </li><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 01, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-08-01T00:00:00+08:00">
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 01, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-01T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
 <!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。</p>
@@ -547,9 +547,9 @@ CHIP Computer {
 <p>至此，我们就完了hack硬件部分的所有工作。我们基于两个基本们：Nand和DFF，一步步实现了诸多芯片，最终实现了整个硬件架构。hack虽小，五脏俱全，我们只保留了计算机架构中最核心的部分，<strong>减少了我们的工作量，更重要的是方便我们拨开众多复杂的技术细节，清楚的了解到计算机体系最核心的设计思想</strong>。完成了hack的硬件系统和指令集的定义，我们就可以编写一个用0101写的hello world程序了，但这貌似有些痛苦，所以我们会在下一篇定义hack的汇编语言，并编写汇编器。😀</p>
 
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh3i0sxnoj310s0u03zp.jpg" width="700" /></center>
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-08-01T00:00:00+08:00"><!-- start custom article footer snippet -->
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-02-01T00:00:00+08:00"><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/07/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器</a></div><div class="next"><span>NEXT</span><a href="/2019/08/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html">从0到1构建计算机(6/12)--汇编语言与汇编器</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器</a></div><div class="next"><span>NEXT</span><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html">从0到1构建计算机(6/12)--汇编语言与汇编器</a></div></div></div>
 
 </div>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(6/12)--汇编语言与汇编器 - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU - 一只草履虫</title>
 
-<meta name="description" content="前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器汇编语言和汇编器汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们...">
-<link rel="canonical" href="http://localhost:4000/2019/08/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片组合逻辑芯片一个最基本的CPU主要由两类芯片组成：  组合逻辑芯片（Combinational Chips）：...">
+<link rel="canonical" href="http://localhost:4000/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -334,219 +334,361 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(6/12)--汇编语言与汇编器</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(6/12)--汇编语言与汇编器"><div class="article__info clearfix"><ul class="left-col menu"><li>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU"><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
             </li><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 19, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-08-19T00:00:00+08:00">
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Dec 16, 2019</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-12-16T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器</p>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片</p>
 
-<h3 id="汇编语言和汇编器">汇编语言和汇编器</h3>
+<h3 id="组合逻辑芯片">组合逻辑芯片</h3>
 
-<p>汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下两种指令是一一对应的，例如：1000100111011000对应mov ax,bx，把机器指令拆成3段，其中前8位代表mov，中间4位代表寄存器ax，最后四位代表寄存器bx。此外，我们还可以在汇编语言中用引用一些符号，用于代表某些数值（例如内存地址，指令地址等），这可以把我们从处理这些繁琐的数值的工作中解放出来（例如我们用符号i来代表一块内存地址，然后不用去记忆地址具体的值是多少，分配在什么位置，是否和其他地址冲突等），提高代码的编写效率。</p>
-
-<p>汇编器负责把汇编语言翻译成机器语言。因为汇编语言和机器语言的高度一致性，所以实现汇编器是比较简单的。唯一的难点可能就在于上面所提到的如何把一些符号和它们所对应的数值联系起来，即符号解析(symbol resolution)的过程。</p>
-
-<h3 id="hack的汇编语言设计">Hack的汇编语言设计</h3>
-
-<p>想要设计一门汇编语言，那么必须要参考它的机器语言。Hack的机器指令集过于简单，只有A、C两种命令，所以相应的它的汇编语言也很简单😂。</p>
-
-<h4 id="a指令">A指令</h4>
-<p>我们copy一些上一篇文章的内容：A指令，即Address指令。它的功能很简单，就是把一个数值传送到CPU中的A寄存器即可，多数情况下这个数字后续会当做地址使用，用于定位内存中的存储单元。</p>
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh0rj8yj6j30we0480sn.jpg" width="600" /></center>
-
-<p>我们定义A指令的汇编指令格式是：<strong>@value</strong>。</p>
-
-<p><strong>1.</strong>value可以是一个立即数。这种格式是两种语言的天然映射。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@3  //把数字3传送到A寄存器
-@5  //把数字5传送到A寄存器
-</code></pre></div></div>
-
-<p><strong>2.</strong>value也可以是一个符号（变量名）</p>
-
-<p>我们支持把符号当做数值代入，这更像我们在高级语言中编码的方式。例如@number，它的含义是：把变量number的首地址传送到A寄存器，number的首地址可能是1000或者2000，我们并不去关心它。如果不支持@+符号这种命令，我们该怎么编写Hack的A汇编指令呢？我们可能需要先梳理出该程序需要几个变量，例如i，j，k，然后画一个表格，安排一下i，j，k的地址，并保证他们不互相冲突，然后用@+立即数的方式编写，每次遇到需要传入变量地址的时候，去检查下表格，填入变量对应的数值。在复杂的程序中，这可能是相当繁琐且容器出错的，所以把他交给汇编器去做是一个明智的选择。</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@number  //把变量number对应的数值（变量地址）传送到A寄存器
-@END     //把标签END对应的数值（指令地址）传送到A寄存器
-</code></pre></div></div>
-
-<p><strong>到目前为止，这好像是我们第一次使用某种技巧（借助一些数据结构和算法），来把一个问题解决地更快更好</strong>，这可能就是编程中最有意思也最有挑战的地方吧。</p>
-
-<h4 id="c指令">C指令</h4>
-
-<p>C指令较为复杂，分成4部分。</p>
+<p>一个最基本的CPU主要由两类芯片组成：</p>
 <ul>
-  <li>第一位是标志位：为1时就代表该指令是C指令</li>
-  <li>3-10位是comp位：：这几位的排列用于表示执行不同的元素&amp;逻辑运算</li>
-  <li>11——13位是dest位：指示需要把计算出的数据传送到哪里（寄存器或内存）</li>
-  <li>14-16位是jump位：指示CPU执行跳转指令的条件</li>
+  <li>组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算</li>
+  <li>时序芯片（Sequential Chips）：寄存器，计数器，RAM等。这些芯片主要负责暂存数据</li>
 </ul>
 
-<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh0v8yf1cj311604st8o.jpg" width="600" /></center>
+<p>组合逻辑芯片（下面简称逻辑芯片）可以类比为一个布尔函数，它仅负责处理逻辑运算：输出结果仅依赖于其输入变量的排列组合。逻辑芯片是没有记忆能力的，它们不能维持自身的状态，当逻辑芯片的输入值改变的时候，它们的输出值也会实时地改变。</p>
 
-<p>我们定义C指令的汇编指令格式是：<strong>dest=comp ; jump</strong>。其中”dest=”，或”; jump”可以被省略，所以还可以演化出另外两种更常用的指令：”dest=comp”和”comp ; jump”。</p>
+<p>hack所需要的逻辑芯片有以下四种：基本逻辑门、多通道逻辑门、加法器、ALU（算数逻辑单元）。</p>
 
-<p><strong>1.</strong>计算后赋值指令：dest=comp</p>
+<h3 id="基本逻辑门">基本逻辑门</h3>
+<p>基本逻辑门是一些简单的布尔函数的实现，我们需要的基本逻辑门如下，有1位和多位（16位）之分。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1g9yzjn8lngj30qe0mgwew.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
 
-<p>下图我们可以看到dest，comp，jump各自的操作和code的对应方式。例如comp中0000010对代表算D+A的和，然后从out输出；dest中010代表把comp计算的赋给寄存器D；那么D=D+A，这句汇编指令就代表：进行D+A的计算操作，然后把结果传送到寄存器D。D=D+A对应的机器指令是：111(0000010)(010)(000)（后三位000代表跳转指令为null，即不跳转）</p>
+<p>我们所有组合逻辑芯片都是基于Nand实现的，下面是Nand的真值表：只有当两个输入都为1时输出为0，其余输出为1反，然后输出。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga16e7ws5tj30b007s3yd.jpg" width="300" /></center>
+<center><figcaption>Nand真值表</figcaption></center>
 
-<p><strong>2.</strong>计算后跳转指令：comp ; jump</p>
+<p>首先我们用Nand实现一个Not。Not很简单，对其输入取反，然后输出。下面是我自己的实现方式：</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga21uf1wocj30s609e3yh.jpg" width="600" /></center>
+<center><figcaption>Not电路图</figcaption></center>
 
-<p>jump中001代表判断comp输出的值，如果&gt;0，则进行指令跳转操作。那么D ; JGT，这句汇编指令就代表：进行D的计算操作（即简单的把D输出），然后判断如果值&gt;0，则进行指令跳转操作。D ; JGT对应的机器指令是：111(0001100)(000)(001)。（倒数后三位000代表赋值指令为null，即不需赋值）</p>
+<p>HDL实现：硬件描述语言实现。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * Not HDL实现
+ * Not gate:
+ * out = not in
+ */
 
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc2zbfy0mmj30uq0kgt9m.jpg" width="800" /></center>
+CHIP Not {
+    IN in;
+    OUT out;
 
-<p><em>需要注意的是：无论是要进行指令跳转操作，还是对内存的数据进行读或写，都需要先调用A指令，把目标地址写入A寄存器</em></p>
-
-<h4 id="符号与符号表">符号与符号表</h4>
-
-<p>Hack汇编语言中涉及3中符号：预定义符号、标签符号、变量符号</p>
-
-<p><strong>1.</strong>预定义符号：预定义符号绑定了内存中的一些地址值，在编写汇编语言时起到辅助作用。例如SP, lCL, ARG等用于辅助函数调用栈的实现；R0-R15可以被当做扩展的寄存器使用；SCREEN, KBD代表屏幕和键盘的内存区域首地址。</p>
-
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc316bfi83j30im0cmmxe.jpg" width="300" /></center>
-
-<p><strong>2.</strong>标签符号：标签符号绑定了指令的地址值，用于跳转指令。用（大写字母符号）声明，独占一行。</p>
-
-<p><strong>3.</strong>变量符号：变量符号绑定了变量的地址值。每遇到新的变量，则连续地在内存空间为其分配地址（变量地址从内存中16地址开始）。</p>
-
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc31216n0qj30ss19yq65.jpg" width="300" /></center>
-
-<p>符号表是一个字典结构，key是符号本身，value可以是和该符号相关的若干信息，在这里符号表的value就是符号代表的内存地址的值。在使用符号表的时候，往往需要先构建符号表（符号表可能会被动态地修改），然后在处理程序数据的时候，通过查找符号表来获取符号相关的信息。符号表是一个重要的数据结构，在汇编器、编译器、链接器中都扮演了重要的角色。</p>
-
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc31ywvwbaj30u80lwq3z.jpg" width="800" /></center>
-
-<h4 id="举例">举例</h4>
-
-<p>这里我们举一个例子，把一个C语言风格的代码，转化为Hack上的汇编语言实现。</p>
-<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc32onh098j31390u0t9w.jpg" width="800" /></center>
-
-<h3 id="实现">实现</h3>
-
-<p>实现Hack的汇编器相对比较简单，主要方法是逐行的分析汇编指令，判断指令类型和组成成分，然后生成对应的机器指令。唯一的难点在于对符号的处理，而实现的技巧在于对符号表的运用。</p>
-
-<p>汇编器实现：（完整实现放在:<a href="https://github.com/guosainpu/Nand2Tetris">github</a>）</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SymbolTable</span>
-    <span class="c1"># void add_entry(entry)      新增一个符号</span>
-    <span class="c1"># bool contains(symbol)      是否包含符号</span>
-    <span class="c1"># string get_address(symbol) 获取符号的值</span>
-    <span class="c1"># ......</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Parser</span>
-    <span class="c1"># bool hasMoreCommand        是否还有下一条指令</span>
-    <span class="c1"># void advance               指令游标前进</span>
-    <span class="c1"># string commandType         当前指令的类型</span>
-    <span class="c1"># string symbol              当前指令的符号</span>
-    <span class="c1"># string dest                当前指令dest部分的符号</span>
-    <span class="c1"># string comp                当前指令comp部分的符号</span>
-    <span class="c1"># string jump                当前指令jump部分的符号</span>
-    <span class="c1"># ......</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Code</span>
-    <span class="c1"># string dest(mnemonic)      根据符号获取dest的机器码</span>
-    <span class="c1"># string comp(mnemonic)      根据符号获取comp的机器码</span>
-    <span class="c1"># string jump(mnemonic)      根据符号获取jump的机器码</span>
-    <span class="c1"># ......</span>
-<span class="k">end</span>
-
-<span class="c1"># main</span>
-<span class="n">file_name</span> <span class="o">=</span> <span class="no">ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">hack_name</span> <span class="o">=</span> <span class="n">file_name</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".hack"</span>
-
-<span class="n">parser</span><span class="o">=</span><span class="no">Parser</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
-<span class="n">code</span> <span class="o">=</span> <span class="no">Code</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
-<span class="n">symbol_table</span> <span class="o">=</span> <span class="no">SymbolTable</span><span class="p">.</span><span class="nf">new</span><span class="p">();</span>
-<span class="vg">$command_line</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="c1">#第一次遍历源文件，构建符号表（初始化所有标签符号的值，因为标签符号可以先使用后声明，所以需要先遍历一遍；变量符号可以边生成机器代码时边初始化，因为变量符号是先声明后使用）</span>
-<span class="nb">puts</span> <span class="s2">"generate symbol table:"</span> 
-<span class="k">while</span> <span class="n">parser</span><span class="p">.</span><span class="nf">hasMoreCommand</span><span class="p">()</span>
-    <span class="n">parser</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
-    <span class="n">command_type</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">commandType</span><span class="p">()</span>
-    <span class="n">command_symbol</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"L_COMMAND"</span>
-        <span class="k">if</span> <span class="o">!</span><span class="n">symbol_table</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
-            <span class="n">symbol_table</span><span class="p">.</span><span class="nf">add_entry</span><span class="p">({</span><span class="n">command_symbol</span><span class="o">=&gt;</span><span class="n">completeBinary</span><span class="p">((</span><span class="vg">$command_line</span><span class="p">).</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))})</span>
-        <span class="k">end</span>
-    <span class="k">else</span>
-        <span class="vg">$command_line</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="nb">puts</span> <span class="s2">"generate code:"</span>
-<span class="c1">#第二次遍历源文件，把汇编代码汇编成机器代码</span>
-<span class="n">parser</span><span class="p">.</span><span class="nf">reset</span><span class="p">()</span>
-<span class="vg">$variabel_address</span> <span class="o">=</span> <span class="mi">16</span> <span class="c1">#变量从地址16开始连续分配</span>
-<span class="n">hack_file</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">hack_name</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
-
-<span class="k">while</span> <span class="n">parser</span><span class="p">.</span><span class="nf">hasMoreCommand</span><span class="p">()</span>
-    <span class="n">new_command</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="n">parser</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
-    <span class="n">command_type</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">commandType</span><span class="p">()</span>
-    <span class="n">command_symbol</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"A_COMMAND"</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"0"</span>
-        <span class="n">address_value</span> <span class="o">=</span> <span class="s2">""</span>
-        <span class="k">if</span> <span class="n">is_number</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
-            <span class="n">address_value</span> <span class="o">=</span> <span class="n">completeBinary</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">.</span><span class="nf">to_i</span><span class="p">.</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-        <span class="k">elsif</span> <span class="n">symbol_table</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span> <span class="c1">#如果符号表已经包含符号，则直接取出符号的值</span>
-            <span class="n">address_value</span> <span class="o">=</span> <span class="n">symbol_table</span><span class="p">.</span><span class="nf">get_address</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
-        <span class="k">else</span>
-            <span class="n">address_value</span> <span class="o">=</span> <span class="n">completeBinary</span><span class="p">(</span><span class="vg">$variabel_address</span><span class="p">.</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1">#如果符号表不包含符号，则把符号加入到符号表，并把下一个变量地址+1</span>
-            <span class="n">symbol_table</span><span class="p">.</span><span class="nf">add_entry</span><span class="p">({</span><span class="n">command_symbol</span><span class="o">=&gt;</span><span class="n">address_value</span><span class="p">})</span>
-            <span class="vg">$variabel_address</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">end</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">address_value</span>
-    <span class="k">elsif</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"C_COMMAND"</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"111"</span>
-        <span class="n">dest_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">dest</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">dest</span><span class="p">())</span>
-        <span class="n">comp_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">comp</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">comp</span><span class="p">())</span>
-        <span class="n">jump_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">jump</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">jump</span><span class="p">())</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">comp_value</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">dest_value</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">jump_value</span>
-    <span class="k">elsif</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"L_COMMAND"</span>
-        <span class="k">next</span>
-    <span class="k">else</span>
-        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"unknow command type"</span>
-    <span class="k">end</span>
-
-    <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
-    <span class="n">hack_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">new_command</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">completeBinary</span><span class="p">(</span><span class="n">binary_string</span><span class="p">)</span>
-    <span class="k">while</span> <span class="n">binary_string</span><span class="p">.</span><span class="nf">length</span> <span class="o">&lt;</span> <span class="mi">15</span>
-        <span class="n">binary_string</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">"0"</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="k">return</span> <span class="n">binary_string</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">is_number</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-  <span class="k">return</span> <span class="n">string</span> <span class="o">!~</span> <span class="sr">/\D/</span> 
-<span class="k">end</span>
+    PARTS:
+    Nand(a=in, b=in, out=out); 
+}
 </code></pre></div></div>
 
-<p>我们用不到200行的代码就实现了一个汇编器，是不是很简单？</p>
+<p>然后我们继续用刚刚实现的Not和Nand组合使用，再实现一个And。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga221fwwf3j310m08mgll.jpg" width="800" /></center>
+<center><figcaption>And电路图</figcaption></center>
 
-<h3 id="总结">总结</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * And gate: 
+ * out = 1 if (a == 1 and b == 1)
+ *       0 otherwise
+ */
 
-<p>汇编语言是人操作计算机工作最直接的方式，它描述了计算机最终执行的指令序列。学习汇编语言能让我们充分获得底层编程的体验，理解计算机运行的机理，这能让我在学习理解上层知识的时候更加准确。Hack的汇编指令只具备了最必要的功能，和我们常用的动辄几百条的汇编指令集有很大差距，但这并不妨碍Hack成为一个完整的计算机。下一篇我们会基于Hack的汇编指令扩展出一个虚拟机，这个虚拟机的指令集更接近我们常用的CPU的指令集。</p>
+CHIP And {
+    IN a, b;
+    OUT out;
 
-<p>推荐王爽的《汇编语言》，这本书不仅能高效地指导大家学习汇编语言，同时也是一本用于指导如何学习的书，字里行间蕴含了王爽老师自己对如何学习，如何教学的理解。相比较于很多苍白的翻译书籍，这本本土书籍更加优秀。</p>
+    PARTS:
+    Nand(a=a, b=b, out=nandOut);
+    Not(in=nandOut, out=out);
+}
+</code></pre></div></div>
 
-</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-08-19T00:00:00+08:00"><!-- start custom article footer snippet -->
+<p>多位基本逻辑门是1位基本逻辑门的简单组合，以16位And为例，用16个1位And组合成16位And.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 16-bit bitwise And:
+ * for i = 0..15: out[i] = (a[i] and b[i])
+ */
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/08/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集</a></div><div class="next"><span>NEXT</span><a href="/2019/08/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html">从0到1构建计算机(7/12)--实现一个虚拟机</a></div></div></div>
+CHIP And16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    And(a=a[0], b=b[0], out=out[0]);
+    And(a=a[1], b=b[1], out=out[1]);
+    And(a=a[2], b=b[2], out=out[2]);
+    And(a=a[3], b=b[3], out=out[3]);
+    And(a=a[4], b=b[4], out=out[4]);
+    And(a=a[5], b=b[5], out=out[5]);
+    And(a=a[6], b=b[6], out=out[6]);
+    And(a=a[7], b=b[7], out=out[7]);
+    And(a=a[8], b=b[8], out=out[8]);
+    And(a=a[9], b=b[9], out=out[9]);
+    And(a=a[10], b=b[10], out=out[10]);
+    And(a=a[11], b=b[11], out=out[11]);
+    And(a=a[12], b=b[12], out=out[12]);
+    And(a=a[13], b=b[13], out=out[13]);
+    And(a=a[14], b=b[14], out=out[14]);
+    And(a=a[15], b=b[15], out=out[15]);
+}
+</code></pre></div></div>
+<p><strong>以此类推，我们可以一步步实现其他所有基本逻辑门。</strong></p>
+
+<h3 id="加法器">加法器</h3>
+<p>有了上面实现的这些基本逻辑门，我们就可以实现CPU中一个非常重要的基本芯片：加法器。实现加法器的顺序是：半加器-&gt;全加器-&gt;16位加法器</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyn6tzgj30va0d8glt.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<p>第一步：实现一个半加器，半加器负责计算两个一位二进制相加，输出sum和carry（进位）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xb8b2xej30sc09m74d.jpg" width="600" /></center>
+<center><figcaption>半加器</figcaption></center>
+
+<p>虽然半加器看上去跳出了布尔运算，升级到的小学数学，但其仍然可以用真值表表示，所以也就可以用基本逻辑门实现，我们用一个Xor和And就可以实现半加器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2c9rhu5bj30sa0ge3yo.jpg" width="600" /></center>
+<center><figcaption>半加器电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 半加器
+ * Computes the sum of two bits.
+ */
+
+CHIP HalfAdder {
+    IN a, b;    // 1-bit inputs
+    OUT sum,    // Right bit of a + b 
+        carry;  // Left bit of a + b
+
+    PARTS:
+    Xor(a=a, b=b, out=sum);
+    And(a=a, b=b, out=carry);
+}
+
+</code></pre></div></div>
+
+<p>半加器只能计算两个一位二进制数相加，接着我们在输入端再加入一个进位管脚（代表低位做加法时进过来的进位），就成为了一个全加器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xom01j9j30u80de0sv.jpg" width="600" /></center>
+<center><figcaption>全加器</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cemdwywj318g0gu0t1.jpg" width="600" /></center>
+<center><figcaption>全加器电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 全加器
+ * Computes the sum of three bits.
+ */
+
+CHIP FullAdder {
+    IN a, b, c;  // 1-bit inputs
+    OUT sum,     // Right bit of a + b + c
+        carry;   // Left bit of a + b + c
+
+    PARTS:
+    HalfAdder(a=a, b=b, carry=carryA, sum=sumA);
+    HalfAdder(a=sumA, b=c, carry=carryB, sum=sum);
+    Or(a=carryA, b=carryB, out=carry);
+}
+</code></pre></div></div>
+
+<p>最后我们利用全加器实现16位加法器，有了16位加法器，我们就可以进行2个不大于2^16的整数的加法了。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1xrljwy9j30te06sdfv.jpg" width="600" /></center>
+<center><figcaption>16位加法器</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 16位加法器
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ */
+
+CHIP Add16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    FullAdder(a=a[0], b=b[0], c=false, sum=out[0], carry=ca0);
+    FullAdder(a=a[1], b=b[1], c=ca0, sum=out[1], carry=ca1);
+    FullAdder(a=a[2], b=b[2], c=ca1, sum=out[2], carry=ca2);
+    FullAdder(a=a[3], b=b[3], c=ca2, sum=out[3], carry=ca3);
+    FullAdder(a=a[4], b=b[4], c=ca3, sum=out[4], carry=ca4);
+    FullAdder(a=a[5], b=b[5], c=ca4, sum=out[5], carry=ca5);
+    FullAdder(a=a[6], b=b[6], c=ca5, sum=out[6], carry=ca6);
+    FullAdder(a=a[7], b=b[7], c=ca6, sum=out[7], carry=ca7);
+    FullAdder(a=a[8], b=b[8], c=ca7, sum=out[8], carry=ca8);
+    FullAdder(a=a[9], b=b[9], c=ca8, sum=out[9], carry=ca9);
+    FullAdder(a=a[10], b=b[10], c=ca9, sum=out[10], carry=ca10);
+    FullAdder(a=a[11], b=b[11], c=ca10, sum=out[11], carry=ca11);
+    FullAdder(a=a[12], b=b[12], c=ca11, sum=out[12], carry=ca12);
+    FullAdder(a=a[13], b=b[13], c=ca12, sum=out[13], carry=ca13);
+    FullAdder(a=a[14], b=b[14], c=ca13, sum=out[14], carry=ca14);
+    FullAdder(a=a[15], b=b[15], c=ca14, sum=out[15], carry=ignorCa); 
+}
+</code></pre></div></div>
+
+<p>有了加法器，我们再实现一个累加器，它对输入数据进行加1，然后输出。累加器是后面CPU中程序计数器的重要部分。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 累加器
+ * 16-bit incrementer:
+ * out = in + 1 (arithmetic addition)
+ */
+
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    Add16(a=in, b[0]=true, b[1]=false, b[2]=false, b[3]=false, b[4]=false, b[5]=false, b[6]=false, b[7]=false, b[8]=false, b[9]=false, b[10]=false, b[11]=false, b[12]=false, b[13]=false, b[14]=false, b[15]=false, out=out);
+}     
+</code></pre></div></div>
+
+<h3 id="多通道逻辑门">多通道逻辑门</h3>
+<p>我们看到基本逻辑门负责计算布尔运算，但其只能根据输入计算出输出，缺少控制能力。下面我们介绍的多通道逻辑门则在逻辑控制方面扮演了重要角色，因为多通道逻辑门具有<strong>选择功能</strong>。多通道逻辑门在CPU和RAM中起到了重要作用。多通道逻辑门分为以下两种：</p>
+
+<ul>
+  <li><strong>Multiplexor:</strong> 有多路输入，一路输出，选择输入中的一路作为输出</li>
+  <li><strong>DMultiplexor:</strong> 有一路输入，多路输出，在输出路中选择一路降输入值输出</li>
+</ul>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyl836uj30v60meaaw.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y8t42i3j30p60dq0sv.jpg" width="600" /></center>
+<center><figcaption>Multiplexor</figcaption></center>
+
+<center>&lt;img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg" width="600&gt;</center>
+<center><figcaption>DMultiplexor</figcaption></center>
+
+<p>这里我们实现一个2路1位的Mux。a，b是两路1位信号输入，sel是选择位。如果sel == 0，out管脚输出a的值，否则输出b的值。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1zhhi4a2j30rm0kuq36.jpg" width="600" /></center>
+<center><figcaption>2路1位Mux电路图</figcaption></center>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/** 
+ * 2路1位Mux
+ * Multiplexor:
+ * out = a if sel == 0
+ *       b otherwise
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    Not(in= sel, out=NotSel);
+    And(a=a, b=NotSel, out=AndAOut);
+    And(a=b, b=sel, out=AndBOut);
+    Or(a=AndAOut, b=AndBOut, out=out);
+}
+</code></pre></div></div>
+
+<p>当然除了2路选择器，还有4路、8路、16路等多路选择器。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yd61q3mj30ze09at8v.jpg" width="800" /></center>
+<center><figcaption>多路Mux</figcaption></center>
+
+<p>下面是4路16位选择器的一种实现方式</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+ */
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+    OUT out[16];
+
+    PARTS:
+    Mux16(a=a, b=b, sel=sel[0], out=outA);
+    Mux16(a=c, b=d, sel=sel[0], out=outB);
+    Mux16(a=outA, b=outB, sel=sel[1], out=out);
+}
+</code></pre></div></div>
+
+<h3 id="alu">ALU</h3>
+<p>有了多通道逻辑门，我们就可以进一步实现一个更为复杂的芯片：ALU。ALU是CPU的三大基本模块之一（ALU、寄存器、程序计数器）。基本逻辑门只能计算一种布尔逻辑，而ALU可以通过改变控制位输入变量的组合（zx,nz,zy,ny,f,no），可以控制实现多种计算逻辑。这类似于一个CPU可以执行指令集中的众多指令一样（当然这其中就依赖于ALU）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga2cylk4d8j30uo05i3yg.jpg" width="600" /></center>
+<center><figcaption>芯片列表</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf3rz82j30pi0i0dg1.jpg" width="600" /></center>
+<center><figcaption>ALU</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg" width="600" /></center>
+<center><figcaption>ALU真值表</figcaption></center>
+
+<p>下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&amp;y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output &lt; 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x &amp; y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out &lt; 0) set ng = 1
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x &amp; y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out &lt; 0),  0 otherwise
+
+    PARTS:
+    Mux16(a=x, b=false, sel=zx, out=zSelX);
+    Not16(in=zSelX, out=notZSelx);
+    Mux16(a=zSelX, b=notZSelx, sel=nx, out=outX);
+
+    Mux16(a=y, b=false, sel=zy, out=zSelY);
+    Not16(in=zSelY, out=notZSelY);
+    Mux16(a=zSelY, b=notZSelY, sel=ny, out=outY);
+
+    Add16(a=outX, b=outY, out=outAdd); // X+Y
+    And16(a=outX, b=outY, out=outAnd); // X&amp;Y
+
+    Mux16(a=outAnd, b=outAdd, sel=f, out=outF);
+    Not16(in=outF, out=notF);
+
+    Mux16(a=outF, b=notF, sel=no, out=out, out[0..7]=outZrA, out[8..15]=outZrB, out[15]=outMSB);
+
+    Or8Way(in=outZrA, out=zrL);
+    Or8Way(in=outZrB, out=zrH);
+    Or(a=zrL, b=zrH, out=notZr);
+    Not(in=notZr, out=zr);
+
+    And(a=true, b=outMSB, out=ng);
+}
+</code></pre></div></div>
+
+<h3 id="补码">补码</h3>
+<p>最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：<strong>任何两个用补码表示的有符号数的加法和正数的加法完全相同</strong>，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。</p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-12-16T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">从0到1构建计算机(2/12)--与非门实现CPU的数理基础</a></div><div class="next"><span>NEXT</span><a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8.html">从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器</a></div></div></div>
 
 </div>
 
