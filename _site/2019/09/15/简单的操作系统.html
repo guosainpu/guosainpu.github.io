@@ -1202,7 +1202,231 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h3 id="文字显示">文字显示</h3>
 
+<p>为了在屏幕上输出文字，我们把512*256的屏幕划分成若干个8*11大小的的方格子（总共划分了64*23个），在每个方格子中我们可以利用88个像素点来绘制文字，以下图的为例。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1gzswkhoj30ja0pumxb.jpg" width="300" /></center>
+
+<p>实现文字绘制的逻辑也是比简单的，最重要的是要先设计出字符的bitMap（字符的bitMap决定了字符的字形和字体），Hack支持127中字符的展示，这里我们列出其中的一部分：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 黑色方块                                          </span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+<span class="c1">// 各个字符的 bitmap</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">32</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>          <span class="c1">//</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">33</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>  <span class="c1">// !</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">34</span><span class="o">,</span><span class="mi">54</span><span class="o">,</span><span class="mi">54</span><span class="o">,</span><span class="mi">20</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>       <span class="c1">// "</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">48</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// 0</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">49</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">14</span><span class="o">,</span><span class="mi">15</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// 1</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">48</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>   <span class="c1">// 2</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">58</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>      <span class="c1">// :</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">59</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>      <span class="c1">// ;</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">60</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>      <span class="c1">// &lt;</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">65</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">63</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// A</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">66</span><span class="o">,</span><span class="mi">31</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">31</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">31</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// B</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">67</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">54</span><span class="o">,</span><span class="mi">35</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">35</span><span class="o">,</span><span class="mi">54</span><span class="o">,</span><span class="mi">28</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>    <span class="c1">// C</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">91</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>          <span class="c1">// [</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">92</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">6</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">48</span><span class="o">,</span><span class="mi">32</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>        <span class="c1">// \</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">93</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>   <span class="c1">// ]</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">97</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">14</span><span class="o">,</span><span class="mi">24</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">27</span><span class="o">,</span><span class="mi">27</span><span class="o">,</span><span class="mi">54</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>      <span class="c1">// a</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">98</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">15</span><span class="o">,</span><span class="mi">27</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>      <span class="c1">// b</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">99</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">51</span><span class="o">,</span><span class="mi">30</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>        <span class="c1">// c</span>
+<span class="o">......</span>
+
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">123</span><span class="o">,</span><span class="mi">56</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">56</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>   <span class="c1">// {</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">124</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>  <span class="c1">// |</span>
+<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="mi">125</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">56</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">12</span><span class="o">,</span><span class="mi">7</span><span class="o">,</span><span class="mi">0</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>    <span class="c1">// }</span>
+<span class="o">......</span>
+
+<span class="c1">// 创建一个8*11的bitMap, 其中 a,b,c 代表其中某一行的bitMap情况</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">create</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">,</span> <span class="kt">int</span> <span class="n">e</span><span class="o">,</span> <span class="kt">int</span> <span class="n">f</span><span class="o">,</span> <span class="kt">int</span> <span class="n">g</span><span class="o">,</span> <span class="kt">int</span> <span class="n">h</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="nc">Array</span> <span class="n">map</span><span class="o">;</span>
+
+    <span class="n">let</span> <span class="n">map</span> <span class="o">=</span> <span class="nc">Array</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">11</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">charMaps</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">map</span><span class="o">;</span>
+
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">b</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">map</span><span class="o">[</span><span class="mi">10</span><span class="o">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">;</span>
+
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>除了字符，我们还需要通过光标来辅助指示当前字符显示的位置，包括向前、向后移动，换行：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 移动光标位置 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">moveCursor</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="kt">int</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">cursor_y</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 在屏幕上换行 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">println</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">cursor_y</span> <span class="o">&lt;</span> <span class="mi">22</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">cursor_y</span> <span class="o">=</span> <span class="n">cursor_y</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">scroll</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 屏幕翻页 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">scroll</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">cursor_y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 退格 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">backSpace</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span> <span class="o">~(</span><span class="n">cursor_y</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="mi">63</span><span class="o">;</span>
+            <span class="n">let</span> <span class="n">cursor_y</span> <span class="o">=</span> <span class="n">cursor_y</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="n">cursor_x</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>最后是在光标的位置打印一个字符（或一串字符），这个过程是：先根据光标的位置计算出字符应该占用的内存的位置，然后把字符的 bitMap 填充到这块内存的过程。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/** 在屏幕上打印字符，并将光标位置向前移动一格 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">printChar</span><span class="o">(</span><span class="kt">char</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="nc">Array</span> <span class="n">map</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">address</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">mask</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">bitmap</span><span class="o">;</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+    
+    <span class="c1">// 获取字符的bitMap，地址锚点到当前光标位置</span>
+    <span class="n">let</span> <span class="n">map</span> <span class="o">=</span> <span class="nc">Output</span><span class="o">.</span><span class="na">getMap</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">address</span> <span class="o">=</span> <span class="o">(</span><span class="n">cursor_y</span><span class="o">*</span><span class="mi">32</span><span class="o">*</span><span class="mi">11</span><span class="o">)</span> <span class="o">+</span> <span class="o">(</span><span class="n">cursor_x</span><span class="o">/</span><span class="mi">2</span><span class="o">);</span>
+    <span class="n">let</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">cursor_x</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="o">;</span>
+    
+    <span class="c1">// 把bitMap的值，填充到锚点到的内存（11*8的方块）</span>
+    <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">11</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+        <span class="k">if</span><span class="o">(</span> <span class="n">mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">bitmap</span> <span class="o">=</span> <span class="n">bitmap</span> <span class="o">*</span> <span class="mi">256</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">let</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">=</span> <span class="n">screen</span><span class="o">[</span><span class="n">address</span><span class="o">]</span> <span class="o">&amp;</span> <span class="n">charMasks</span><span class="o">[</span><span class="n">mask</span><span class="o">]</span> <span class="o">|</span> <span class="n">bitmap</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">address</span> <span class="o">=</span> <span class="n">address</span> <span class="o">+</span> <span class="mi">32</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// 移动光标位置</span>
+    <span class="k">if</span><span class="o">(</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="mi">63</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="k">else</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">cursor_x</span> <span class="o">=</span> <span class="n">cursor_x</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 在屏幕上打印一个字符 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">printString</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">while</span><span class="o">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printChar</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+        <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="cm">/** 在屏幕上打印一个数字 */</span>
+<span class="n">function</span> <span class="kt">void</span> <span class="nf">printInt</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">var</span> <span class="nc">String</span> <span class="n">s</span><span class="o">;</span>
+    <span class="n">let</span> <span class="n">s</span> <span class="o">=</span> <span class="nc">String</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+    <span class="k">do</span> <span class="n">s</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+    <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="k">do</span> <span class="n">s</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+    <span class="k">return</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
 <h3 id="system">System</h3>
+
+<p>我们完成了一系列的Jack操作系统的基础库，它们提高了我们使用Jack编写程序的效率，拓展了程序的人机交互能力。最后我们需要再写一个System类，把这些库整合起来，形成Jack操作系统。首先我们要知道操作系统也是一个程序，当计算机启动时，首先被执行的程序就是操作系统（准确的说先执行引导程序，引导执行操作系统程序）。Jack操作系统会先执行一系列标准库初始化工作，然后再把执行交给主程序，主程序执行完后（如果主程序不是以无限循环的方式执行的话），操作系统把计算机挂起（无限循环的方式）。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Sys</span> <span class="o">{</span>
+
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Math</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>    <span class="c1">// 系统库初始化</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+        <span class="k">do</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+        <span class="k">do</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+        <span class="k">do</span> <span class="nc">Main</span><span class="o">.</span><span class="na">main</span><span class="o">();</span>    <span class="c1">// 执行主程序</span>
+        <span class="k">do</span> <span class="nc">Sys</span><span class="o">.</span><span class="na">halt</span><span class="o">();</span>     <span class="c1">// 完成主程序后，挂起</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 挂起：无限循环 */</span>
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">halt</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){}</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** Wait 一小段时间 */</span>
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">wait</span><span class="o">(</span><span class="kt">int</span> <span class="n">duration</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">duration</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="k">while</span><span class="o">(</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">200</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="n">let</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">let</span> <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 打印错误信息 */</span>
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">error</span><span class="o">(</span><span class="kt">int</span> <span class="n">errorCode</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="s">"Err"</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printInt</span><span class="o">(</span><span class="n">errorCode</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Sys</span><span class="o">.</span><span class="na">halt</span><span class="o">();</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="总结">总结</h3>
+
+<p>可以说我们本篇实现的操作系统完全算不上一个真正意义上的操作系统，最终这个操作系统和我们的主程序会被一起编译，生成一个静态程序。最终Hack执行的是这个目标程序，而不是操作系统，Jack操作系统完全没有起到管理程序的作用。但这不妨碍我们从中窥到操作系统中的一些底层操作的工作原理（主要是内存管理和I/0管理）。</p>
+
+<p>我们也完全可以对它进行扩展，例如可以在操作系统中集成进100个小游戏，启动后在屏幕上展示所有游戏的图标，用户选择游戏后，操作系统切换到相应的游戏程序执行。这样我们就把Hack变成了一个小霸王游戏机😅。</p>
 
 <p>本篇完整实现放在了:<a href="https://github.com/guosainpu/Nand2Tetris">github</a></p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2019-09-15T00:00:00+08:00"><!-- start custom article footer snippet -->
