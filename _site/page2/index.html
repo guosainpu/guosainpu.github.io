@@ -5,7 +5,7 @@
 
 <meta name="description" content="Your Site Description
 ">
-<link rel="canonical" href="/page2/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/page2/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -411,7 +411,7 @@ CPU本质上是一个函数计算器：
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-12T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
       </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/02/18/%E4%B9%A6%E5%8D%95.html"><h2 itemprop="headline" class="item__header">技术书单</h2></a></header>
+          <header><a href="/2019/02/18/%E4%B9%A6%E5%8D%95%E7%9A%84%E5%89%AF%E6%9C%AC.html"><h2 itemprop="headline" class="item__header">技术书单</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机基础：
 * 编码的奥秘（Charles Petzold）
 * 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
@@ -423,14 +423,38 @@ CPU本质上是一个函数计算器：
 
 iOS：
 * runtime技术博客 (刘小壮)
-* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)</div><p><a href="/2019/02/18/%E4%B9%A6%E5%8D%95.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+* 深入解析MacOS&amp;iOS操作系统 (jonatan levin)</div><p><a href="/2019/02/18/%E4%B9%A6%E5%8D%95%E7%9A%84%E5%89%AF%E6%9C%AC.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E6%8A%80%E6%9C%AF%E4%B9%A6%E5%8D%95">技术书单</a>
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 18, 2019</span>
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-02-18T00:00:00+08:00">
     <meta itemprop="keywords" content="技术书单"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0.html"><h2 itemprop="headline" class="item__header">定点数&浮点数</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">浮点数的概念是相对于定点数来说的:
+
+
+  定点数：小数点的位置是固定的。(小数点的左边表示整数部分，小数点的右边表示小数部分)
+  浮点数：小数点的位置是浮动的。
+
+
+假设目前只有8bit存储空间可供表示一个数，我们把第一位用于符号位，剩下7位用于数值位，则一个数用定点数表示和浮点数表示的表示规则如下：
+
+定点数表示
+假定将小数点放在第五个bit，那么前三位将用于表示整数部分，后四位则用于表示小数部分。
+
+定点数表示举例：10000.000 == +1.0 ；00000.000 == -1.0；10011.000 == +3.0；00111.101 == -(7+5/8)
+
+取值范围
+
+整数部分的可表示的最大绝对值是：2^4 = 16，小数部分可表示的最大绝对值是：2(n-1)/2n...</div><p><a href="/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 11, 2016</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2016-07-11T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>13 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>14 post articles, 2 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><a class="button button--secondary button--circle" href="/">
             <i class="fas fa-angle-left"></i>

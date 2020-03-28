@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>About - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>定点数&浮点数 - 一只草履虫</title>
 
-<meta name="description" content="Your Site Description
-">
-<link rel="canonical" href="http://localhost:4000/about%E7%9A%84%E5%89%AF%E6%9C%AC.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="浮点数的概念是相对于定点数来说的:  定点数：小数点的位置是固定的。(小数点的左边表示整数部分，小数点的右边表示小数部分)  浮点数：小数点的位置是浮动的。假设目前只有8bit存储空间可供表示一个数，我们把第一位用于符号位，剩下7位用于数值位，则一个数用定点数表示和浮点数表示的表示规则如下：定点数表示假定将小数点...">
+<link rel="canonical" href="http://localhost:4000/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -253,7 +252,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -331,101 +330,64 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>About</h1></header></div><meta itemprop="headline" content="About"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>定点数&浮点数</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="定点数&浮点数"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 11, 2016</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2016-07-11T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, World!</span><span class="dl">'</span><span class="p">);</span>
-</code></pre></div></div>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p>浮点数的概念是相对于定点数来说的:</p>
 
-<h2 id="features">Features</h2>
+<ol>
+  <li>定点数：小数点的位置是固定的。(小数点的左边表示整数部分，小数点的右边表示小数部分)</li>
+  <li>浮点数：小数点的位置是浮动的。</li>
+</ol>
 
-<ul>
-  <li>Responsive</li>
-  <li>Semantic HTML</li>
-  <li>Skins</li>
-  <li>Highlight Theme</li>
-  <li>Internationalization</li>
-  <li>Search</li>
-  <li>Table of contents</li>
-  <li>Authors</li>
-  <li>Additional styles (alert, tag, image, icon, button, grid, etc)</li>
-  <li>Extensions (audios, videos, slides, demos)</li>
-  <li>Markdown enhancements (<a href="https://www.mathjax.org/">MathJax</a>, <a href="https://mermaidjs.github.io/">mermaid</a>, <a href="http://www.chartjs.org/">chartjs</a>)</li>
-  <li>Sharing (<a href="https://www.addtoany.com/">AddToAny</a>, <a href="https://www.addthis.com/">AddThis</a>)</li>
-  <li>Comments (<a href="https://disqus.com/">Disqus</a>, <a href="https://gitalk.github.io/">Gitalk</a>, <a href="https://valine.js.org/en/">Valine</a>)</li>
-  <li>Pageview (<a href="https://leancloud.cn/">LeanCloud</a>)</li>
-  <li>Analytics (<a href="https://analytics.google.com/analytics/web/">Google Analytics</a>)</li>
-  <li>RSS (<a href="https://github.com/jekyll/jekyll-feed">jekyll-feed</a>)</li>
-</ul>
+<p>假设目前只有8bit存储空间可供表示一个数，我们把第一位用于符号位，剩下7位用于数值位，则一个数用定点数表示和浮点数表示的表示规则如下：</p>
 
-<h2 id="skins">Skins</h2>
+<h3 id="定点数表示">定点数表示</h3>
+<p>假定将小数点放在第五个bit，那么前三位将用于表示整数部分，后四位则用于表示小数部分。</p>
 
-<p>TeXt has 6 built-in skins, you can also set up your own skin.</p>
+<p>定点数表示举例：10000.000 == +1.0 ；00000.000 == -1.0；10011.000 == +3.0；00111.101 == -(7+5/8)</p>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">default</code></th>
-      <th><code class="highlighter-rouge">dark</code></th>
-      <th><code class="highlighter-rouge">forest</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_default.jpg" alt="Default" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_dark.jpg" alt="Dark" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_forest.jpg" alt="Forest" /></td>
-    </tr>
-  </tbody>
-</table>
+<h4 id="取值范围">取值范围</h4>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">ocean</code></th>
-      <th><code class="highlighter-rouge">chocolate</code></th>
-      <th><code class="highlighter-rouge">orange</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_ocean.jpg" alt="Ocean" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_chocolate.jpg" alt="Chocolate" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_orange.jpg" alt="Orange" /></td>
-    </tr>
-  </tbody>
-</table>
+<p>整数部分的可表示的最大绝对值是：2^4 = 16，小数部分可表示的最大绝对值是：2(n-1)/2n = 1/2 + 1/4 + 1/8 = 7/8。</p>
 
-<h3 id="highlight-theme">Highlight Theme</h3>
+<p>那么小数点在第5位的8bit定点数可以表示的数值范围是： -(16+7/8) ~ +(16+7/8)。</p>
 
-<p>TeXt use <a href="https://github.com/chriskempson/tomorrow-theme">Tomorrow</a> as the highlight theme.</p>
+<h4 id="精确度">精确度</h4>
+<p>对于整数部分，只要在表示范围内，都是绝对精确的。上面的8个bit可以精确的表示-16 ~ +16的任何一个整数</p>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">tomorrow</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-eighties</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-blue</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-bright</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow.png" alt="Tomorrow" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night.png" alt="Tomorrow Night" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-eighties.png" alt="Tomorrow Night Eighties" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-blue.png" alt="Tomorrow Night Blue" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-bright.png" alt="Tomorrow Night Bright" /></td>
-    </tr>
-  </tbody>
-</table>
-</div><div class="d-print-none"><footer class="article__footer"><!-- start custom article footer snippet -->
+<p>对于小数部分，由于只有三个小数位，所以小数部分只能精确的表示1/2^3(即1/8)的倍数，能精确表示的小数是有限的(即只能精确的表示7个小数，1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8)。而小数是无限的，所以要先表示某个小数，只能近似的去表示它，如想表示3.15/8，那只能找最近的3/8去近似的表示它。</p>
 
-<!-- end custom article footer snippet --></footer></div>
+<p>采用定点数，从数轴的角度来看，所表示的这些数的分布是均匀的(即两个相邻的数的差值总是一个定值，此处是1/8)</p>
+
+<h3 id="浮点数表示">浮点数表示</h3>
+
+<p>浮点数的小数点位置是不固定的，一个浮点数的表示方法统一采用：符号+尾数+阶数(例如：+1.234 * 2^3 == 9.872)</p>
+
+<p>因为尾数的第一位总是1,所以此处可以省出一位数。我们假定：对于8bit位浮点数，第一位为符号位，二三位为阶码位，四五六七八位为尾数位</p>
+
+<p>那么有，阶码的取值范围是2^-2 ~ 2^2(1/4，4)，尾数的取值范围是1 ~ 1+ 1/2 + 1/4 + 1/8 + 1/16 + 1/32(即1~1+(31/32))</p>
+
+<p>所以，该浮点数能表示的最大的绝对值是(1~1+(31/32)*2^4</p>
+
+<p>表示方法的最大精度为1/16，即小数点后两位(近似两位，其实连两位也不到，因为只能表示1/16的整倍数)</p>
+
+<p>我们以float类型为例，float有22位尾数：1/2^22 = 0.00000024。所以float表示纯小数时能表示0.00000024的倍数的那些数，即也能表示5 * 0.00000024 = 0.0000012(约等于0.0000001)。所以float表示纯小数时近似精确到小数点后6位。当然，这是把尾数全部用于表示小数时能精确到后六位，当有一部分用于表示整数时(即当阶码的值大于0时)，精确度就不能到达6位了，甚至当阶码比较大时(因为阶码决定了小数点的位置)，连个位，十位，百位也不能精确表示了。</p>
+
+<p>采用浮点数，从数轴的角度来看，越靠近0的地方，数越密集，越靠近两端数越稀疏，所以用浮点数表示一个数，该数的绝对值越小，误差越小，绝对值越大误差越大。</p>
+
+<p><a href="http://www.h-schmidt.net/FloatConverter/IEEE754.html">浮点数在线转换工具</a></p>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2016-07-11T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="next"><span>NEXT</span><a href="/2019/02/18/%E4%B9%A6%E5%8D%95%E7%9A%84%E5%89%AF%E6%9C%AC.html">技术书单</a></div></div></div>
 
 </div>
 
@@ -985,6 +947,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script><script type="text/x-mathjax-config">
 	var _config = { tex2jax: {
 		inlineMath: [['$','$'], ['\\(','\\)']]
