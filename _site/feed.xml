@@ -1,5 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-03-28T14:16:23+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
-</subtitle><author><name>Your Name</name></author><entry><title type="html">从0到1构建计算机(12/12)–收获和总结</title><link href="http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html" rel="alternate" type="text/html" title="从0到1构建计算机(12/12)--收获和总结" /><published>2020-03-22T00:00:00+08:00</published><updated>2020-03-22T00:00:00+08:00</updated><id>http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93</id><content type="html" xml:base="http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html">&lt;p&gt;完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-03-29T22:09:28+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">一只草履虫</title><subtitle>Your Site Description
+</subtitle><author><name>Your Name</name></author><entry><title type="html">C语言拾遗</title><link href="http://localhost:4000/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97.html" rel="alternate" type="text/html" title="C语言拾遗" /><published>2020-03-29T00:00:00+08:00</published><updated>2020-03-29T00:00:00+08:00</updated><id>http://localhost:4000/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97</id><content type="html" xml:base="http://localhost:4000/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97.html">&lt;h3 id=&quot;short-long&quot;&gt;short, long&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;short int x;
+long int y;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。&lt;/p&gt;
+
+&lt;p&gt;short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位。&lt;/p&gt;
+
+&lt;h3 id=&quot;extern&quot;&gt;extern&lt;/h3&gt;
+
+&lt;p&gt;引用全局变量（外部变量）时需要先使用 extern 关键字来声明对变量的引用，格式：extern dataType dateName; 如果全局变量的声明和引用都在同一个源文件中，那么可以省略使用 extern。&lt;/p&gt;
+
+&lt;h3 id=&quot;const&quot;&gt;const&lt;/h3&gt;
+
+&lt;p&gt;任何变量的声明都可以用const修饰，该修饰符表示所修饰的变量的值不能够被修改，如果const修饰的是数组，那么所有数组元素的值都不能被修改。const也可以用来修饰作为函数参数的数组，表明函数不能对入参数组的元素的值进行修改。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;const double e = 2.718281;
+const char msg[] = &quot;warning:&quot;
+
+int strlen(const char[]);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;static&quot;&gt;static&lt;/h3&gt;
+
+&lt;p&gt;用static修饰的变量或函数，可以将其声明后的对象的作用域限定在被编译的源文件的剩余的部分，以达到隐藏对象的目的。简单说就是：全局对象对于程序全局可见，静态对象只在文件内可见。&lt;/p&gt;
+
+&lt;p&gt;另外，static可以在函数内修饰变量。此时该变量只在函数内可见，但变量的生命周期不跟随函数声明周期变化，是一直存在的（会一直占用内存）。&lt;/p&gt;
+
+&lt;h3 id=&quot;register&quot;&gt;register&lt;/h3&gt;
+
+&lt;p&gt;用register修饰变量，所要表达的是意思：想要编译器把变量存放在寄存器中，这样可以让函数占用的内存更小，运行的速度更快。不同的硬件环境对register变量的支持不一样，而且编译器可以也忽略register修饰。&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="C语言" /><summary type="html">short, long short int x; long int y; short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。 short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位。 extern 引用全局变量（外部变量）时需要先使用 extern 关键字来声明对变量的引用，格式：extern dataType dateName; 如果全局变量的声明和引用都在同一个源文件中，那么可以省略使用 extern。 const 任何变量的声明都可以用const修饰，该修饰符表示所修饰的变量的值不能够被修改，如果const修饰的是数组，那么所有数组元素的值都不能被修改。const也可以用来修饰作为函数参数的数组，表明函数不能对入参数组的元素的值进行修改。 const double e = 2.718281; const char msg[] = &quot;warning:&quot; int strlen(const char[]); static 用static修饰的变量或函数，可以将其声明后的对象的作用域限定在被编译的源文件的剩余的部分，以达到隐藏对象的目的。简单说就是：全局对象对于程序全局可见，静态对象只在文件内可见。 另外，static可以在函数内修饰变量。此时该变量只在函数内可见，但变量的生命周期不跟随函数声明周期变化，是一直存在的（会一直占用内存）。 register 用register修饰变量，所要表达的是意思：想要编译器把变量存放在寄存器中，这样可以让函数占用的内存更小，运行的速度更快。不同的硬件环境对register变量的支持不一样，而且编译器可以也忽略register修饰。</summary></entry><entry><title type="html">从0到1构建计算机(12/12)–收获和总结</title><link href="http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html" rel="alternate" type="text/html" title="从0到1构建计算机(12/12)--收获和总结" /><published>2020-03-22T00:00:00+08:00</published><updated>2020-03-22T00:00:00+08:00</updated><id>http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93</id><content type="html" xml:base="http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html">&lt;p&gt;完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。&lt;/p&gt;
 
 &lt;p&gt;之所以说是暂时的收尾，是因为我觉得课程中很多知识点自己理解得还不到位，很多精华的思想也没有完全get到。这门课程是一门基础性的课程，也是一门常读常新的课程，值得经常回顾和思考。这门课程也是一门很好的入门课程、框架课程（哈佛大学的学生把它戏称为计算机专业101课程），它让我们对计算机科学知识体系有了一个很直观的感受和实践（至少是我作为一个iOS程序员能够接触到的知识体系）。师傅领进门，如果后续我们对其中的某些方向比较感兴趣，可以再去深入地展开学习和研究。&lt;/p&gt;
 
@@ -3688,345 +3720,4 @@ CHIP PC {
 &lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1gbdrw718d4j31be0hiaat.jpg&quot; width=&quot;800&quot; /&gt;&lt;/center&gt;
 
 &lt;h3 id=&quot;总结&quot;&gt;总结&lt;/h3&gt;
-&lt;p&gt;至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="从0到1构建计算机" /><summary type="html">上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。 反馈电路、时钟系统、D触发器 组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（即形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。 提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么时钟频率通常被当做衡量计算机性能的重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。 在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由R-S锁存器派生而来。（DFF的实现相对复杂，如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。 边沿触发的D型触发器 DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。 1位寄存器和16位寄存器 有了DFF的记忆功能，我们接下来先实现最简单1bit寄存器和16bit寄存器。1bit寄存器的接口包括：in输入管脚，负责传输输入数据；load管脚，load管脚是控制位，只有当load为1的时候，才会存储in的输入数据；out管脚输出当前存储的值。接口如下所示： 1bit芯片很好实现，主要是实现load位的控制功能即可，根据芯片描述可以把芯片设计为：load为1时选择输入in的数据，load为0时选择输入上一次寄存器保存的数据。这种选择功能正好是上一篇我们实现的Multiplexor芯片（后面在实现RAM的时候，Multiplexor在地址选择中的作用体现得更加明显）。1bit寄存器内部实现如下： 然后我们用硬件描述语言（HDL）实现： /** * 1-bit register: * If load[t] == 1 then out[t+1] = in[t] * else out does not change (out[t+1] = out[t]) */ CHIP Bit { IN in, load; OUT out; PARTS: Mux(a=outBack, b=in, sel=load, out=dffIn); DFF(in=dffIn, out=out, out=outBack); } 有1bit寄存器，16bit寄存器可以看做是16个1bit寄存器的组合： HDL实现：16bit寄存器 /** * 16-bit register: * If load[t] == 1 then out[t+1] = in[t] * else out does not change */ CHIP Register { IN in[16], load; OUT out[16]; PARTS: Mux(a=outBack0, b=in[0], sel=load, out=dffIn0); DFF(in=dffIn0, out=out[0], out=outBack0); Mux(a=outBack1, b=in[1], sel=load, out=dffIn1); DFF(in=dffIn1, out=out[1], out=outBack1); Mux(a=outBack2, b=in[2], sel=load, out=dffIn2); DFF(in=dffIn2, out=out[2], out=outBack2); Mux(a=outBack3, b=in[3], sel=load, out=dffIn3); DFF(in=dffIn3, out=out[3], out=outBack3); Mux(a=outBack4, b=in[4], sel=load, out=dffIn4); DFF(in=dffIn4, out=out[4], out=outBack4); Mux(a=outBack5, b=in[5], sel=load, out=dffIn5); DFF(in=dffIn5, out=out[5], out=outBack5); // ...6到15 } RAM 接着我们来实现计算机中另一个非常重要的组成部分：RAM。刚才看到，16bit寄存器可以由16个1bit的寄存器组合而成，同理一个mKB的RAM，可以由n个16位寄存器组合而成，16位寄存器就是RAM中的基本存储单元，寄存器的宽度（此处是16位）就是RAM”字”（WORD）的宽度。我们都知道，需要通过地址来访问RAM，RAM中每个寄存器都绑定到一个唯一地址。下图是RAM的接口设计，RAM有三种输入：数据输入，地址输入和加载位。地址指定了当前周期RAM中哪一个寄存器被访问，当进行读操作时（load=0），RAM立即输出被选中的寄存器的值，当进行写操作时（load=1），被选中的寄存器被赋予新的值，从下个周期开始RAM将开始发出新的值。输入和输出的数据宽度就是RAM”字”的宽度。 接下来我们要实现RAM8，RAM64，RAM512，RAM4K，RAM16K几种内存容量的RAM。RAMn中的n即代表RAM中有n个寄存器。例如RAM16K中有16K个16位寄存器，那么他的内存容量就是16K*(16/2)byte=32Kbyte。想要实现一个RAMn芯片，我们需要在RAMn芯片中集成n个寄存器，外加一些列控制逻辑（处理load）和地址选择逻辑，那么涉及到选择逻辑自然少不了Multiplexor和DMultiplexor。那么下面我们以RAM8为例讲一下我自己的实现方式： RAM8中有8个寄存器 8个寄存器有8个地址，所以我们的地址位需要2^n=8, n=3位 DMux用于解析写入时的地址，用3位sel分离出需要写入的那一路，再和load做与操作后作为寄存器的load位输入，最终通过load位来决定哪一个寄存器被写入In。 Mux用于解析读取时的地址，用3位sel在8个寄存器中选择想要读取的那一路数据 HDL实现：RAM8 /** * Memory of 8 registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM8 { IN in[16], load, address[3]; OUT out[16]; PARTS: DMux8Way(in=true, sel=address, a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); Register(in=in, load=load0, out=R0); Register(in=in, load=load1, out=R1); Register(in=in, load=load2, out=R2); Register(in=in, load=load3, out=R3); Register(in=in, load=load4, out=R4); Register(in=in, load=load5, out=R5); Register(in=in, load=load6, out=R6); Register(in=in, load=load7, out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel=address, out=out); } 有了RAM8，我们就可以利用8个RAM8的组合实现RAM64，以此类推实现后面容量更大的RAM。 实现RAM64的技巧是对地址位的拆分，RAM64需要6个地址位，把6个地址为拆分为3+3 和实现RAM8的时候类似，需要引入一组Mux和DMux，这组选择芯片使用6位地址中的高三位，通过高3位把地址初步划分为8个地址段，每个地址段的容量即RAM8中寄存器的数量 每个RAM8使用6位地址中的低三位，然后从中定位到目标地址寄存器 HDL实现：RAM64 /** * Memory of 64 registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM64 { IN in[16], load, address[6]; OUT out[16]; PARTS: DMux8Way(in=true, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); RAM8(in=in, load=load0, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R0); RAM8(in=in, load=load1, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R1); RAM8(in=in, load=load2, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R2); RAM8(in=in, load=load3, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R3); RAM8(in=in, load=load4, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R4); RAM8(in=in, load=load5, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R5); RAM8(in=in, load=load6, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R6); RAM8(in=in, load=load7, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], out=out); } HDL实现：RAM4K /** * Memory of 4K registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM4K { IN in[16], load, address[12]; OUT out[16]; PARTS: DMux8Way(in=true, sel[0..2]=address[9..11], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); RAM512(in=in, load=load0, address[0..8]=address[0..8], out=R0); RAM512(in=in, load=load1, address[0..8]=address[0..8], out=R1); RAM512(in=in, load=load2, address[0..8]=address[0..8], out=R2); RAM512(in=in, load=load3, address[0..8]=address[0..8], out=R3); RAM512(in=in, load=load4, address[0..8]=address[0..8], out=R4); RAM512(in=in, load=load5, address[0..8]=address[0..8], out=R5); RAM512(in=in, load=load6, address[0..8]=address[0..8], out=R6); RAM512(in=in, load=load7, address[0..8]=address[0..8], out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0..2]=address[9..11], out=out); } 至此，我们了解了RAM中内存访问的方式。在RAM中的存储单元可以通过解析地址信号来进行随机的访问，而不会受限于存储单元的位置，访问任何位置的存储单元的速度都是相等的，例如访问内存中一个数组中任意下标的数据的速度都是相等的。这也是Random Access Memory概念的由来。 计数器 计数器也是CPU中一个重要的原件，主要用来存储将要执行指令的内存地址。在大多数情况下，计数器每个周期简单的进行+1操作，这时计算机能够获取下一条地址，这和CPU顺序执行指令的模式相符，同时CPU也支持直接跳转到编号为n的指令去执行，因此计数器要支持将其值设置为n的能力。下面我们来看一下计数器的接口设计：计数器芯片有2个附加控制位reset和inc，当inc=1时，计数器在每个时钟周期自加1，其输出值为out(t)=out(t-1)+1；如果想要将计数器置为0，就将reset置为1。如果想要将计数器设置为某个值，则将load置为1，并将数值从in输入。 下图是我对计数器的实现逻辑 reset，inc，load用一个Or8way输出，只要其中有一个为1，那么register的load为就为1，register的值会被更新 3个Mux串联用于选择自增1、in的输入值、重置0这三种操作 HDL实现：计数器 /** * A 16-bit counter with load and reset control bits. * if (reset[t] == 1) out[t+1] = 0 * else if (load[t] == 1) out[t+1] = in[t] * else if (inc[t] == 1) out[t+1] = out[t] + 1 (integer addition) * else out[t+1] = out[t] */ CHIP PC { IN in[16],load,inc,reset; OUT out[16]; PARTS: Or8Way(in[0]=inc, in[1]=reset, in[2]=load, in[3..7]=false, out=ReLoad); Mux16(a=outBack, b=outPlus, sel=inc, out=loadIN); Mux16(a=loadIN, b=in, sel=load, out=resetIN); Mux16(a=resetIN, b=false, sel=reset, out=ReIn); Register(in=ReIn, load=ReLoad, out=out, out=outBack); Inc16(in=outBack, out=outPlus); } 我们以下图为例，看一下计数器是如何在时钟系统下变化数值的。 总结 至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。</summary></entry><entry><title type="html">从0到1构建计算机(3/12)–组合逻辑芯片：逻辑门、加法器、ALU</title><link href="http://localhost:4000/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html" rel="alternate" type="text/html" title="从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU" /><published>2019-12-16T00:00:00+08:00</published><updated>2019-12-16T00:00:00+08:00</updated><id>http://localhost:4000/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87:%E9%80%BB%E8%BE%91%E9%97%A8%E3%80%81%E5%8A%A0%E6%B3%95%E5%99%A8%E3%80%81ALU</id><content type="html" xml:base="http://localhost:4000/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html">&lt;p&gt;上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片&lt;/p&gt;
-
-&lt;h3 id=&quot;组合逻辑芯片&quot;&gt;组合逻辑芯片&lt;/h3&gt;
-
-&lt;p&gt;一个最基本的CPU主要由两类芯片组成：&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算&lt;/li&gt;
-  &lt;li&gt;时序芯片（Sequential Chips）：寄存器，计数器，RAM等。这些芯片主要负责暂存数据&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;组合逻辑芯片（下面简称逻辑芯片）可以类比为一个布尔函数，它仅负责处理逻辑运算：输出结果仅依赖于其输入变量的排列组合。逻辑芯片是没有记忆能力的，它们不能维持自身的状态，当逻辑芯片的输入值改变的时候，它们的输出值也会实时地改变。&lt;/p&gt;
-
-&lt;p&gt;hack所需要的逻辑芯片有以下四种：基本逻辑门、多通道逻辑门、加法器、ALU（算数逻辑单元）。&lt;/p&gt;
-
-&lt;h3 id=&quot;基本逻辑门&quot;&gt;基本逻辑门&lt;/h3&gt;
-&lt;p&gt;基本逻辑门是一些简单的布尔函数的实现，我们需要的基本逻辑门如下，有1位和多位（16位）之分。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1g9yzjn8lngj30qe0mgwew.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;芯片列表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;我们所有组合逻辑芯片都是基于Nand实现的，下面是Nand的真值表：只有当两个输入都为1时输出为0，其余输出为1反，然后输出。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga16e7ws5tj30b007s3yd.jpg&quot; width=&quot;300&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;Nand真值表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;首先我们用Nand实现一个Not。Not很简单，对其输入取反，然后输出。下面是我自己的实现方式：&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga21uf1wocj30s609e3yh.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;Not电路图&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;HDL实现：硬件描述语言实现。&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * Not HDL实现
- * Not gate:
- * out = not in
- */
-
-CHIP Not {
-    IN in;
-    OUT out;
-
-    PARTS:
-    Nand(a=in, b=in, out=out); 
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后我们继续用刚刚实现的Not和Nand组合使用，再实现一个And。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga221fwwf3j310m08mgll.jpg&quot; width=&quot;800&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;And电路图&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * And gate: 
- * out = 1 if (a == 1 and b == 1)
- *       0 otherwise
- */
-
-CHIP And {
-    IN a, b;
-    OUT out;
-
-    PARTS:
-    Nand(a=a, b=b, out=nandOut);
-    Not(in=nandOut, out=out);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;多位基本逻辑门是1位基本逻辑门的简单组合，以16位And为例，用16个1位And组合成16位And.&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 16-bit bitwise And:
- * for i = 0..15: out[i] = (a[i] and b[i])
- */
-
-CHIP And16 {
-    IN a[16], b[16];
-    OUT out[16];
-
-    PARTS:
-    And(a=a[0], b=b[0], out=out[0]);
-    And(a=a[1], b=b[1], out=out[1]);
-    And(a=a[2], b=b[2], out=out[2]);
-    And(a=a[3], b=b[3], out=out[3]);
-    And(a=a[4], b=b[4], out=out[4]);
-    And(a=a[5], b=b[5], out=out[5]);
-    And(a=a[6], b=b[6], out=out[6]);
-    And(a=a[7], b=b[7], out=out[7]);
-    And(a=a[8], b=b[8], out=out[8]);
-    And(a=a[9], b=b[9], out=out[9]);
-    And(a=a[10], b=b[10], out=out[10]);
-    And(a=a[11], b=b[11], out=out[11]);
-    And(a=a[12], b=b[12], out=out[12]);
-    And(a=a[13], b=b[13], out=out[13]);
-    And(a=a[14], b=b[14], out=out[14]);
-    And(a=a[15], b=b[15], out=out[15]);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;以此类推，我们可以一步步实现其他所有基本逻辑门。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;加法器&quot;&gt;加法器&lt;/h3&gt;
-&lt;p&gt;有了上面实现的这些基本逻辑门，我们就可以实现CPU中一个非常重要的基本芯片：加法器。实现加法器的顺序是：半加器-&amp;gt;全加器-&amp;gt;16位加法器&lt;/p&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyn6tzgj30va0d8glt.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;芯片列表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;第一步：实现一个半加器，半加器负责计算两个一位二进制相加，输出sum和carry（进位）。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1xb8b2xej30sc09m74d.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;半加器&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;虽然半加器看上去跳出了布尔运算，升级到的小学数学，但其仍然可以用真值表表示，所以也就可以用基本逻辑门实现，我们用一个Xor和And就可以实现半加器。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga2c9rhu5bj30sa0ge3yo.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;半加器电路图&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 半加器
- * Computes the sum of two bits.
- */
-
-CHIP HalfAdder {
-    IN a, b;    // 1-bit inputs
-    OUT sum,    // Right bit of a + b 
-        carry;  // Left bit of a + b
-
-    PARTS:
-    Xor(a=a, b=b, out=sum);
-    And(a=a, b=b, out=carry);
-}
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;半加器只能计算两个一位二进制数相加，接着我们在输入端再加入一个进位管脚（代表低位做加法时进过来的进位），就成为了一个全加器。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1xom01j9j30u80de0sv.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;全加器&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga2cemdwywj318g0gu0t1.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;全加器电路图&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 全加器
- * Computes the sum of three bits.
- */
-
-CHIP FullAdder {
-    IN a, b, c;  // 1-bit inputs
-    OUT sum,     // Right bit of a + b + c
-        carry;   // Left bit of a + b + c
-
-    PARTS:
-    HalfAdder(a=a, b=b, carry=carryA, sum=sumA);
-    HalfAdder(a=sumA, b=c, carry=carryB, sum=sum);
-    Or(a=carryA, b=carryB, out=carry);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;最后我们利用全加器实现16位加法器，有了16位加法器，我们就可以进行2个不大于2^16的整数的加法了。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1xrljwy9j30te06sdfv.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;16位加法器&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 16位加法器
- * Adds two 16-bit values.
- * The most significant carry bit is ignored.
- */
-
-CHIP Add16 {
-    IN a[16], b[16];
-    OUT out[16];
-
-    PARTS:
-    FullAdder(a=a[0], b=b[0], c=false, sum=out[0], carry=ca0);
-    FullAdder(a=a[1], b=b[1], c=ca0, sum=out[1], carry=ca1);
-    FullAdder(a=a[2], b=b[2], c=ca1, sum=out[2], carry=ca2);
-    FullAdder(a=a[3], b=b[3], c=ca2, sum=out[3], carry=ca3);
-    FullAdder(a=a[4], b=b[4], c=ca3, sum=out[4], carry=ca4);
-    FullAdder(a=a[5], b=b[5], c=ca4, sum=out[5], carry=ca5);
-    FullAdder(a=a[6], b=b[6], c=ca5, sum=out[6], carry=ca6);
-    FullAdder(a=a[7], b=b[7], c=ca6, sum=out[7], carry=ca7);
-    FullAdder(a=a[8], b=b[8], c=ca7, sum=out[8], carry=ca8);
-    FullAdder(a=a[9], b=b[9], c=ca8, sum=out[9], carry=ca9);
-    FullAdder(a=a[10], b=b[10], c=ca9, sum=out[10], carry=ca10);
-    FullAdder(a=a[11], b=b[11], c=ca10, sum=out[11], carry=ca11);
-    FullAdder(a=a[12], b=b[12], c=ca11, sum=out[12], carry=ca12);
-    FullAdder(a=a[13], b=b[13], c=ca12, sum=out[13], carry=ca13);
-    FullAdder(a=a[14], b=b[14], c=ca13, sum=out[14], carry=ca14);
-    FullAdder(a=a[15], b=b[15], c=ca14, sum=out[15], carry=ignorCa); 
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;有了加法器，我们再实现一个累加器，它对输入数据进行加1，然后输出。累加器是后面CPU中程序计数器的重要部分。&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 累加器
- * 16-bit incrementer:
- * out = in + 1 (arithmetic addition)
- */
-
-CHIP Inc16 {
-    IN in[16];
-    OUT out[16];
-
-    PARTS:
-    Add16(a=in, b[0]=true, b[1]=false, b[2]=false, b[3]=false, b[4]=false, b[5]=false, b[6]=false, b[7]=false, b[8]=false, b[9]=false, b[10]=false, b[11]=false, b[12]=false, b[13]=false, b[14]=false, b[15]=false, out=out);
-}     
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;多通道逻辑门&quot;&gt;多通道逻辑门&lt;/h3&gt;
-&lt;p&gt;我们看到基本逻辑门负责计算布尔运算，但其只能根据输入计算出输出，缺少控制能力。下面我们介绍的多通道逻辑门则在逻辑控制方面扮演了重要角色，因为多通道逻辑门具有&lt;strong&gt;选择功能&lt;/strong&gt;。多通道逻辑门在CPU和RAM中起到了重要作用。多通道逻辑门分为以下两种：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Multiplexor:&lt;/strong&gt; 有多路输入，一路输出，选择输入中的一路作为输出&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;DMultiplexor:&lt;/strong&gt; 有一路输入，多路输出，在输出路中选择一路降输入值输出&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga2cyl836uj30v60meaaw.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;芯片列表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1y8t42i3j30p60dq0sv.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;Multiplexor&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;center&gt;&amp;lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg&quot; width=&quot;600&amp;gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;DMultiplexor&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;这里我们实现一个2路1位的Mux。a，b是两路1位信号输入，sel是选择位。如果sel == 0，out管脚输出a的值，否则输出b的值。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1zhhi4a2j30rm0kuq36.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;2路1位Mux电路图&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/** 
- * 2路1位Mux
- * Multiplexor:
- * out = a if sel == 0
- *       b otherwise
- */
-
-CHIP Mux {
-    IN a, b, sel;
-    OUT out;
-
-    PARTS:
-    Not(in= sel, out=NotSel);
-    And(a=a, b=NotSel, out=AndAOut);
-    And(a=b, b=sel, out=AndBOut);
-    Or(a=AndAOut, b=AndBOut, out=out);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;当然除了2路选择器，还有4路、8路、16路等多路选择器。&lt;/p&gt;
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1yd61q3mj30ze09at8v.jpg&quot; width=&quot;800&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;多路Mux&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;下面是4路16位选择器的一种实现方式&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * 4-way 16-bit multiplexor:
- * out = a if sel == 00
- *       b if sel == 01
- *       c if sel == 10
- *       d if sel == 11
- */
-
-CHIP Mux4Way16 {
-    IN a[16], b[16], c[16], d[16], sel[2];
-    OUT out[16];
-
-    PARTS:
-    Mux16(a=a, b=b, sel=sel[0], out=outA);
-    Mux16(a=c, b=d, sel=sel[0], out=outB);
-    Mux16(a=outA, b=outB, sel=sel[1], out=out);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;alu&quot;&gt;ALU&lt;/h3&gt;
-&lt;p&gt;有了多通道逻辑门，我们就可以进一步实现一个更为复杂的芯片：ALU。ALU是CPU的三大基本模块之一（ALU、寄存器、程序计数器）。基本逻辑门只能计算一种布尔逻辑，而ALU可以通过改变控制位输入变量的组合（zx,nz,zy,ny,f,no），可以控制实现多种计算逻辑。这类似于一个CPU可以执行指令集中的众多指令一样（当然这其中就依赖于ALU）。&lt;/p&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga2cylk4d8j30uo05i3yg.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;芯片列表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf3rz82j30pi0i0dg1.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;ALU&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;center&gt;&lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg&quot; width=&quot;600&quot; /&gt;&lt;/center&gt;
-&lt;center&gt;&lt;figcaption&gt;ALU真值表&lt;/figcaption&gt;&lt;/center&gt;
-
-&lt;p&gt;下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/**
- * The ALU (Arithmetic Logic Unit).
- * Computes one of the following functions:
- * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
- * x+1, y+1, x-1, y-1, x&amp;amp;y, x|y on two 16-bit inputs, 
- * according to 6 input bits denoted zx,nx,zy,ny,f,no.
- * In addition, the ALU computes two 1-bit outputs:
- * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
- * if the ALU output &amp;lt; 0, ng is set to 1; otherwise ng is set to 0.
- */
-
-// Implementation: the ALU logic manipulates the x and y inputs
-// and operates on the resulting values, as follows:
-// if (zx == 1) set x = 0        // 16-bit constant
-// if (nx == 1) set x = !x       // bitwise not
-// if (zy == 1) set y = 0        // 16-bit constant
-// if (ny == 1) set y = !y       // bitwise not
-// if (f == 1)  set out = x + y  // integer 2's complement addition
-// if (f == 0)  set out = x &amp;amp; y  // bitwise and
-// if (no == 1) set out = !out   // bitwise not
-// if (out == 0) set zr = 1
-// if (out &amp;lt; 0) set ng = 1
-
-CHIP ALU {
-    IN  
-        x[16], y[16],  // 16-bit inputs        
-        zx, // zero the x input?
-        nx, // negate the x input?
-        zy, // zero the y input?
-        ny, // negate the y input?
-        f,  // compute out = x + y (if 1) or x &amp;amp; y (if 0)
-        no; // negate the out output?
-
-    OUT 
-        out[16], // 16-bit output
-        zr, // 1 if (out == 0), 0 otherwise
-        ng; // 1 if (out &amp;lt; 0),  0 otherwise
-
-    PARTS:
-    Mux16(a=x, b=false, sel=zx, out=zSelX);
-    Not16(in=zSelX, out=notZSelx);
-    Mux16(a=zSelX, b=notZSelx, sel=nx, out=outX);
-
-    Mux16(a=y, b=false, sel=zy, out=zSelY);
-    Not16(in=zSelY, out=notZSelY);
-    Mux16(a=zSelY, b=notZSelY, sel=ny, out=outY);
-
-    Add16(a=outX, b=outY, out=outAdd); // X+Y
-    And16(a=outX, b=outY, out=outAnd); // X&amp;amp;Y
-
-    Mux16(a=outAnd, b=outAdd, sel=f, out=outF);
-    Not16(in=outF, out=notF);
-
-    Mux16(a=outF, b=notF, sel=no, out=out, out[0..7]=outZrA, out[8..15]=outZrB, out[15]=outMSB);
-
-    Or8Way(in=outZrA, out=zrL);
-    Or8Way(in=outZrB, out=zrH);
-    Or(a=zrL, b=zrH, out=notZr);
-    Not(in=notZr, out=zr);
-
-    And(a=true, b=outMSB, out=ng);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;补码&quot;&gt;补码&lt;/h3&gt;
-&lt;p&gt;最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：&lt;strong&gt;任何两个用补码表示的有符号数的加法和正数的加法完全相同&lt;/strong&gt;，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="从0到1构建计算机" /><summary type="html">上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片 组合逻辑芯片 一个最基本的CPU主要由两类芯片组成： 组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算 时序芯片（Sequential Chips）：寄存器，计数器，RAM等。这些芯片主要负责暂存数据 组合逻辑芯片（下面简称逻辑芯片）可以类比为一个布尔函数，它仅负责处理逻辑运算：输出结果仅依赖于其输入变量的排列组合。逻辑芯片是没有记忆能力的，它们不能维持自身的状态，当逻辑芯片的输入值改变的时候，它们的输出值也会实时地改变。 hack所需要的逻辑芯片有以下四种：基本逻辑门、多通道逻辑门、加法器、ALU（算数逻辑单元）。 基本逻辑门 基本逻辑门是一些简单的布尔函数的实现，我们需要的基本逻辑门如下，有1位和多位（16位）之分。 芯片列表 我们所有组合逻辑芯片都是基于Nand实现的，下面是Nand的真值表：只有当两个输入都为1时输出为0，其余输出为1反，然后输出。 Nand真值表 首先我们用Nand实现一个Not。Not很简单，对其输入取反，然后输出。下面是我自己的实现方式： Not电路图 HDL实现：硬件描述语言实现。 /** * Not HDL实现 * Not gate: * out = not in */ CHIP Not { IN in; OUT out; PARTS: Nand(a=in, b=in, out=out); } 然后我们继续用刚刚实现的Not和Nand组合使用，再实现一个And。 And电路图 /** * And gate: * out = 1 if (a == 1 and b == 1) * 0 otherwise */ CHIP And { IN a, b; OUT out; PARTS: Nand(a=a, b=b, out=nandOut); Not(in=nandOut, out=out); } 多位基本逻辑门是1位基本逻辑门的简单组合，以16位And为例，用16个1位And组合成16位And. /** * 16-bit bitwise And: * for i = 0..15: out[i] = (a[i] and b[i]) */ CHIP And16 { IN a[16], b[16]; OUT out[16]; PARTS: And(a=a[0], b=b[0], out=out[0]); And(a=a[1], b=b[1], out=out[1]); And(a=a[2], b=b[2], out=out[2]); And(a=a[3], b=b[3], out=out[3]); And(a=a[4], b=b[4], out=out[4]); And(a=a[5], b=b[5], out=out[5]); And(a=a[6], b=b[6], out=out[6]); And(a=a[7], b=b[7], out=out[7]); And(a=a[8], b=b[8], out=out[8]); And(a=a[9], b=b[9], out=out[9]); And(a=a[10], b=b[10], out=out[10]); And(a=a[11], b=b[11], out=out[11]); And(a=a[12], b=b[12], out=out[12]); And(a=a[13], b=b[13], out=out[13]); And(a=a[14], b=b[14], out=out[14]); And(a=a[15], b=b[15], out=out[15]); } 以此类推，我们可以一步步实现其他所有基本逻辑门。 加法器 有了上面实现的这些基本逻辑门，我们就可以实现CPU中一个非常重要的基本芯片：加法器。实现加法器的顺序是：半加器-&amp;gt;全加器-&amp;gt;16位加法器 芯片列表 第一步：实现一个半加器，半加器负责计算两个一位二进制相加，输出sum和carry（进位）。 半加器 虽然半加器看上去跳出了布尔运算，升级到的小学数学，但其仍然可以用真值表表示，所以也就可以用基本逻辑门实现，我们用一个Xor和And就可以实现半加器。 半加器电路图 /** * 半加器 * Computes the sum of two bits. */ CHIP HalfAdder { IN a, b; // 1-bit inputs OUT sum, // Right bit of a + b carry; // Left bit of a + b PARTS: Xor(a=a, b=b, out=sum); And(a=a, b=b, out=carry); } 半加器只能计算两个一位二进制数相加，接着我们在输入端再加入一个进位管脚（代表低位做加法时进过来的进位），就成为了一个全加器。 全加器 全加器电路图 /** * 全加器 * Computes the sum of three bits. */ CHIP FullAdder { IN a, b, c; // 1-bit inputs OUT sum, // Right bit of a + b + c carry; // Left bit of a + b + c PARTS: HalfAdder(a=a, b=b, carry=carryA, sum=sumA); HalfAdder(a=sumA, b=c, carry=carryB, sum=sum); Or(a=carryA, b=carryB, out=carry); } 最后我们利用全加器实现16位加法器，有了16位加法器，我们就可以进行2个不大于2^16的整数的加法了。 16位加法器 /** * 16位加法器 * Adds two 16-bit values. * The most significant carry bit is ignored. */ CHIP Add16 { IN a[16], b[16]; OUT out[16]; PARTS: FullAdder(a=a[0], b=b[0], c=false, sum=out[0], carry=ca0); FullAdder(a=a[1], b=b[1], c=ca0, sum=out[1], carry=ca1); FullAdder(a=a[2], b=b[2], c=ca1, sum=out[2], carry=ca2); FullAdder(a=a[3], b=b[3], c=ca2, sum=out[3], carry=ca3); FullAdder(a=a[4], b=b[4], c=ca3, sum=out[4], carry=ca4); FullAdder(a=a[5], b=b[5], c=ca4, sum=out[5], carry=ca5); FullAdder(a=a[6], b=b[6], c=ca5, sum=out[6], carry=ca6); FullAdder(a=a[7], b=b[7], c=ca6, sum=out[7], carry=ca7); FullAdder(a=a[8], b=b[8], c=ca7, sum=out[8], carry=ca8); FullAdder(a=a[9], b=b[9], c=ca8, sum=out[9], carry=ca9); FullAdder(a=a[10], b=b[10], c=ca9, sum=out[10], carry=ca10); FullAdder(a=a[11], b=b[11], c=ca10, sum=out[11], carry=ca11); FullAdder(a=a[12], b=b[12], c=ca11, sum=out[12], carry=ca12); FullAdder(a=a[13], b=b[13], c=ca12, sum=out[13], carry=ca13); FullAdder(a=a[14], b=b[14], c=ca13, sum=out[14], carry=ca14); FullAdder(a=a[15], b=b[15], c=ca14, sum=out[15], carry=ignorCa); } 有了加法器，我们再实现一个累加器，它对输入数据进行加1，然后输出。累加器是后面CPU中程序计数器的重要部分。 /** * 累加器 * 16-bit incrementer: * out = in + 1 (arithmetic addition) */ CHIP Inc16 { IN in[16]; OUT out[16]; PARTS: Add16(a=in, b[0]=true, b[1]=false, b[2]=false, b[3]=false, b[4]=false, b[5]=false, b[6]=false, b[7]=false, b[8]=false, b[9]=false, b[10]=false, b[11]=false, b[12]=false, b[13]=false, b[14]=false, b[15]=false, out=out); } 多通道逻辑门 我们看到基本逻辑门负责计算布尔运算，但其只能根据输入计算出输出，缺少控制能力。下面我们介绍的多通道逻辑门则在逻辑控制方面扮演了重要角色，因为多通道逻辑门具有选择功能。多通道逻辑门在CPU和RAM中起到了重要作用。多通道逻辑门分为以下两种： Multiplexor: 有多路输入，一路输出，选择输入中的一路作为输出 DMultiplexor: 有一路输入，多路输出，在输出路中选择一路降输入值输出 芯片列表 Multiplexor &amp;lt;img src=&quot;https://tva1.sinaimg.cn/large/006tNbRwly1ga1y9h0fixj30me08mjrd.jpg&quot; width=&quot;600&amp;gt; DMultiplexor 这里我们实现一个2路1位的Mux。a，b是两路1位信号输入，sel是选择位。如果sel == 0，out管脚输出a的值，否则输出b的值。 2路1位Mux电路图 /** * 2路1位Mux * Multiplexor: * out = a if sel == 0 * b otherwise */ CHIP Mux { IN a, b, sel; OUT out; PARTS: Not(in= sel, out=NotSel); And(a=a, b=NotSel, out=AndAOut); And(a=b, b=sel, out=AndBOut); Or(a=AndAOut, b=AndBOut, out=out); } 当然除了2路选择器，还有4路、8路、16路等多路选择器。 多路Mux 下面是4路16位选择器的一种实现方式 /** * 4-way 16-bit multiplexor: * out = a if sel == 00 * b if sel == 01 * c if sel == 10 * d if sel == 11 */ CHIP Mux4Way16 { IN a[16], b[16], c[16], d[16], sel[2]; OUT out[16]; PARTS: Mux16(a=a, b=b, sel=sel[0], out=outA); Mux16(a=c, b=d, sel=sel[0], out=outB); Mux16(a=outA, b=outB, sel=sel[1], out=out); } ALU 有了多通道逻辑门，我们就可以进一步实现一个更为复杂的芯片：ALU。ALU是CPU的三大基本模块之一（ALU、寄存器、程序计数器）。基本逻辑门只能计算一种布尔逻辑，而ALU可以通过改变控制位输入变量的组合（zx,nz,zy,ny,f,no），可以控制实现多种计算逻辑。这类似于一个CPU可以执行指令集中的众多指令一样（当然这其中就依赖于ALU）。 芯片列表 ALU ALU真值表 下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。 /** * The ALU (Arithmetic Logic Unit). * Computes one of the following functions: * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y, * x+1, y+1, x-1, y-1, x&amp;amp;y, x|y on two 16-bit inputs, * according to 6 input bits denoted zx,nx,zy,ny,f,no. * In addition, the ALU computes two 1-bit outputs: * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0; * if the ALU output &amp;lt; 0, ng is set to 1; otherwise ng is set to 0. */ // Implementation: the ALU logic manipulates the x and y inputs // and operates on the resulting values, as follows: // if (zx == 1) set x = 0 // 16-bit constant // if (nx == 1) set x = !x // bitwise not // if (zy == 1) set y = 0 // 16-bit constant // if (ny == 1) set y = !y // bitwise not // if (f == 1) set out = x + y // integer 2's complement addition // if (f == 0) set out = x &amp;amp; y // bitwise and // if (no == 1) set out = !out // bitwise not // if (out == 0) set zr = 1 // if (out &amp;lt; 0) set ng = 1 CHIP ALU { IN x[16], y[16], // 16-bit inputs zx, // zero the x input? nx, // negate the x input? zy, // zero the y input? ny, // negate the y input? f, // compute out = x + y (if 1) or x &amp;amp; y (if 0) no; // negate the out output? OUT out[16], // 16-bit output zr, // 1 if (out == 0), 0 otherwise ng; // 1 if (out &amp;lt; 0), 0 otherwise PARTS: Mux16(a=x, b=false, sel=zx, out=zSelX); Not16(in=zSelX, out=notZSelx); Mux16(a=zSelX, b=notZSelx, sel=nx, out=outX); Mux16(a=y, b=false, sel=zy, out=zSelY); Not16(in=zSelY, out=notZSelY); Mux16(a=zSelY, b=notZSelY, sel=ny, out=outY); Add16(a=outX, b=outY, out=outAdd); // X+Y And16(a=outX, b=outY, out=outAnd); // X&amp;amp;Y Mux16(a=outAnd, b=outAdd, sel=f, out=outF); Not16(in=outF, out=notF); Mux16(a=outF, b=notF, sel=no, out=out, out[0..7]=outZrA, out[8..15]=outZrB, out[15]=outMSB); Or8Way(in=outZrA, out=zrL); Or8Way(in=outZrB, out=zrH); Or(a=zrL, b=zrH, out=notZr); Not(in=notZr, out=zr); And(a=true, b=outMSB, out=ng); } 补码 最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：任何两个用补码表示的有符号数的加法和正数的加法完全相同，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。</summary></entry></feed>
+&lt;p&gt;至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。&lt;/p&gt;</content><author><name>Your Name</name></author><category term="计算机基础" /><category term="从0到1构建计算机" /><summary type="html">上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。 反馈电路、时钟系统、D触发器 组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导致我们无法两次踏入同一条河流。要解决这个问题也很简单，我们引一条导线让数据回流，形成一个环路即可（即形成反馈）。下图就是用OR门加上一路环路构成的一位存储器，但他的缺点是只能记忆一次1的输入，后续无论输入如何改变，输出总是为1。如果想要实现功能更强大的记忆芯片就需要更复杂的电路设计，但仍然是基于门的输出再重新作为输入的原理。 提到”记忆”就不能不涉及到”时间”，计算机中的时间是基于震荡时钟系统的，震荡时钟提供连续的交变信号（高低电平）从而形成离散的时间周期。时钟周期是计算机系统中各元器件能整齐划一，协调同步的工作的基础。当一个时钟周期到来时，计算机的各个元器件必须抓紧在本次周期内完成自己的任务，然后停下来安静等待下一个周期的来临（这也是为什么时钟频率通常被当做衡量计算机性能的重要指标，因为频率越高，单位时间内计算机完成的工作步骤就越多）。例如只有当时钟上升沿到来时，各时序芯片才会瞬间改变状态，其余时间保持状态锁定。如果把CPU、内存、输入输出设备比作乐团中各个乐器的乐手，那么时钟系统就是计算机乐团的乐队指挥。 在搭建hack的时候，我们一共用到了两个基本芯片（即不用自己实现的芯片），一个是上一篇用于搭建组合逻辑芯片系统的Nand，另外一个就是本片用于搭建时序逻辑芯片的DFF（data Flip-Flop：D触发器）。DFF的结构由R-S锁存器派生而来。（DFF的实现相对复杂，如果对锁存器和DFF感兴趣，可以参考《编码的奥秘》Charles Petzold）。 边沿触发的D型触发器 DFF包含1bit的输入和1bit的输出，另外DFF有一个时钟输入（图中的小三角代表时钟输入），DFF根据数据输入位和时钟输入位的输入实现了out(t)=in(t-1)，即DFF简单的将前一个时间周期的输入值作为当前时间周期的输出值。这是DFF具备记忆功能的表现，也是我们后续实现16bit寄存器，16K、64K、256K等RAM的基础。 1位寄存器和16位寄存器 有了DFF的记忆功能，我们接下来先实现最简单1bit寄存器和16bit寄存器。1bit寄存器的接口包括：in输入管脚，负责传输输入数据；load管脚，load管脚是控制位，只有当load为1的时候，才会存储in的输入数据；out管脚输出当前存储的值。接口如下所示： 1bit芯片很好实现，主要是实现load位的控制功能即可，根据芯片描述可以把芯片设计为：load为1时选择输入in的数据，load为0时选择输入上一次寄存器保存的数据。这种选择功能正好是上一篇我们实现的Multiplexor芯片（后面在实现RAM的时候，Multiplexor在地址选择中的作用体现得更加明显）。1bit寄存器内部实现如下： 然后我们用硬件描述语言（HDL）实现： /** * 1-bit register: * If load[t] == 1 then out[t+1] = in[t] * else out does not change (out[t+1] = out[t]) */ CHIP Bit { IN in, load; OUT out; PARTS: Mux(a=outBack, b=in, sel=load, out=dffIn); DFF(in=dffIn, out=out, out=outBack); } 有1bit寄存器，16bit寄存器可以看做是16个1bit寄存器的组合： HDL实现：16bit寄存器 /** * 16-bit register: * If load[t] == 1 then out[t+1] = in[t] * else out does not change */ CHIP Register { IN in[16], load; OUT out[16]; PARTS: Mux(a=outBack0, b=in[0], sel=load, out=dffIn0); DFF(in=dffIn0, out=out[0], out=outBack0); Mux(a=outBack1, b=in[1], sel=load, out=dffIn1); DFF(in=dffIn1, out=out[1], out=outBack1); Mux(a=outBack2, b=in[2], sel=load, out=dffIn2); DFF(in=dffIn2, out=out[2], out=outBack2); Mux(a=outBack3, b=in[3], sel=load, out=dffIn3); DFF(in=dffIn3, out=out[3], out=outBack3); Mux(a=outBack4, b=in[4], sel=load, out=dffIn4); DFF(in=dffIn4, out=out[4], out=outBack4); Mux(a=outBack5, b=in[5], sel=load, out=dffIn5); DFF(in=dffIn5, out=out[5], out=outBack5); // ...6到15 } RAM 接着我们来实现计算机中另一个非常重要的组成部分：RAM。刚才看到，16bit寄存器可以由16个1bit的寄存器组合而成，同理一个mKB的RAM，可以由n个16位寄存器组合而成，16位寄存器就是RAM中的基本存储单元，寄存器的宽度（此处是16位）就是RAM”字”（WORD）的宽度。我们都知道，需要通过地址来访问RAM，RAM中每个寄存器都绑定到一个唯一地址。下图是RAM的接口设计，RAM有三种输入：数据输入，地址输入和加载位。地址指定了当前周期RAM中哪一个寄存器被访问，当进行读操作时（load=0），RAM立即输出被选中的寄存器的值，当进行写操作时（load=1），被选中的寄存器被赋予新的值，从下个周期开始RAM将开始发出新的值。输入和输出的数据宽度就是RAM”字”的宽度。 接下来我们要实现RAM8，RAM64，RAM512，RAM4K，RAM16K几种内存容量的RAM。RAMn中的n即代表RAM中有n个寄存器。例如RAM16K中有16K个16位寄存器，那么他的内存容量就是16K*(16/2)byte=32Kbyte。想要实现一个RAMn芯片，我们需要在RAMn芯片中集成n个寄存器，外加一些列控制逻辑（处理load）和地址选择逻辑，那么涉及到选择逻辑自然少不了Multiplexor和DMultiplexor。那么下面我们以RAM8为例讲一下我自己的实现方式： RAM8中有8个寄存器 8个寄存器有8个地址，所以我们的地址位需要2^n=8, n=3位 DMux用于解析写入时的地址，用3位sel分离出需要写入的那一路，再和load做与操作后作为寄存器的load位输入，最终通过load位来决定哪一个寄存器被写入In。 Mux用于解析读取时的地址，用3位sel在8个寄存器中选择想要读取的那一路数据 HDL实现：RAM8 /** * Memory of 8 registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM8 { IN in[16], load, address[3]; OUT out[16]; PARTS: DMux8Way(in=true, sel=address, a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); Register(in=in, load=load0, out=R0); Register(in=in, load=load1, out=R1); Register(in=in, load=load2, out=R2); Register(in=in, load=load3, out=R3); Register(in=in, load=load4, out=R4); Register(in=in, load=load5, out=R5); Register(in=in, load=load6, out=R6); Register(in=in, load=load7, out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel=address, out=out); } 有了RAM8，我们就可以利用8个RAM8的组合实现RAM64，以此类推实现后面容量更大的RAM。 实现RAM64的技巧是对地址位的拆分，RAM64需要6个地址位，把6个地址为拆分为3+3 和实现RAM8的时候类似，需要引入一组Mux和DMux，这组选择芯片使用6位地址中的高三位，通过高3位把地址初步划分为8个地址段，每个地址段的容量即RAM8中寄存器的数量 每个RAM8使用6位地址中的低三位，然后从中定位到目标地址寄存器 HDL实现：RAM64 /** * Memory of 64 registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM64 { IN in[16], load, address[6]; OUT out[16]; PARTS: DMux8Way(in=true, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); RAM8(in=in, load=load0, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R0); RAM8(in=in, load=load1, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R1); RAM8(in=in, load=load2, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R2); RAM8(in=in, load=load3, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R3); RAM8(in=in, load=load4, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R4); RAM8(in=in, load=load5, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R5); RAM8(in=in, load=load6, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R6); RAM8(in=in, load=load7, address[0]=address[0], address[1]=address[1], address[2]=address[2], out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0]=address[3], sel[1]=address[4], sel[2]=address[5], out=out); } HDL实现：RAM4K /** * Memory of 4K registers, each 16 bit-wide. Out holds the value * stored at the memory location specified by address. If load==1, then * the in value is loaded into the memory location specified by address * (the loaded value will be emitted to out from the next time step onward). */ CHIP RAM4K { IN in[16], load, address[12]; OUT out[16]; PARTS: DMux8Way(in=true, sel[0..2]=address[9..11], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h); And(a=a, b=load, out=load0); And(a=b, b=load, out=load1); And(a=c, b=load, out=load2); And(a=d, b=load, out=load3); And(a=e, b=load, out=load4); And(a=f, b=load, out=load5); And(a=g, b=load, out=load6); And(a=h, b=load, out=load7); RAM512(in=in, load=load0, address[0..8]=address[0..8], out=R0); RAM512(in=in, load=load1, address[0..8]=address[0..8], out=R1); RAM512(in=in, load=load2, address[0..8]=address[0..8], out=R2); RAM512(in=in, load=load3, address[0..8]=address[0..8], out=R3); RAM512(in=in, load=load4, address[0..8]=address[0..8], out=R4); RAM512(in=in, load=load5, address[0..8]=address[0..8], out=R5); RAM512(in=in, load=load6, address[0..8]=address[0..8], out=R6); RAM512(in=in, load=load7, address[0..8]=address[0..8], out=R7); Mux8Way16(a=R0, b=R1, c=R2, d=R3, e=R4, f=R5, g=R6, h=R7, sel[0..2]=address[9..11], out=out); } 至此，我们了解了RAM中内存访问的方式。在RAM中的存储单元可以通过解析地址信号来进行随机的访问，而不会受限于存储单元的位置，访问任何位置的存储单元的速度都是相等的，例如访问内存中一个数组中任意下标的数据的速度都是相等的。这也是Random Access Memory概念的由来。 计数器 计数器也是CPU中一个重要的原件，主要用来存储将要执行指令的内存地址。在大多数情况下，计数器每个周期简单的进行+1操作，这时计算机能够获取下一条地址，这和CPU顺序执行指令的模式相符，同时CPU也支持直接跳转到编号为n的指令去执行，因此计数器要支持将其值设置为n的能力。下面我们来看一下计数器的接口设计：计数器芯片有2个附加控制位reset和inc，当inc=1时，计数器在每个时钟周期自加1，其输出值为out(t)=out(t-1)+1；如果想要将计数器置为0，就将reset置为1。如果想要将计数器设置为某个值，则将load置为1，并将数值从in输入。 下图是我对计数器的实现逻辑 reset，inc，load用一个Or8way输出，只要其中有一个为1，那么register的load为就为1，register的值会被更新 3个Mux串联用于选择自增1、in的输入值、重置0这三种操作 HDL实现：计数器 /** * A 16-bit counter with load and reset control bits. * if (reset[t] == 1) out[t+1] = 0 * else if (load[t] == 1) out[t+1] = in[t] * else if (inc[t] == 1) out[t+1] = out[t] + 1 (integer addition) * else out[t+1] = out[t] */ CHIP PC { IN in[16],load,inc,reset; OUT out[16]; PARTS: Or8Way(in[0]=inc, in[1]=reset, in[2]=load, in[3..7]=false, out=ReLoad); Mux16(a=outBack, b=outPlus, sel=inc, out=loadIN); Mux16(a=loadIN, b=in, sel=load, out=resetIN); Mux16(a=resetIN, b=false, sel=reset, out=ReIn); Register(in=ReIn, load=ReLoad, out=out, out=outBack); Inc16(in=outBack, out=outPlus); } 我们以下图为例，看一下计数器是如何在时钟系统下变化数值的。 总结 至此，我们实现了hack CPU所需的所有芯片。组合逻辑芯片主要负责算数运算、逻辑运算、选择逻辑，并且通过适当的组合可以用来实现指令解析和某些功能控制；时序芯片主要负责存储数据。下一篇我们会用这些芯片搭建一个简单但实用的CPU。</summary></entry></feed>

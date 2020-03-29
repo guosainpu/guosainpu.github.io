@@ -336,6 +336,33 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97.html"><h2 itemprop="headline" class="item__header">C语言拾遗</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">short, long
+
+short int x;
+long int y;
+
+
+short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。
+
+short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位。
+
+extern
+
+引用全局变量（外部变量）时需要先使用 extern 关键字来声明对变量的引用，格式：extern dataType dateName; 如果全局变量的声明和引用都在同一个源文件中，那么可以省略使用 extern。
+
+const
+
+任何变量的声明都可以用const修饰，该修饰符表示所修饰...</div><p><a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=C%E8%AF%AD%E8%A8%80">C语言</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 29, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-03-29T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,C语言"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(12/12)--收获和总结</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。
 
@@ -456,36 +483,8 @@ class Main {
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 19, 2020</span>
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-19T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。
-
-计算机架构
-
-hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是将中央处理单元和存储器，通过存储器中存储的程序指令控制中央处理器的执行，即存储程序计算机。它主要有以下几个特点：
-
-  以运算单元为中心
-  采用存储程序原理
-  存储器是按地址访问、线性编址的空间
-  控制流由指令流产生
-  指令由操作码和地址码组成
-  数据以二进制编码
-
-
-
-
-指令集（机器语言）
-我们可以从两个角度来理解CPU，一个是从机器语言的角度，一个是从物...</div><p><a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 01, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-01T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>14 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>15 post articles, 2 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
             <i class="fas fa-angle-left"></i>
