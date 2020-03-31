@@ -346,8 +346,8 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="short-long">short, long</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>short int x;
-long int y;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">short</span> <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+<span class="kt">long</span> <span class="kt">int</span> <span class="n">y</span><span class="p">;</span>
 </code></pre></div></div>
 
 <p>short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。</p>
@@ -362,10 +362,10 @@ long int y;
 
 <p>任何变量的声明都可以用const修饰，该修饰符表示所修饰的变量的值不能够被修改，如果const修饰的是数组，那么所有数组元素的值都不能被修改。const也可以用来修饰作为函数参数的数组，表明函数不能对入参数组的元素的值进行修改。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>const double e = 2.718281;
-const char msg[] = "warning:"
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">double</span> <span class="n">e</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span><span class="mi">718281</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">"warning:"</span>
 
-int strlen(const char[]);
+<span class="kt">int</span> <span class="nf">strlen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="p">[]);</span>
 </code></pre></div></div>
 
 <h3 id="static">static</h3>
@@ -377,6 +377,55 @@ int strlen(const char[]);
 <h3 id="register">register</h3>
 
 <p>用register修饰变量，所要表达的是意思：想要编译器把变量存放在寄存器中，这样可以让函数占用的内存更小，运行的速度更快。不同的硬件环境对register变量的支持不一样，而且编译器可以也忽略register修饰。</p>
+
+<h3 id="指针和数组">指针和数组</h3>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gdbwcu9wcfj312g0au0ty.jpg" width="500" /></center>
+
+<ul>
+  <li>代码中使用数组名a，即代表数组a的首地址。pa = a 等价于 pa = &amp;a[0]</li>
+  <li>无论数组a中的元素类型和数组长度是什么，对指针加1就意味着，pa+1指向pa所指向的对象的下一个对象（是对象个数的偏移量，而不是物理地址的偏移量）。</li>
+  <li>对数组元素a[i]的引用，也等价于*(a+i)的指针形式。</li>
+</ul>
+
+<h3 id="void-">void *</h3>
+
+<p>任何指针都可以转换为void *类型的指针，并且将它转换为原来的类型时不会丢失信息。</p>
+
+<h3 id="一些复杂的带指针的声明">一些复杂的带指针的声明</h3>
+
+<p>C语言的语法力图使声明和使用相一致，对于简单情况，这种做法是很有效的，但是对于情况比较复杂的情况，则容易让人混淆。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">;</span>       <span class="c1">// argc是指向char的指针的指针</span>
+
+<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">daytab</span><span class="p">)[</span><span class="mi">13</span><span class="p">];</span> <span class="c1">// daytab是指向数组（int[13]）的指针</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">daytab</span><span class="p">[</span><span class="mi">13</span><span class="p">];</span>   <span class="c1">// daytab是一个数组（int *[13]），数组存储指向int的指针</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">comp</span><span class="p">();</span>      <span class="c1">// com是一个函数，返回一个void *类型的指针</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">comp</span><span class="p">)();</span>    <span class="c1">// com是一个指向函数的指针，该函数返回void类型的对象</span>
+</code></pre></div></div>
+
+<p>上面的几个声明还算好理解，下面这两个就更复杂了。如果想要分析复杂的指针声明，需要用递归下降的算法思想(从反方向)，在这些声明中，越靠近name的修饰符优先级越高，越能表达name的本质属性，越靠近外围的修饰符优先级越低，是对name的补充修饰。这里给出分析下面声明的递归定义：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dcl：         前面带有可选的*的direct-dcl
+direct-dcl：  name
+              (dcl)
+              direct-dcl()
+              direct-dcl[可选长度]
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">())[])();</span>    <span class="c1">// x是一个函数，这个函数返回一个指向数组的指针；数组中的元素是一个指针，这个指针指向一个函数，这个函数返回一个char对象</span>
+<span class="kt">char</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">])())[</span><span class="mi">5</span><span class="p">];</span>  <span class="c1">// x是一个数组[3]；数组中的元素指向一个函数，该函数返回一个指针；该指针一个数组[5]，数组中的元素是char</span>
+</code></pre></div></div>
+
+<p>我们以 char (* (* x())[] )(); 来解析一下：</p>
+<ol>
+  <li>x() 声明 x 是一个函数，*x() 的 * 修饰了函数 x 返回了一个指针，但指向何处需要外层继续修饰</li>
+  <li>(*x())[]，声明了上面返回的指针指向的是一个数组，数组里面存的什么值需要外层继续修饰</li>
+  <li>*(*x())[]，声明了上面的数组中存的是一个指针，指向何处需要外层继续修饰</li>
+  <li>(*(*x())[])()，声明了上面指针指向的是一个函数，函数的返回值需要外层继续修饰</li>
+  <li>char (*(*x())[])()，声明了上面的函数的返回值是一个char对象</li>
+</ol>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-03-29T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html">从0到1构建计算机(12/12)--收获和总结</a></div></div></div>
