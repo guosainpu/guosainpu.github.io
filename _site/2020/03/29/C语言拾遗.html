@@ -552,6 +552,17 @@ direct-dcl：  name
 <span class="p">}</span> 
 
 </code></pre></div></div>
+
+<h3 id="内存对齐">内存对齐</h3>
+
+<p>为什么要进行内存对齐呢？</p>
+<ol>
+  <li>平台原因(移植原因)：不是所有的硬件平台都能访问任意地址上的任意数据的；某些硬件平台只能在某些地址处取某些特定类型的数据，否则抛出硬件异常。</li>
+  <li>性能原因：数据结构(尤其是栈)应该尽可能地在自然边界上对齐。原因在于，为了访问未对齐的内存，处理器需要作两次内存访问；而对齐的内存访问仅需要一次访问。</li>
+</ol>
+
+<p>参考资料：
+<a href="https://www.cnblogs.com/TenosDoIt/p/3590491.html">C++ 内存对齐</a>，<a href="https://www.cnblogs.com/TenosDoIt/p/3590491.html">失传的C结构体打包技艺</a></p>
 </div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-03-29T00:00:00+08:00"><!-- start custom article footer snippet -->
 
 <!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html">从0到1构建计算机(12/12)--收获和总结</a></div></div></div>
