@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>About - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>静态链接分析 - 一只草履虫</title>
 
-<meta name="description" content="Your Site Description
-">
-<link rel="canonical" href="http://localhost:4000/about%E7%9A%84%E5%89%AF%E6%9C%AC.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="注：本篇内容基本参考自：Mach-O 与静态链接。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。材料准备首先手写一个简单的C程序：a.c，b.c/* a.c */#include &lt;stdio.h&gt;extern int globalA;extern int globalB;void sw...">
+<link rel="canonical" href="http://localhost:4000/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -253,7 +252,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -331,101 +330,225 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>About</h1></header></div><meta itemprop="headline" content="About"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>静态链接分析</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="静态链接分析"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80">汇编语言</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 22, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-06-22T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,汇编语言"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, World!</span><span class="dl">'</span><span class="p">);</span>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><p><strong>注：本篇内容基本参考自：</strong><a href="https://zhangbuhuai.com/post/macho-static-link.html#symbol-table">Mach-O 与静态链接</a>。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。</p>
+
+<h3 id="材料准备">材料准备</h3>
+
+<p>首先手写一个简单的C程序：a.c，b.c</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* a.c */</span>
+<span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">globalA</span><span class="p">;</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">globalB</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">swap</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">b</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">printResult</span><span class="p">();</span>
+<span class="kt">void</span> <span class="nf">printsomething</span><span class="p">();</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">globalA</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="n">globalB</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+    <span class="n">swap</span><span class="p">(</span><span class="o">&amp;</span><span class="n">globalA</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">globalB</span><span class="p">);</span>
+
+    <span class="n">printsomething</span><span class="p">();</span>
+    <span class="n">printResult</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">printsomething</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"print something here:</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="features">Features</h2>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* b.c */</span>
+<span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">int</span> <span class="n">globalA</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">globalB</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
 
-<ul>
-  <li>Responsive</li>
-  <li>Semantic HTML</li>
-  <li>Skins</li>
-  <li>Highlight Theme</li>
-  <li>Internationalization</li>
-  <li>Search</li>
-  <li>Table of contents</li>
-  <li>Authors</li>
-  <li>Additional styles (alert, tag, image, icon, button, grid, etc)</li>
-  <li>Extensions (audios, videos, slides, demos)</li>
-  <li>Markdown enhancements (<a href="https://www.mathjax.org/">MathJax</a>, <a href="https://mermaidjs.github.io/">mermaid</a>, <a href="http://www.chartjs.org/">chartjs</a>)</li>
-  <li>Sharing (<a href="https://www.addtoany.com/">AddToAny</a>, <a href="https://www.addthis.com/">AddThis</a>)</li>
-  <li>Comments (<a href="https://disqus.com/">Disqus</a>, <a href="https://gitalk.github.io/">Gitalk</a>, <a href="https://valine.js.org/en/">Valine</a>)</li>
-  <li>Pageview (<a href="https://leancloud.cn/">LeanCloud</a>)</li>
-  <li>Analytics (<a href="https://analytics.google.com/analytics/web/">Google Analytics</a>)</li>
-  <li>RSS (<a href="https://github.com/jekyll/jekyll-feed">jekyll-feed</a>)</li>
-</ul>
+<span class="kt">void</span> <span class="nf">swap</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">temp</span> <span class="o">=</span> <span class="o">*</span><span class="n">a</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="o">*</span><span class="n">b</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span>
 
-<h2 id="skins">Skins</h2>
+<span class="kt">void</span> <span class="nf">printResult</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"globalA = %d, globalB = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">globalA</span><span class="p">,</span> <span class="n">globalB</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>TeXt has 6 built-in skins, you can also set up your own skin.</p>
+<p>然后分别编译a.c和b.c，生成a.o和b.o，然后把a.o和b.o进行静态链接生成ab.out。可以看到a.o和b.o是Mach-O 64-bit object类型的文件，即目标文件，虽然也是mach-O格式的，但还不能被加载执行。ab.out则是Mach-O 64-bit executable，是可以用来被执行的。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">default</code></th>
-      <th><code class="highlighter-rouge">dark</code></th>
-      <th><code class="highlighter-rouge">forest</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_default.jpg" alt="Default" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_dark.jpg" alt="Dark" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_forest.jpg" alt="Forest" /></td>
-    </tr>
-  </tbody>
-</table>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>➜  静态链接 git:(master) ✗ file a.o
+a.o: Mach-O 64-bit object x86_64
+➜  静态链接 git:(master) ✗ file ab.out
+ab.out: Mach-O 64-bit executable x86_64
+</code></pre></div></div>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">ocean</code></th>
-      <th><code class="highlighter-rouge">chocolate</code></th>
-      <th><code class="highlighter-rouge">orange</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_ocean.jpg" alt="Ocean" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_chocolate.jpg" alt="Chocolate" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_orange.jpg" alt="Orange" /></td>
-    </tr>
-  </tbody>
-</table>
+<h3 id="查看mach-o">查看Mach-O</h3>
 
-<h3 id="highlight-theme">Highlight Theme</h3>
+<p>我们使用工具来分析Mach-O文件：<a href="https://github.com/gdbinit/MachOView">MachOView</a>。</p>
 
-<p>TeXt use <a href="https://github.com/chriskempson/tomorrow-theme">Tomorrow</a> as the highlight theme.</p>
+<p>因为三个文件都是Mach-O格式的文件，所以内容格式差不多，都有自己的TEXt段，DATA段等。</p>
+<ol>
+  <li>a.o中TEXT段的内容就是main和printsomething两个函数的二进制指令</li>
+  <li>b.o中TEXT段的内容则是swap和printResult两个函数的二进制指令，DATA段则存储了globalA和globalB两个全局变量</li>
+  <li>ab.out就是把a.o和b.o做了一个合并和重新整理，包含了所有函数和变量的信息。</li>
+</ol>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">tomorrow</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-eighties</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-blue</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-bright</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow.png" alt="Tomorrow" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night.png" alt="Tomorrow Night" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-eighties.png" alt="Tomorrow Night Eighties" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-blue.png" alt="Tomorrow Night Blue" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-bright.png" alt="Tomorrow Night Bright" /></td>
-    </tr>
-  </tbody>
-</table>
-</div><div class="d-print-none"><footer class="article__footer"><!-- start custom article footer snippet -->
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2asb69y9j31fn0u049h.jpg" width="1000" /></center>
 
-<!-- end custom article footer snippet --></footer></div>
+<h3 id="静态链接">静态链接</h3>
+
+<p>静态链接是一个比较简单的概念，工作内容就是把若干个目标文件合并，并重新整理成一个新的目标文件（此时也是可执行文件了）的过程。本质上仍然应属于编译的过程。</p>
+
+<h4 id="为什么需要静态链接">为什么需要静态链接</h4>
+
+<p>静态链接应该是编程复杂化、工程化的产物，如果一个程序很简单，只有一个main函数，那么自然不需要链接的过程，直接编译就可以了。</p>
+
+<p>随着程序复杂度的提高，源程序也被拆分成若干个源文件，但划分若干文件也并不代表一定需要静态链接。例如，如果我们修改了某个源文件，可以重新编译所有源文件，直接生成一个可执行文件也是可行的。不过仅为了1个文件的修改，要重新编译另外9999个没有改变的文件显然是没有必要的。</p>
+
+<p>所以我们拆分了生成可执行文件的步骤：先编译单个文件，然后再把它们链接起来。这样当我们修改了某个文件后，只需重新编译该文件，然后再执行一遍链接过程即可。所以静态链接对软件开发的复杂化、工程化、工作效率等都有起到了很大的作用。</p>
+
+<h3 id="分析程序">分析程序</h3>
+
+<p>我们再来分析下这个程序：</p>
+<ol>
+  <li>b.c中声明了两个全局变量和两个函数，并没有引用外部变量和函数（不考虑printf函数）</li>
+  <li>a.c中引用了b.c中声明的两个变量和函数</li>
+</ol>
+
+<p>然后看下a.o中main函数的二进制指令：</p>
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2ct19dw6j31280leac5.jpg" width="800" /></center>
+
+<h4 id="globala-和-globalb">globalA 和 globalB</h4>
+
+<p>我们看到两条指令：488B0500000000 和 488B0D00000000，意思是分别把globalA的地址放入rax，把globalB的地址放入rcx。</p>
+<ol>
+  <li>488B0500000000指令拆解是：48 8B05 00000000，48代表movq，8B05代表rax，因为在a.o中我们还不知道globalA的地址，所以此时地址暂时为0：00000000</li>
+  <li>同理：488B0D00000000 指令拆解是：48 8B0D 00000000，48代表movq，8B0D代表rcx，因为在a.o中我们还不知道globalB的地址，所以此时地址暂时为0：00000000</li>
+</ol>
+
+<h4 id="swap-和-printresult">swap 和 printResult</h4>
+
+<p>看下swap和printResult的调用跳转指令：</p>
+<ol>
+  <li>E800000000：指令拆解是：E8 00000000，因为还不知道swap的地址，所以此时地址暂时为0：00000000</li>
+  <li>E800000000：指令拆解是：E8 00000000，因为还不知道printResult的地址，所以此时地址暂时为0：00000000</li>
+</ol>
+
+<h4 id="about">ab.out</h4>
+
+<p>a.o中引用外部符号的地方，因为暂时无法得知外部符号的地址，所以暂时都用0占位了。经过静态链接后，我们再看ab.out中的这些指令，占位0就已经被有意义的值替代了。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2crlhlglj31840le40q.jpg" width="800" /></center>
+
+<h3 id="重定向表">重定向表</h3>
+
+<p>我们可以看到在a.o中有三条指令都是E800000000，那Mach-O工具解析出来为什么能知道哪个是调用swap，哪个是调用printResult呢？这个通过后面分析重定向表（Relocations）得到的。<strong>重定向表是一个list结构，其中每个item都指示了什么位置的，多长bit的内容需要被重定向到哪个符号。</strong>在链接时，连接器就会依据重定向表的内容为需要重定向的地方进行重定向。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2gl52kx7j31930u042l.jpg" width="1000" /></center>
+
+<p>上图中，可以看到a.o中的globalA，globalB，swap，printResult等在b.o中的外部符号是需要被重定向的。并且即使是自己内部的printsomething和字符串常量”print something here:\n”也是需要被重定向的，因为这些符号的位置随着最后合并成ab.out也是要变化的，所有索性就到后面一起处理。</p>
+
+<h4 id="重定向表的结构">重定向表的结构</h4>
+
+<p>Relocation table 可以看作是一个 relocation entry 的数组，每个 relocation entry 占 8 个字节，对应结构体是relocation_info：</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">relocation_info</span> <span class="p">{</span>
+    <span class="kt">int32_t</span>   <span class="n">r_address</span><span class="p">;</span>      <span class="cm">/* offset in the section to what is being relocated */</span>
+    <span class="kt">uint32_t</span>  <span class="n">r_symbolnum</span><span class="o">:</span><span class="mi">24</span><span class="p">,</span> <span class="cm">/* symbol index if r_extern == 1 or section ordinal if r_extern == 0 */</span>
+              <span class="nl">r_pcrel:</span><span class="mi">1</span><span class="p">,</span>      <span class="cm">/* was relocated pc relative already */</span>
+              <span class="nl">r_length:</span><span class="mi">2</span><span class="p">,</span>     <span class="cm">/* 0=byte, 1=word, 2=long, 3=quad */</span>
+              <span class="nl">r_extern:</span><span class="mi">1</span><span class="p">,</span>     <span class="cm">/* does not include value of sym referenced */</span>
+              <span class="nl">r_type:</span><span class="mi">4</span><span class="p">;</span>       <span class="cm">/* if not 0, machine specific relocation type */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>我们以 globalB 为例，来分析一下这个结构体：</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2jorwt2jj31b006q0sx.jpg" width="1000" /></center>
+
+<ol>
+  <li>前4个字节是 r_address，这个字段代表需要被重定向的字段的起始地址（偏好地址），这里是0x12。</li>
+  <li>length 代表需要被重定向的字段的长度，和 r_address 配合使用就是确定哪些bit位需要被重定向。这里就是从TEXT段偏移0x12的地址开始的4个字节需要被重定向。（检查一下TEXT段，确实是 globalB 的位置）</li>
+</ol>
+
+<p>这样就已经确定了哪些bit需要被重定向了，那么下一步是确定应该被重定向到哪个符号。这个信息隐藏在后4个字节里，后四个字节是一个bit field。其中最重要的信息是 r_symbolnum</p>
+<ol>
+  <li>r_symbolnum 是共用体的后24位（前24还是后24和机器架构有关） ，代表了需要重定向到的符号在符号表中的index，有了这个index，就能知道需要被定向到哪个符号了。这里的值是3。</li>
+</ol>
+
+<p>然后我们再来看下符号表</p>
+
+<h3 id="符号表">符号表</h3>
+
+<p>符号表是程序编译过程中非常重要的数据，用于存储符号和符号相关的信息。符号表本质是一个键值对表，key是符号名，值是一些符号相关的信息</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2kdf9zmlj31xk0u042p.jpg" width="1000" /></center>
+
+<p>上面提到 globalB 的 r_symbolnum 的值是3，这里可以看到 index = 3 的符号正是 globalB。</p>
+
+<h4 id="符号表的结构">符号表的结构</h4>
+
+<p>此处一个符号表的 entry 占 16个字节。它的核心字段是 n_strx 和 n_value</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">nlist_64</span> <span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="kt">uint32_t</span> <span class="n">n_strx</span><span class="p">;</span>   <span class="cm">/* index into the string table */</span>
+    <span class="p">}</span> <span class="n">n_un</span><span class="p">;</span>
+    <span class="kt">uint8_t</span>  <span class="n">n_type</span><span class="p">;</span>       <span class="cm">/* type flag, see below */</span>
+    <span class="kt">uint8_t</span>  <span class="n">n_sect</span><span class="p">;</span>       <span class="cm">/* section number or NO_SECT */</span>
+    <span class="kt">uint16_t</span> <span class="n">n_desc</span><span class="p">;</span>       <span class="cm">/* see &lt;mach-o/stab.h&gt; */</span>
+    <span class="kt">uint64_t</span> <span class="n">n_value</span><span class="p">;</span>      <span class="cm">/* value of this symbol (or stab offset) */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<ol>
+  <li>前4个字节是 n_strx ，用于表示该符号的名称，它指示了该符号名称在 string table中的起始位置。这里globalB的值是0x32，正好是string table中 globalB 的起始位置。</li>
+  <li>后8个字节是 n_value，用于表示该符号的value，如果该符号是全局变量，那么value就是该变量在DATA段的地址，如果该符号是函数，那么该value就是该函数在TEXT段的入口地址。这里 value 是0，因为 a.o 中还没有和 globalB 相关的任何信息（此时 globalB 是外部符号）。</li>
+</ol>
+
+<p>我们再来验证一下 n_value。看下链接后ab.out符号表中的 globalB。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2l8b70dij322i0ag75r.jpg" width="1000" /></center>
+
+<p>此时，value的值变成了 000000010000101C，该值的含义是 globalB 的地址是 000000010000101C。我们在 DATA 段找到该地址，发现当前该地址存储的值是4，正好就是 globalB（它前面的变量存储的值是3，是 globalA。符合 int globalA = 3; int globalB = 4; 这两条初始化语句）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2l898wprj30wa0hmjsi.jpg" width="1000" /></center>
+
+<h3 id="静态链接器">静态链接器</h3>
+
+<p>有了以上信息后，剩下了的就是静态链接器的工作的，链接器负责分析以上信息，然后重新调整各变量和方法的位置，补全重定向的地址，合并生成最终的可执行文件。</p>
+
+<h3 id="总结">总结</h3>
+
+<p>我们可以看到静态链接本身并不算复杂，它的核心逻辑就是【重定向表】和【符号表】，搞懂了这两个表中字段的含义，基本就搞懂了静态链接的方式了。</p>
+
+<ol>
+  <li>在编译单个源文件时，此时涉及到的全局变量、调用函数的地址、字符串常量的地址都先用0占位（无论是不是外部符号），因为此时无法确定这些地址的最终值（后面还要和其他目标文件合并）</li>
+  <li>重定向符号表指示了：目标文件中哪些 bit 是需要被重定向的（起始地址+长度），并且要把它重定向到哪个符号（用符号在符号表中的index来指明）</li>
+  <li>符号表：收集了所有符号，和每个符号所对应的内存地址（如果是变量就对应到DATA段该变量的地址，如果是函数就对应到TEXT段该函数的起始地址）</li>
+  <li>字符串表：收集了所有字符串（字符串之间用 00 分割）</li>
+</ol>
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-06-22T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B.html">x86_64汇编下的函数调用过程</a></div><div class="next"><span>NEXT</span><a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++.html">重修C++</a></div></div></div>
 
 </div>
 
@@ -985,6 +1108,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script><script type="text/x-mathjax-config">
 	var _config = { tex2jax: {
 		inlineMath: [['$','$'], ['\\(','\\)']]

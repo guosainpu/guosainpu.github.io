@@ -5,7 +5,7 @@
 
 <meta name="description" content="Your Site Description
 ">
-<link rel="canonical" href="/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -336,16 +336,140 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/05/01/%E9%87%8D%E5%AD%A6C++.html"><h2 itemprop="headline" class="item__header">重学C++</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">准备重学下C++</div><p><a href="/2020/05/01/%E9%87%8D%E5%AD%A6C++.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+          <header><a href="/2020/08/07/%E6%8E%A2%E7%A9%B6Runtime.html"><h2 itemprop="headline" class="item__header">探究OC Runtime</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">Runtime理解
+
+OC是基于C的，在C的基础上扩展出了面向对象的能力，支持其面向对象能力的核心就是OC的runtime机制。OC中我们编写的类，最终按照某种数据结构存储在可执行文件的__DATA段中，然后可执行文件被操作系统加载到进程空间，此时进程空间中就有了各个类和函数的信息。runtime是一个动态链接库，在程序执行过程中，我们通过runtime提供的各种能力，来访问、操作、读写各个类、方法、实例对象。
+
+总结来说：OC的面向对象能力 = 类和方法的数据结构（数据结构也由runtime定义）+ 算法（runtime提供的各种操作）。
+
+举例
+
+我们写一个简单的OC程序
+
+#import &lt;Foundation/Foundation.h&gt;
+
+@interface te...</div><p><a href="/2020/08/07/%E6%8E%A2%E7%A9%B6Runtime.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=OC">OC</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 07, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-08-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,OC"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++.html"><h2 itemprop="headline" class="item__header">重修C++</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">准备重学下C++</div><p><a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
             </li><li>
               <a class="button button--secondary button--pill button--sm"
                 href="/archive.html?tag=C%2B%2B">C++</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>May 01, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-05-01T00:00:00+08:00">
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 01, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-07-01T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,C++"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html"><h2 itemprop="headline" class="item__header">静态链接分析</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">注：本篇内容基本参考自：Mach-O 与静态链接。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。
+
+材料准备
+
+首先手写一个简单的C程序：a.c，b.c
+
+/* a.c */
+#include &lt;stdio.h&gt;
+
+extern int globalA;
+extern int globalB;
+
+void swap(int *a, int *b);
+void printResult();
+void printsomething();
+
+int main() {
+    globalA = 5;
+    globalB = 6;
+    swap(&amp;globalA, &amp;globalB);
+
+    printsomething();
+    pr...</div><p><a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80">汇编语言</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 22, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-06-22T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,汇编语言"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B.html"><h2 itemprop="headline" class="item__header">x86_64汇编下的函数调用过程</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">材料准备
+
+首先手写一个简单的C程序：main.c
+
+#include &lt;stdio.h&gt;
+
+void empty();
+int  add(int i, int j);
+void myPrint(int num);
+void testParams(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+
+int main()
+{
+	// 测试空函数
+	empty();
+
+	// 测试传2个参数的函数
+	int i = 3;
+	int j = 4;
+	int k = add(i, j);
+
+	// 测试传多个参数的函数
+	testParams(1, 2, 3, 4, 5, 6,...</div><p><a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80">汇编语言</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 10, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-06-10T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,汇编语言"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2.html"><h2 itemprop="headline" class="item__header">计算机发展史</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">发展阶段
+
+【计算】 –&gt; 【计算 + 存储】 –&gt; 【可编程化计算 + 存储】 –&gt; 【人工智能 + 存储】
+
+早期计算机
+
+简单的加减乘除算数运算工具，目的是利用工具辅助人工计算
+
+1、纯手动工具：结绳记事、算盘、计算尺
+
+
+算盘
+
+2、手动机械工具：
+
+  1623年，德国科学家施卡德建造出世界已知的第一部机械式计算器，成为计算机世代之父，这部机械改良自时钟的齿轮技术，能进行六位数的加减，并经由钟声输出答案，因此又称为“算数钟”。
+  1642年法国数学家帕斯卡为税务所苦的税务员父亲发明了滚轮式加法器，可透过转盘进行加法运算。
+  1673年德国数学家莱布尼茨使用阶梯式圆柱齿轮加以改良，制作出可以四则运算的步进计算器。
+
+
+
+帕斯卡的滚轮式加法器
+
+可编程思想
+...</div><p><a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%91%A8%E8%BE%B9">计算机周边</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 09, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-06-09T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,计算机周边"></div>
       </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97.html"><h2 itemprop="headline" class="item__header">C语言拾遗</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">short, long
@@ -413,74 +537,8 @@ const
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Mar 21, 2020</span>
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-03-21T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/29/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(10/12)--简单的操作系统</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置绘制上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简单一些。
-
-操作系统就是用来衔接计算机的硬件系统和软件系统的，以使得计算机对程序员和用户而言更容易使用。本篇的操作系统包含了一个最小规模的操作系统（其实就是一个Jack标准库的集合），主要包括：数学运算、字符串操作、内存管理、文本和图形输出到屏幕、键盘输入处理等功能，不包括：进程管理、磁盘管理、通信等功能。
-
-数学操作
-
-目前Hack在硬件上只支持加法和减法，因此我们需要在软...</div><p><a href="/2020/02/29/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 29, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-29T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(9/12)--实现编译器</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。
-
-高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则的语法（上下文无关语法）组织的，结构上层次化的语言。程序的每个类，每条语句都是符合某种语法规则的，所以我们反过来能够使用这些语法规则对其进行准确地解析，而我们日常使用的自然语言则不太受语法的严格的约束，所以用算法解释自然语言会更困难。
-
-词法分析
-
-程序基本上由语句组成，语句由单词和符号组成，每个单词或符号都有它要表达的含义：或是某种预算操作，或是某块内存的指针，或是指明当...</div><p><a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 25, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-25T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(8/12)--高级语言：Jack</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">本篇我们将设计一门高级语言：Jack。Jack是一门基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性（其实Jack非常寒酸，只是支持了“对象”的功能）。本篇的内容非常简单，主要是介绍Jack的语法。
-
-Hello, World
-
-众所周知，学习一门新语言的第一步，是写一个 Hello, World。
-
-class Main {
-    function void main() {  // Jack程序要包含一个Main类，且包含main方法，这是程序的入口函数。
-       do Output.printString("Hello, World");
-       do Output.println(); //换行
-       ret...</div><p><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 24, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-24T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(7/12)--实现一个虚拟机</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算...</div><p><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 21, 2020</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-21T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>16 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>20 post articles, 3 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><div class="button button--secondary button--circle disabled">
             <i class="fas fa-angle-left"></i>
@@ -488,6 +546,8 @@ class Main {
               <div class="button button--primary button--circle focus"><span>1</span></div>
             </li><li>
                 <a class="button button--secondary button--circle" href="/page2"><span>2</span></a>
+              </li><li>
+                <a class="button button--secondary button--circle" href="/page3"><span>3</span></a>
               </li><li><a class="button button--secondary button--circle" href="/page2">
             <i class="fas fa-angle-right"></i>
           </a></li></ul>

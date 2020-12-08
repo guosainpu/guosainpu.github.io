@@ -1,11 +1,10 @@
 <!DOCTYPE html><html lang="en">
   <head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>About - 一只草履虫</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>探究OC Runtime - 一只草履虫</title>
 
-<meta name="description" content="Your Site Description
-">
-<link rel="canonical" href="http://localhost:4000/about%E7%9A%84%E5%89%AF%E6%9C%AC.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<meta name="description" content="Runtime理解OC是基于C的，在C的基础上扩展出了面向对象的能力，支持其面向对象能力的核心就是OC的runtime机制。OC中我们编写的类，最终按照某种数据结构存储在可执行文件的__DATA段中，然后可执行文件被操作系统加载到进程空间，此时进程空间中就有了各个类和函数的信息。runtime是一个动态链接库，在...">
+<link rel="canonical" href="http://localhost:4000/2020/08/07/%E6%8E%A2%E7%A9%B6Runtime.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -253,7 +252,7 @@
 </script></head>
   <body>
     <div class="root" data-is-touch="false">
-      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport cell cell--auto">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
 
       <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
       <div class="header__title">
@@ -331,101 +330,80 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
   </header>
 </div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
 
-              <div class="col-aside d-print-none js-col-aside"></div>
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>About</h1></header></div><meta itemprop="headline" content="About"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>探究OC Runtime</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="探究OC Runtime"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=iOS">iOS</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=OC">OC</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Aug 07, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-08-07T00:00:00+08:00">
+    <meta itemprop="keywords" content="iOS,OC"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
 
-<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello, World!</span><span class="dl">'</span><span class="p">);</span>
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="runtime理解">Runtime理解</h3>
+
+<p>OC是基于C的，在C的基础上扩展出了面向对象的能力，支持其面向对象能力的核心就是OC的runtime机制。OC中我们编写的类，最终按照某种数据结构存储在可执行文件的__DATA段中，然后可执行文件被操作系统加载到进程空间，此时进程空间中就有了各个类和函数的信息。runtime是一个动态链接库，在程序执行过程中，我们通过runtime提供的各种能力，来访问、操作、读写各个类、方法、实例对象。</p>
+
+<p><strong>总结来说：OC的面向对象能力 = 类和方法的数据结构（数据结构也由runtime定义）+ 算法（runtime提供的各种操作）。</strong></p>
+
+<h4 id="举例">举例</h4>
+
+<p>我们写一个简单的OC程序</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#import &lt;Foundation/Foundation.h&gt;
+</span>
+<span class="err">@</span><span class="n">interface</span> <span class="n">testClass</span> <span class="o">:</span> <span class="n">NSObject</span>
+
+<span class="err">@</span><span class="n">property</span><span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">assign</span><span class="p">)</span> <span class="n">NSInteger</span> <span class="n">testInt</span><span class="p">;</span>
+<span class="o">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">testMethod</span><span class="p">;</span>
+
+<span class="err">@</span><span class="n">end</span>
+
+<span class="err">@</span><span class="n">implementation</span> <span class="n">testClass</span>
+
+<span class="o">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">testMethod</span>
+<span class="p">{</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="err">@</span><span class="n">end</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+	<span class="n">testClass</span> <span class="o">*</span><span class="n">obj</span> <span class="o">=</span> <span class="p">[[</span><span class="n">testClass</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+	<span class="p">[</span><span class="n">obj</span> <span class="n">testMethod</span><span class="p">];</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="features">Features</h2>
+<p>我们生成二进制文件后，可以看到。</p>
 
-<ul>
-  <li>Responsive</li>
-  <li>Semantic HTML</li>
-  <li>Skins</li>
-  <li>Highlight Theme</li>
-  <li>Internationalization</li>
-  <li>Search</li>
-  <li>Table of contents</li>
-  <li>Authors</li>
-  <li>Additional styles (alert, tag, image, icon, button, grid, etc)</li>
-  <li>Extensions (audios, videos, slides, demos)</li>
-  <li>Markdown enhancements (<a href="https://www.mathjax.org/">MathJax</a>, <a href="https://mermaidjs.github.io/">mermaid</a>, <a href="http://www.chartjs.org/">chartjs</a>)</li>
-  <li>Sharing (<a href="https://www.addtoany.com/">AddToAny</a>, <a href="https://www.addthis.com/">AddThis</a>)</li>
-  <li>Comments (<a href="https://disqus.com/">Disqus</a>, <a href="https://gitalk.github.io/">Gitalk</a>, <a href="https://valine.js.org/en/">Valine</a>)</li>
-  <li>Pageview (<a href="https://leancloud.cn/">LeanCloud</a>)</li>
-  <li>Analytics (<a href="https://analytics.google.com/analytics/web/">Google Analytics</a>)</li>
-  <li>RSS (<a href="https://github.com/jekyll/jekyll-feed">jekyll-feed</a>)</li>
-</ul>
+<p>在__DATA,objc_data中，存储了类的信息。一共五个字段，比较中的字段有3个，isA指向该类的元类，super class指向该类的父类，data指向calss_ro_t字段，该字段进一步包含了更丰富的信息。</p>
 
-<h2 id="skins">Skins</h2>
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ggjmn1d0iqj319t0u0jvl.jpg" width="1000" /></center>
 
-<p>TeXt has 6 built-in skins, you can also set up your own skin.</p>
+<p>这里data指向 0000000100001108，该地址在__DATA,ojct_const中，该段中存储了一些不可变信息，包括方法列表、属性列表、协议列表等。这里我们看下0000000100001108地址的值，这个数据结构中包含了类的类名，实例对象的size，方法列表、变量列表的地址等信息。其中base method又指向0000000100001078，我们再看下0000000100001078（还在该段中）</p>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">default</code></th>
-      <th><code class="highlighter-rouge">dark</code></th>
-      <th><code class="highlighter-rouge">forest</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_default.jpg" alt="Default" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_dark.jpg" alt="Dark" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_forest.jpg" alt="Forest" /></td>
-    </tr>
-  </tbody>
-</table>
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ggjmusoz1zj31dc0u00x3.jpg" width="1000" /></center>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">ocean</code></th>
-      <th><code class="highlighter-rouge">chocolate</code></th>
-      <th><code class="highlighter-rouge">orange</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_ocean.jpg" alt="Ocean" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_chocolate.jpg" alt="Chocolate" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/skins_orange.jpg" alt="Orange" /></td>
-    </tr>
-  </tbody>
-</table>
+<p>这块数据描述了testClass中所有方法的信息，包括方法的名称、类型、起始地址等。</p>
 
-<h3 id="highlight-theme">Highlight Theme</h3>
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ggjmwt8yq3j31i00u0q7f.jpg" width="1000" /></center>
 
-<p>TeXt use <a href="https://github.com/chriskempson/tomorrow-theme">Tomorrow</a> as the highlight theme.</p>
+<p><strong>可以看到：我们用OC所写的程序的各种信息，换了中描述方式（组织成新的数据结构格式）被存储到可执行文件当中了，后面在执行的时候，就可以通过解析这些数据结构来获取信息，帮助程序更好的执行</strong>。例如，我们在程序中调用了testMethod方法，如果这是一个C程序，那么在汇编代码中，就会直接call到该函数的地址上。但这里不是，这里是去调用了objc_msgSend方法（在runtime中实现），告诉objc_msgSend程序想要的方法名是testMethod(通过rsi寄存器传参)，然后objc_msgSend帮我们去找到testMethod的入口地址（通过分析刚才提到的各种数据结构）并跳转执行。</p>
 
-<table>
-  <thead>
-    <tr>
-      <th><code class="highlighter-rouge">tomorrow</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-eighties</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-blue</code></th>
-      <th><code class="highlighter-rouge">tomorrow-night-bright</code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow.png" alt="Tomorrow" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night.png" alt="Tomorrow Night" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-eighties.png" alt="Tomorrow Night Eighties" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-blue.png" alt="Tomorrow Night Blue" /></td>
-      <td><img src="https://raw.githubusercontent.com/kitian616/jekyll-TeXt-theme/master/screenshots/highlight_tomorrow-night-bright.png" alt="Tomorrow Night Bright" /></td>
-    </tr>
-  </tbody>
-</table>
-</div><div class="d-print-none"><footer class="article__footer"><!-- start custom article footer snippet -->
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1ggjn37ronlj31ke0osdiv.jpg" width="1000" /></center>
 
-<!-- end custom article footer snippet --></footer></div>
+<p>我们通过这里例子，简单的感受了一些runtime机制，后面我们就更深入的对runtime进行一些探究。此时我们也知道了，探究runtime，其实就是搞懂runtime所定义的各种数据模型，以及利用这些数据模型所进行的各种操作。</p>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-08-07T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++.html">重修C++</a></div></div></div>
 
 </div>
 
@@ -985,6 +963,68 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 /*(function () {
 
 })();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
 </script><script type="text/x-mathjax-config">
 	var _config = { tex2jax: {
 		inlineMath: [['$','$'], ['\\(','\\)']]

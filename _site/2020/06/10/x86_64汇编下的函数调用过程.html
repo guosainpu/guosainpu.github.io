@@ -1,0 +1,1645 @@
+<!DOCTYPE html><html lang="en">
+  <head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>x86_64汇编下的函数调用过程 - 一只草履虫</title>
+
+<meta name="description" content="材料准备首先手写一个简单的C程序：main.c#include &lt;stdio.h&gt;void empty();int  add(int i, int j);void myPrint(int num);void testParams(int a, int b, int c, int d, int e, i...">
+<link rel="canonical" href="http://localhost:4000/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+
+<meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
+
+<meta name="theme-color" content="#ffffff">
+<!-- end favicons snippet --><link rel="stylesheet" href="/assets/css/main.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" ><!-- start custom head snippets -->
+
+<!-- end custom head snippets --><script>(function() {
+  window.isArray = function(val) {
+    return Object.prototype.toString.call(val) === '[object Array]';
+  };
+  window.isString = function(val) {
+    return typeof val === 'string';
+  };
+
+  window.hasEvent = function(event) {
+    return 'on'.concat(event) in window.document;
+  };
+
+  window.isOverallScroller = function(node) {
+    return node === document.documentElement || node === document.body || node === window;
+  };
+
+  window.isFormElement = function(node) {
+    var tagName = node.tagName;
+    return tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA';
+  };
+
+  window.pageLoad = (function () {
+    var loaded = false, cbs = [];
+    window.addEventListener('load', function () {
+      var i;
+      loaded = true;
+      if (cbs.length > 0) {
+        for (i = 0; i < cbs.length; i++) {
+          cbs[i]();
+        }
+      }
+    });
+    return {
+      then: function(cb) {
+        cb && (loaded ? cb() : (cbs.push(cb)));
+      }
+    };
+  })();
+})();
+(function() {
+  window.throttle = function(func, wait) {
+    var args, result, thisArg, timeoutId, lastCalled = 0;
+
+    function trailingCall() {
+      lastCalled = new Date;
+      timeoutId = null;
+      result = func.apply(thisArg, args);
+    }
+    return function() {
+      var now = new Date,
+        remaining = wait - (now - lastCalled);
+
+      args = arguments;
+      thisArg = this;
+
+      if (remaining <= 0) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        lastCalled = now;
+        result = func.apply(thisArg, args);
+      } else if (!timeoutId) {
+        timeoutId = setTimeout(trailingCall, remaining);
+      }
+      return result;
+    };
+  };
+})();
+(function() {
+  var Set = (function() {
+    var add = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (data[i] === item) {
+          return;
+        }
+      }
+      this.size ++;
+      data.push(item);
+      return data;
+    };
+
+    var Set = function(data) {
+      this.size = 0;
+      this._data = [];
+      var i;
+      if (data.length > 0) {
+        for (i = 0; i < data.length; i++) {
+          add.call(this, data[i]);
+        }
+      }
+    };
+    Set.prototype.add = add;
+    Set.prototype.get = function(index) { return this._data[index]; };
+    Set.prototype.has = function(item) {
+      var i, data = this._data;
+      for (i = 0; i < data.length; i++) {
+        if (this.get(i) === item) {
+          return true;
+        }
+      }
+      return false;
+    };
+    Set.prototype.is = function(map) {
+      if (map._data.length !== this._data.length) { return false; }
+      var i, j, flag, tData = this._data, mData = map._data;
+      for (i = 0; i < tData.length; i++) {
+        for (flag = false, j = 0; j < mData.length; j++) {
+          if (tData[i] === mData[j]) {
+            flag = true;
+            break;
+          }
+        }
+        if (!flag) { return false; }
+      }
+      return true;
+    };
+    Set.prototype.values = function() {
+      return this._data;
+    };
+    return Set;
+  })();
+
+  window.Lazyload = (function(doc) {
+    var queue = {js: [], css: []}, sources = {js: {}, css: {}}, context = this;
+    var createNode = function(name, attrs) {
+      var node = doc.createElement(name), attr;
+      for (attr in attrs) {
+        if (attrs.hasOwnProperty(attr)) {
+          node.setAttribute(attr, attrs[attr]);
+        }
+      }
+      return node;
+    };
+    var end = function(type, url) {
+      var s, q, qi, cbs, i, j, cur, val, flag;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        s[url] = true;
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (cur.urls.has(url)) {
+            qi = cur, val = qi.urls.values();
+            qi && (cbs = qi.callbacks);
+            for (flag = true, j = 0; j < val.length; j++) {
+              cur = val[j];
+              if (!s[cur]) {
+                flag = false;
+              }
+            }
+            if (flag && cbs && cbs.length > 0) {
+              for (j = 0; j < cbs.length; j++) {
+                cbs[j].call(context);
+              }
+              qi.load = true;
+            }
+          }
+        }
+      }
+    };
+    var load = function(type, urls, callback) {
+      var s, q, qi, node, i, cur,
+        _urls = typeof urls === 'string' ? new Set([urls]) : new Set(urls), val, url;
+      if (type === 'js' || type ==='css') {
+        s = sources[type], q = queue[type];
+        for (i = 0; i < q.length; i++) {
+          cur = q[i];
+          if (_urls.is(cur.urls)) {
+            qi = cur;
+            break;
+          }
+        }
+        val = _urls.values();
+        if (qi) {
+          callback && (qi.load || qi.callbacks.push(callback));
+          callback && (qi.load && callback());
+        } else {
+          q.push({
+            urls: _urls,
+            callbacks: callback ? [callback] : [],
+            load: false
+          });
+          for (i = 0; i < val.length; i++) {
+            node = null, url = val[i];
+            if (s[url] === undefined) {
+              (type === 'js' ) && (node = createNode('script', { src: url }));
+              (type === 'css') && (node = createNode('link', { rel: 'stylesheet', href: url }));
+              if (node) {
+                node.onload = (function(type, url) {
+                  return function() {
+                    end(type, url);
+                  };
+                })(type, url);
+                (doc.head || doc.body).appendChild(node);
+                s[url] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+    return {
+      js: function(url, callback) {
+        load('js', url, callback);
+      },
+      css: function(url, callback) {
+        load('css', url, callback);
+      }
+    };
+  })(this.document);
+})();
+</script><script>
+  (function() {
+    var TEXT_VARIABLES = {
+      version: '2.2.4',
+      sources: {
+        font_awesome: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css',
+        jquery: 'https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js',
+        leancloud_js_sdk: '//cdn.jsdelivr.net/npm/leancloud-storage@3.13.2/dist/av-min.js',
+        chart: 'https://cdn.bootcss.com/Chart.js/2.7.2/Chart.bundle.min.js',
+        gitalk: {
+          js: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.js',
+          css: 'https://cdn.bootcss.com/gitalk/1.2.2/gitalk.min.css'
+        },
+        valine: 'https://unpkg.com/valine/dist/Valine.min.js',
+        mathjax: 'https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML',
+        mermaid: 'https://cdn.bootcss.com/mermaid/8.0.0-rc.8/mermaid.min.js'
+      },
+      site: {
+        toc: {
+          selectors: 'h1,h2,h3'
+        }
+      },
+      paths: {
+        search_js: '/assets/search.js'
+      }
+    };
+    window.TEXT_VARIABLES = TEXT_VARIABLES;
+  })();
+</script></head>
+  <body>
+    <div class="root" data-is-touch="false">
+      <div class="layout--page js-page-root"><div class="page__main js-page-main page__viewport has-aside cell cell--auto">
+
+      <div class="page__main-inner"><div class="page__header d-print-none"><header class="header"><div class="main">
+      <div class="header__title">
+        <div class="header__brand"><?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.11, written by Peter Selinger 2001-2013
+</metadata>
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M1510 4100 c-21 -21 -24 -30 -20 -70 2 -26 34 -60 57 -60 7 0 49 -14
+93 -31 227 -87 388 -262 455 -493 l17 -57 35 31 c19 17 50 38 68 47 l32 15
+-12 42 c-80 256 -294 473 -563 570 -88 31 -135 33 -162 6z"/>
+<path d="M3470 4096 c-61 -21 -179 -75 -190 -86 -3 -3 -30 -21 -60 -41 -30
+-20 -84 -65 -119 -100 -61 -62 -161 -197 -161 -219 0 -5 -4 -10 -8 -10 -5 0
+-9 -6 -9 -12 -1 -7 -12 -43 -27 -80 l-26 -68 28 -14 c16 -8 46 -30 67 -49 l40
+-35 26 82 c15 45 41 104 58 131 17 28 35 59 40 70 13 27 96 114 153 159 63 50
+180 109 259 130 51 14 69 24 81 45 8 14 13 32 12 39 -1 6 -2 18 -3 25 -7 52
+-70 65 -161 33z"/>
+<path d="M2425 3545 c-59 -15 -126 -44 -105 -45 52 -2 45 -47 -16 -104 -70
+-66 -204 -111 -217 -73 -6 18 -90 -117 -120 -193 -26 -65 -45 -155 -51 -240
+l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
+4 -6 -3 -14 4 -17 16 -28 90 -120 232 -135 208 -32 -52 -231 55 -263 141 -7
+21 10 39 38 39 19 1 19 1 1 12 -70 40 -274 59 -371 33z"/>
+<path d="M1075 3317 c-37 -37 -44 -71 -25 -122 5 -14 12 -36 14 -48 2 -12 11
+-41 20 -65 8 -23 16 -44 16 -47 1 -7 3 -14 48 -160 22 -71 50 -162 62 -202 13
+-40 25 -72 29 -71 3 1 13 -1 21 -5 8 -3 78 -22 155 -43 77 -20 146 -42 153
+-47 6 -5 12 -7 12 -4 0 3 23 -1 52 -9 29 -7 53 -12 55 -11 1 2 5 25 8 53 3 27
+7 60 10 74 17 82 32 70 -147 121 l-162 45 -34 110 c-33 108 -44 146 -97 317
+-33 108 -55 136 -112 144 -39 5 -46 2 -78 -30z"/>
+<path d="M3912 3315 c-25 -21 -39 -59 -108 -280 -79 -255 -79 -257 -113 -271
+-18 -8 -43 -16 -55 -18 -44 -8 -221 -59 -229 -66 -4 -3 -3 -31 2 -61 6 -29 12
+-74 15 -99 3 -25 5 -46 5 -46 1 -1 31 7 69 18 37 10 74 21 82 23 24 6 284 76
+295 80 11 3 23 37 104 300 27 88 60 195 74 237 32 101 29 143 -12 180 -40 36
+-88 37 -129 3z"/>
+<path d="M4184 2720 l1 -195 40 -19 c52 -25 488 -214 542 -235 23 -9 45 -20
+49 -24 4 -4 -24 -21 -62 -38 -38 -17 -111 -51 -162 -75 -51 -24 -95 -44 -97
+-44 -2 0 -50 -22 -107 -48 -57 -27 -126 -59 -153 -71 l-50 -22 -1 -185 c-1
+-127 3 -184 10 -183 6 0 202 96 436 213 l425 213 0 234 0 234 -225 113 c-124
+62 -234 119 -245 126 -11 7 -30 16 -41 20 -12 4 -58 26 -103 50 -44 24 -81 43
+-81 41 0 -2 -40 18 -88 44 l-88 47 0 -196z"/>
+<path d="M685 2788 c-132 -66 -325 -164 -430 -218 l-190 -97 -3 -231 -2 -232
+430 -215 c236 -118 433 -215 438 -215 4 0 7 83 8 184 l0 184 -50 23 c-28 12
+-97 44 -154 71 -57 26 -105 48 -107 48 -2 0 -43 19 -92 41 -48 23 -121 57
+-160 75 -40 18 -73 35 -73 37 0 3 39 21 88 42 82 35 139 60 207 90 17 7 95 41
+175 75 80 35 150 67 155 72 11 9 16 376 6 383 -3 1 -114 -51 -246 -117z"/>
+<path d="M1801 2632 c-21 -93 -26 -150 -26 -317 0 -191 4 -231 35 -364 78
+-331 274 -600 513 -705 59 -27 195 -57 202 -46 3 4 5 338 5 741 l1 734 -360 2
+-359 1 -11 -46z"/>
+<path d="M2589 2670 c-1 -3 -2 -335 -4 -739 l-3 -733 57 5 c70 7 171 46 249
+96 211 137 382 429 437 746 30 172 26 421 -8 575 l-12 54 -358 1 c-196 0 -357
+-2 -358 -5z"/>
+<path d="M1650 2151 c-19 -9 -100 -45 -180 -80 -145 -63 -218 -98 -232 -110
+-7 -6 -30 -132 -104 -546 -2 -16 -16 -92 -30 -169 -20 -113 -23 -145 -13 -173
+19 -57 77 -83 134 -58 44 18 60 46 74 130 6 39 13 81 16 95 3 14 14 75 24 135
+27 149 51 285 56 315 3 14 8 43 11 65 8 46 21 75 34 75 5 0 40 14 77 31 38 17
+101 47 141 65 62 28 73 37 67 53 -9 30 -15 61 -22 116 -8 72 -12 76 -53 56z"/>
+<path d="M3415 2113 c-4 -27 -11 -72 -16 -100 -10 -52 -7 -73 11 -73 5 0 42
+-15 82 -34 40 -19 102 -47 138 -64 l65 -29 19 -109 c10 -60 20 -118 22 -129 3
+-11 7 -36 10 -55 3 -19 16 -96 29 -170 24 -133 29 -161 40 -230 9 -57 24 -85
+54 -103 59 -34 131 -11 151 47 11 33 9 54 -14 172 -5 26 -64 368 -72 419 -3
+22 -7 45 -9 50 -4 18 -15 79 -20 110 -2 17 -7 41 -10 55 -14 70 -17 86 -17 97
+-1 7 -5 10 -10 7 -9 -6 -94 31 -346 147 -46 22 -88 39 -92 39 -5 0 -12 -21
+-15 -47z"/>
+</g>
+</svg>
+<a title="Your Site Description
+" href="/">一只草履虫</a></div><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></div><nav class="navigation">
+        <ul><li class="navigation__item"><a href="/archive.html">Archive</a></li><li class="navigation__item"><a href="/about.html">About</a></li><li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li></ul>
+      </nav></div>
+  </header>
+</div><div class="page__content"><div class ="main"><div class="grid grid--reverse">
+
+              <div class="col-aside d-print-none js-col-aside"><aside class="page__aside js-page-aside"><div class="toc-aside js-toc-root"></div></aside></div>
+
+              <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
+
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><div class="article__header"><header><h1>x86_64汇编下的函数调用过程</h1></header><span class="split-space">&nbsp;</span></div><meta itemprop="headline" content="x86_64汇编下的函数调用过程"><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80">汇编语言</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jun 10, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-06-10T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,汇编语言"><div class="js-article-content"><div class="layout--article"><!-- start custom article top snippet -->
+
+<!-- end custom article top snippet --><div class="article__content" itemprop="articleBody"><h3 id="材料准备">材料准备</h3>
+
+<p>首先手写一个简单的C程序：main.c</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">void</span> <span class="nf">empty</span><span class="p">();</span>
+<span class="kt">int</span>  <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">myPrint</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">testParams</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">e</span><span class="p">,</span> <span class="kt">int</span> <span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">g</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="c1">// 测试空函数</span>
+	<span class="n">empty</span><span class="p">();</span>
+
+	<span class="c1">// 测试传2个参数的函数</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+
+	<span class="c1">// 测试传多个参数的函数</span>
+	<span class="n">testParams</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+
+	<span class="c1">// 测试print函数（不定参数）</span>
+	<span class="n">myPrint</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+	
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">empty</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">myPrint</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"%s %s %s: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="s">"hello"</span><span class="p">,</span> <span class="s">"world"</span><span class="p">,</span> <span class="s">"print"</span><span class="p">,</span> <span class="n">num</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">testParams</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">e</span><span class="p">,</span> <span class="kt">int</span> <span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">g</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后执行 clang main.c，默认生成 a.out 文件。查看 a.out，可以看到 a.out 是一个 x86_64 架构下的 Mach-O 格式的文件。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>➜  函数调用过程 git:(master) ✗ clang main.c
+➜  函数调用过程 git:(master) ✗ ls
+a.out  main.c
+➜  函数调用过程 git:(master) ✗ file a.out 
+a.out: Mach-O 64-bit executable x86_64
+➜  函数调用过程 git:(master) ✗ 
+</code></pre></div></div>
+
+<h3 id="查看mach-o">查看Mach-O</h3>
+
+<p>我们使用工具来分析Mach-O文件：<a href="https://github.com/gdbinit/MachOView">MachOView</a></p>
+
+<p>展开段：__TEXT_text，我们可以看到 main.c 中我们自定义的函数的以汇编指令的形式顺序的排列在这里。
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfubijrys3j30u01rc4c2.jpg" width="800" /></p>
+
+<h3 id="rbp-和-rsp">RBP 和 RSP</h3>
+
+<p>分析函数调用过程，其实就是分析程序执行过程中<strong>指令的跳转和栈内存区域的变化</strong></p>
+
+<p>在函数调用过程中有2个非常重要的指针寄存器：<strong>bp 和 sp</strong></p>
+<ol>
+  <li>bp始终指向当前最顶部的栈帧的栈底</li>
+  <li>sp指向当前最顶部的栈帧的栈顶（原则上是需要指向栈顶，但由于代码优化的原因，并不是总是）</li>
+</ol>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfucqsz6rpj30hq0q20tk.jpg" width="300" /></center>
+
+<h3 id="空函数的调用过程">空函数的调用过程</h3>
+
+<p>接着让我们用debug的方式来看下 x86_64 下函数的调用过程。首先程序会先进入 main 函数，然后调用 empty 函数，empty 函数非常简单，什么都不做就退出了。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 // 调用 lldb 开始调试 a.out
+➜  函数调用过程 git:(master) ✗ lldb a.out 
+(lldb) target create "a.out"
+Current executable set to 'a.out' (x86_64).
+
+2 // 设置断点到 main
+(lldb) breakpoint set --name main 
+Breakpoint 1: where = a.out`main, address = 0x0000000100000e20
+
+3 // run 程序
+(lldb) run
+Process 42767 launched: '/Users/guosai/practice_C/函数调用过程/a.out' (x86_64)
+Process 42767 stopped
+
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x0000000100000e20 a.out`main
+a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;: pushq  %rbp
+    0x100000e21 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;: subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;: movl   $0x0, -0x4(%rbp)
+Target 0: (a.out) stopped.
+(lldb) 
+</code></pre></div></div>
+
+<p>可以看到，程序停留在了 main 函数的第一条指令 pushq    %rbp。然后我们再来分析看下 main 函数和 empty 函数的汇编代码（用 disassemble –name 命令）</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+    0x100000e2f &lt;+15&gt;:  callq  0x100000f60               ; empty
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;:  movl   -0x8(%rbp), %edi
+    0x100000e45 &lt;+37&gt;:  movl   -0xc(%rbp), %esi
+    0x100000e48 &lt;+40&gt;:  callq  0x100000eb0               ; add
+    0x100000e4d &lt;+45&gt;:  movl   %eax, -0x10(%rbp)
+    0x100000e50 &lt;+48&gt;:  movl   $0x1, %edi
+    0x100000e55 &lt;+53&gt;:  movl   $0x2, %esi
+    0x100000e5a &lt;+58&gt;:  movl   $0x3, %edx
+    0x100000e5f &lt;+63&gt;:  movl   $0x4, %ecx
+    0x100000e64 &lt;+68&gt;:  movl   $0x5, %r8d
+    0x100000e6a &lt;+74&gt;:  movl   $0x6, %r9d
+    0x100000e70 &lt;+80&gt;:  movl   $0x7, (%rsp)
+    0x100000e77 &lt;+87&gt;:  movl   $0x8, 0x8(%rsp)
+    0x100000e7f &lt;+95&gt;:  movl   $0x9, 0x10(%rsp)
+    0x100000e87 &lt;+103&gt;: movl   $0xa, 0x18(%rsp)
+    0x100000e8f &lt;+111&gt;: movl   $0xb, 0x20(%rsp)
+    0x100000e97 &lt;+119&gt;: callq  0x100000ed0               ; testParams
+    0x100000e9c &lt;+124&gt;: movl   -0x10(%rbp), %edi
+    0x100000e9f &lt;+127&gt;: callq  0x100000f20               ; myPrint
+    0x100000ea4 &lt;+132&gt;: xorl   %eax, %eax
+    0x100000ea6 &lt;+134&gt;: addq   $0x40, %rsp
+    0x100000eaa &lt;+138&gt;: popq   %rbp
+    0x100000eab &lt;+139&gt;: retq   
+    0x100000eac &lt;+140&gt;: nopl   (%rax)
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a.out`empty:
+    0x100000f60 &lt;+0&gt;: pushq  %rbp
+    0x100000f61 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000f64 &lt;+4&gt;: popq   %rbp
+    0x100000f65 &lt;+5&gt;: retq   
+</code></pre></div></div>
+
+<p>要分析一个空函数的调用过程，主要是分析一下几个指令（或指令组合）</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>指令（指令组合）</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>callq  数值</td>
+      <td>跳转到某函数</td>
+    </tr>
+    <tr>
+      <td>pushq  %rbp 和 movq   %rsp, %rbp</td>
+      <td>暂存bp指针，并开辟新的栈帧</td>
+    </tr>
+    <tr>
+      <td>popq   %rbp 和 retq</td>
+      <td>函数结束，返回上一级函数</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="callq">callq</h4>
+
+<p>callq 就是 call 指令（q代表要处理的字节长度，q是8字节，l是4字节，w是2字节）。call 指令指示 CPU 应跳转到某个地址去执行新的函数。</p>
+
+<p>现在我们执行4次step指令，让 CPU 停留在第五条指令上：callq  0x100000f60（去跳转 empty 函数），在分析这条指令之前，我们先来看下 CPU 中各寄存器的状态（register read 命令）</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a.out`main:
+    0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+-&gt;  0x100000e2f &lt;+15&gt;:  callq  0x100000f60               ; empty
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    ............
+
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff330
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000e2f  a.out`main + 15
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfudzgrh42j31jq0i874t.jpg" width="800" /></center>
+
+<p>可以看到此时：</p>
+<ul>
+  <li>rbp = 0x00007ffeefbff370，main栈帧的栈底的地址就是 0x00007ffeefbff370</li>
+  <li>rsp = 0x00007ffeefbff330，main栈帧的栈顶的地址就是 0x00007ffeefbff330（因为栈是向下生长的，所以sp小于dp）</li>
+</ul>
+
+<p>由此可以算出 main 的栈帧占的内存空间大小是 0x40 ，正好符合第三条指令：subq   $0x40, %rsp</p>
+
+<ul>
+  <li>rip 指向当前等待执行的指令的地址，此时 rip = 0x0000000100000e2f，正好是（0x100000e2f &lt;+15&gt;:  callq  0x100000f60）</li>
+</ul>
+
+<p>那么 callq  0x100000f60 指令做了什么呢？我们首先抛出结论：</p>
+<ol>
+  <li>首先 call 指令把当前指令的下一条指令 push 入栈（先把这条指令的地址暂存下来，等后面被调用函数返回的时候才能找到它，并继续执行）</li>
+  <li>找到下一条需要执行的指令的地址（即 empty 的地址），并跳转执行。</li>
+</ol>
+
+<p>首先我们来验证第2点，当前的跳转指令是：callq  0x100000f60，empty 的第一条指令的地址也是 0x100000f60（0x100000f60 &lt;+0&gt;: pushq  %rbp）。这里 0x100000f60 是 lldb帮我们计算出来的值，算法是：目的值 = 偏移值+下一条指令的地址，这个逻辑就是地址无关代码（position independent code）</p>
+
+<p>然后我们验证第一点，先看一下当前内存中栈顶附近（rsp = 0x00007ffeefbff330）存储的数值（memory read 指令）</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>memory read --size 4 --format x --count 16 0x00007ffeefbff310
+
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff380 0x00007ffe (0x00000000 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) 
+</code></pre></div></div>
+<p>上面的(0x00000000 0x00000001)表示0x7ffeefbff328地址存的现在存的值是 0000000100000000(小端模式)，后面在会被覆盖成函数返回地址 0x100000e34。</p>
+
+<p>然后执行 step。再次观察寄存器和内存数值的变化：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff380 0x00007ffe (0x00000e34 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f60  a.out`empty
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+
+<p>可以看到有三个地方变化了</p>
+<ol>
+  <li>0x7ffeefbff328 地址内存的值有(0x00000000 0x00000001)变成了(0x00000e34 0x00000001，即小端模式下的 0000000100000e34)，正好是 callq  0x100000f60 的下一条指令的地址 0x100000e34。</li>
+  <li>因为有新的值入栈了，所以rsp的值也需要更新到新的栈顶，即 0x00007ffeefbff330 - 8 = 0x00007ffeefbff328（push入栈的指针占8个字节）</li>
+  <li>rip指向了新的指令地址：empty函数的第一条指令：rip = 0x0000000100000f60  a.out`empty</li>
+</ol>
+
+<p>执行完call指令后，执行逻辑就从main跳出来，去执行empty了。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfufv8slmmj31dg0u0jsc.jpg" width="800" /></center>
+
+<h4 id="pushq---rbp--movq--rsp-rbp">pushq   %rbp &amp; movq  %rsp, %rbp</h4>
+
+<p>所有函数的开头都需要执行这两行函数，它的目的是暂存上一个函数的rbp指针，并把rbp指针更新指向到新的栈帧</p>
+<ol>
+  <li>pushq %rbp：暂存一个函数的rbp指针</li>
+  <li>movq  %rsp, %rbp：rbp指针更新指向到新的栈帧</li>
+</ol>
+
+<p>第一步：验证一下 pushq  %rbp，首先看下当前寄存器和内存的状态：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: (0xefbff380 0x00007ffe) 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f60  a.out`empty
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+<p>其中 0x7ffeefbff320 地址中的值（0x00000001 0x0000000e）一会儿是要被当前 rbp 的值（rbp = 0x00007ffeefbff370）覆盖的，然后 rsp 会减“1”，变成 0x00007ffeefbff320。ok，我们执行以下 step，看下结果：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: (0xefbff370 0x00007ffe) 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f61  a.out`empty + 1
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+<p>结果和预料的一样，现在：rsp = 0x00007ffeefbff320，地址 0x7ffeefbff320 存储的值是 0x00007ffeefbff370（小端模式）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv1ltg2exj31cz0u075c.jpg" width="800" /></center>
+
+<p>第二步：movq  %rsp, %rbp，是把 rsp 的值赋值给 rbp，这样 rbp 就指向了新的栈帧的栈底，代表开辟了了一个新的栈帧，即 empty 函数的栈帧。执行 step ，看下结果：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff320 // rbp的值更新了，目前和 rsp 相同
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f64  a.out`empty + 4
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv1sgy0i1j31dv0u0gmu.jpg" width="800" /></center>
+
+<p>以上就是一个空函数调用时，CPU跳转新函数和新栈帧开辟的逻辑。因为 empty 函数中没有任何实现，所以接着会马上返回。</p>
+
+<h4 id="popq---rbp--retq">popq   %rbp &amp; retq</h4>
+
+<p>所有函数的汇编指令也都是有这两条指令作为结尾，这两条指令的含义是：取回暂存的 rbp 指针并恢复 rbp 寄存器的值，然后取出暂存的返回指令的地址，并跳转执行。</p>
+<ol>
+  <li>popq   %rbp： 取回暂存的 rbp 指针并恢复 rbp 寄存器的值。</li>
+  <li>取出暂存的返回指令的地址，并跳转执行。</li>
+</ol>
+
+<p>第一步验证：popq   %rbp。看下执行这一步之前，寄存器和内存的状态：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff320
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f64  a.out`empty + 4
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+
+(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff370 0x00007ffe 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+</code></pre></div></div>
+<p>当前栈顶地址是：rsp = 0x00007ffeefbff320，栈顶地址存储的值是：0xefbff370 0x00007ffe，也就是我们之前暂存的上一个函数的栈帧的基地址。然后执行 step，看下结果：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) register read 
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f65  a.out`empty + 5
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+<p>现在 rbp = 0x00007ffeefbff370，rbp 寄存器恢复了，同时 rsp 增加了 “1”（因为执行了 pop 指令，栈的长度减少了），此时：</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv27e3rp6j31dd0u0myf.jpg" width="800" /></center>
+
+<p>第二步执行：retq，这一步会取出当前栈顶的值，即暂存的需要返回到的指令的地址（此时是 0x100000e34）。先看一下当前状态：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff370 0x00007ffe (0x00000e34 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f65  a.out`empty + 5
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+<p>rsp = 0x00007ffeefbff328，rsp 执行当前栈顶，当前栈顶存储的值是 (0x00000e34 0x00000001)。然后执行 step， 看下结果：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(lldb) disassemble 
+a.out`empty:
+    0x100000f60 &lt;+0&gt;: pushq  %rbp
+    0x100000f61 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000f64 &lt;+4&gt;: popq   %rbp
+-&gt;  0x100000f65 &lt;+5&gt;: retq   
+(lldb) step
+Process 45685 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = instruction step into
+    frame #0: 0x0000000100000e34 a.out`main + 20
+a.out`main:
+-&gt;  0x100000e34 &lt;+20&gt;: movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;: movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;: movl   -0x8(%rbp), %edi
+    0x100000e45 &lt;+37&gt;: movl   -0xc(%rbp), %esi
+Target 0: (a.out) stopped.
+(lldb) register read 
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff330
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000e34  a.out`main + 20
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</code></pre></div></div>
+<p>可以看到，执行完 retq 后，CPU指向了需要返回的指令地址：0x100000e34（rip = 0x0000000100000e34）；rsp 继续加“1”。此时 函数的栈帧恢复了之前在main函数的状态：</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv2exw2p0j31d70u0wfr.jpg" width="800" /></center>
+
+<p>到此为止，一个空函数的调用和返回过程就结束了，我们再来总结一下整个过程：</p>
+
+<h3 id="函数调用过程">函数调用过程</h3>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv3dqvw9uj31800u0gn0.jpg" width="800" /></center>
+
+<h3 id="传参--返回值">传参 &amp; 返回值</h3>
+
+<p>函数调用时，有两种传参方式：</p>
+<ol>
+  <li>寄存器够用时，是寄存器传参</li>
+  <li>寄存器不够用时，把参数 push 到栈上，用栈内存传参。</li>
+</ol>
+
+<p>返回值：</p>
+<ol>
+  <li>利用寄存器 eax 存储返回值，返回给上一级函数。</li>
+</ol>
+
+<h4 id="寄存器传参">寄存器传参</h4>
+
+<p>我们以 add 函数为例分析：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 测试传2个参数的函数
+int i = 3;
+int j = 4;
+int k = add(i, j);
+
+	int add(int i, int j)
+{
+	int k = i + j;
+	return k;
+}
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+    0x100000e2f &lt;+15&gt;:  callq  0x100000f60
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)      
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;:  movl   -0x8(%rbp), %edi      // 参数：数字 3 放入 edi 中
+    0x100000e45 &lt;+37&gt;:  movl   -0xc(%rbp), %esi      // 参数：数字 4 放入 esi 中
+    0x100000e48 &lt;+40&gt;:  callq  0x100000eb0           ; add
+    ..........
+
+a.out`add:
+    0x100000eb0 &lt;+0&gt;:  pushq  %rbp
+    0x100000eb1 &lt;+1&gt;:  movq   %rsp, %rbp
+    0x100000eb4 &lt;+4&gt;:  movl   %edi, -0x4(%rbp)      // 从 edi 中取出参数 3
+    0x100000eb7 &lt;+7&gt;:  movl   %esi, -0x8(%rbp)      // 从 esi 中取出参数 4
+    0x100000eba &lt;+10&gt;: movl   -0x4(%rbp), %esi      
+    0x100000ebd &lt;+13&gt;: addl   -0x8(%rbp), %esi      // 计算 3 + 4
+    0x100000ec0 &lt;+16&gt;: movl   %esi, -0xc(%rbp)
+    0x100000ec3 &lt;+19&gt;: movl   -0xc(%rbp), %eax      // 3 + 4 的结果放入 eax 中，作为返回参数返回
+    0x100000ec6 &lt;+22&gt;: popq   %rbp
+    0x100000ec7 &lt;+23&gt;: retq   
+    0x100000ec8 &lt;+24&gt;: nopl   (%rax,%rax)
+</code></pre></div></div>
+
+<h4 id="栈内存传参">栈内存传参</h4>
+
+<p>我们以 testParams 函数为例分析：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 测试传多个参数的函数
+testParams(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+void testParams(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k)
+{
+	return;
+}
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a.out`main:
+    ........
+    0x100000e50 &lt;+48&gt;:  movl   $0x1, %edi        // 数字1，2，3，4，5，6 分别放入了 6 个寄存器
+    0x100000e55 &lt;+53&gt;:  movl   $0x2, %esi
+    0x100000e5a &lt;+58&gt;:  movl   $0x3, %edx
+    0x100000e5f &lt;+63&gt;:  movl   $0x4, %ecx
+    0x100000e64 &lt;+68&gt;:  movl   $0x5, %r8d
+    0x100000e6a &lt;+74&gt;:  movl   $0x6, %r9d
+    0x100000e70 &lt;+80&gt;:  movl   $0x7, (%rsp)      // 数字7，8，9，10，11 分别放入栈内存（main的栈帧空间）
+    0x100000e77 &lt;+87&gt;:  movl   $0x8, 0x8(%rsp)
+    0x100000e7f &lt;+95&gt;:  movl   $0x9, 0x10(%rsp)
+    0x100000e87 &lt;+103&gt;: movl   $0xa, 0x18(%rsp)
+    0x100000e8f &lt;+111&gt;: movl   $0xb, 0x20(%rsp)
+    0x100000e97 &lt;+119&gt;: callq  0x100000ed0               ; testParams
+    ........
+
+a.out`testParams:
+    0x100000ed0 &lt;+0&gt;:  pushq  %rbp
+    0x100000ed1 &lt;+1&gt;:  movq   %rsp, %rbp
+    0x100000ed4 &lt;+4&gt;:  pushq  %r14
+    0x100000ed6 &lt;+6&gt;:  pushq  %rbx
+    0x100000ed7 &lt;+7&gt;:  movl   0x30(%rbp), %eax   // 从栈内存中把参数读取出来，并放入testParams的栈帧空间
+    0x100000eda &lt;+10&gt;: movl   0x28(%rbp), %r10d
+    0x100000ede &lt;+14&gt;: movl   0x20(%rbp), %r11d
+    0x100000ee2 &lt;+18&gt;: movl   0x18(%rbp), %ebx
+    0x100000ee5 &lt;+21&gt;: movl   0x10(%rbp), %r14d
+    0x100000ee9 &lt;+25&gt;: movl   %edi, -0x14(%rbp)
+    0x100000eec &lt;+28&gt;: movl   %esi, -0x18(%rbp)
+    0x100000eef &lt;+31&gt;: movl   %edx, -0x1c(%rbp)
+    0x100000ef2 &lt;+34&gt;: movl   %ecx, -0x20(%rbp)
+    0x100000ef5 &lt;+37&gt;: movl   %r8d, -0x24(%rbp)
+    0x100000ef9 &lt;+41&gt;: movl   %r9d, -0x28(%rbp)
+    0x100000efd &lt;+45&gt;: movl   %eax, -0x2c(%rbp)
+    0x100000f00 &lt;+48&gt;: movl   %r10d, -0x30(%rbp)
+    0x100000f04 &lt;+52&gt;: movl   %r11d, -0x34(%rbp)
+    0x100000f08 &lt;+56&gt;: movl   %ebx, -0x38(%rbp)
+    0x100000f0b &lt;+59&gt;: movl   %r14d, -0x3c(%rbp)
+    0x100000f0f &lt;+63&gt;: popq   %rbx
+    0x100000f10 &lt;+64&gt;: popq   %r14
+    0x100000f12 &lt;+66&gt;: popq   %rbp
+    0x100000f13 &lt;+67&gt;: retq   
+    0x100000f14 &lt;+68&gt;: nopw   %cs:(%rax,%rax)
+    0x100000f1e &lt;+78&gt;: nop    
+</code></pre></div></div>
+
+<h4 id="不定参数传参">不定参数传参</h4>
+
+</div><section class="article__sharing d-print-none"></section><div class="d-print-none"><footer class="article__footer"><meta itemprop="dateModified" content="2020-06-10T00:00:00+08:00"><!-- start custom article footer snippet -->
+
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous"><span>PREVIOUS</span><a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2.html">计算机发展史</a></div><div class="next"><span>NEXT</span><a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">静态链接分析</a></div></div></div>
+
+</div>
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    $(function() {
+      var $this ,$scroll;
+      var $articleContent = $('.js-article-content');
+      var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+      var scroll = hasSidebar ? '.js-page-main' : 'html, body';
+      $scroll = $(scroll);
+
+      $articleContent.find('.highlight').each(function() {
+        $this = $(this);
+        $this.attr('data-lang', $this.find('code').attr('data-lang'));
+      });
+      $articleContent.find('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]').each(function() {
+        $this = $(this);
+        $this.append($('<a class="anchor d-print-none" aria-hidden="true"></a>').html('<i class="fas fa-anchor"></i>'));
+      });
+      $articleContent.on('click', '.anchor', function() {
+        $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
+      });
+    });
+  });
+})();
+</script></div><section class="page__comments d-print-none"></section></article><!-- start custom main bottom snippet -->
+
+<!-- end custom main bottom snippet --></div>
+            </div></div></div><div class="page__footer d-print-none">
+<footer class="footer py-4 js-page-footer">
+  <div class="main"><div itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Your Name"><meta itemprop="url" content="/"><meta itemprop="description" content="I am an amazing person."><div class="footer__author-links"><div class="author-links">
+  <ul class="menu menu--nowrap menu--inline"></ul>
+</div>
+</div>
+    </div><div class="site-info mt-2">
+      <div>一只草履虫, guosainpu@gmail.com ^_^
+      </div>
+    </div>
+  </div>
+</footer></div></div>
+    </div><script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $body = $('body'), $window = $(window);
+    var $pageRoot = $('.js-page-root'), $pageMain = $('.js-page-main');
+    var activeCount = 0;
+    function modal(options) {
+      var $root = this, visible, onChange, hideWhenWindowScroll = false;
+      var scrollTop;
+      function setOptions(options) {
+        var _options = options || {};
+        visible = _options.initialVisible === undefined ? false : show;
+        onChange = _options.onChange;
+        hideWhenWindowScroll = _options.hideWhenWindowScroll;
+      }
+      function init() {
+        setState(visible);
+      }
+      function setState(isShow) {
+        if (isShow === visible) {
+          return;
+        }
+        visible = isShow;
+        if (visible) {
+          activeCount++;
+          scrollTop = $(window).scrollTop() || $pageMain.scrollTop();
+          $root.addClass('modal--show');
+          $pageMain.scrollTop(scrollTop);
+          activeCount === 1 && ($pageRoot.addClass('show-modal'), $body.addClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.on('scroll', hide);
+          $window.on('keyup', handleKeyup);
+        } else {
+          activeCount > 0 && activeCount--;
+          $root.removeClass('modal--show');
+          $window.scrollTop(scrollTop);
+          activeCount === 0 && ($pageRoot.removeClass('show-modal'), $body.removeClass('of-hidden'));
+          hideWhenWindowScroll && window.hasEvent('touchstart') && $window.off('scroll', hide);
+          $window.off('keyup', handleKeyup);
+        }
+        onChange && onChange(visible);
+      }
+      function show() {
+        setState(true);
+      }
+      function hide() {
+        setState(false);
+      }
+      function handleKeyup(e) {
+        // Char Code: 27  ESC
+        if (e.which ===  27) {
+          hide();
+        }
+      }
+      setOptions(options);
+      init();
+      return {
+        show: show,
+        hide: hide,
+        $el: $root
+      };
+    }
+    $.fn.modal = modal;
+  });
+})();
+</script><div class="modal modal--overflow page__search-modal d-print-none js-page-search-modal"><script>
+(function () {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    // search panel
+    var search = (window.search || (window.search = {}));
+    var useDefaultSearchBox = window.useDefaultSearchBox === undefined ?
+      true : window.useDefaultSearchBox ;
+
+    var $searchModal = $('.js-page-search-modal');
+    var $searchToggle = $('.js-search-toggle');
+    var searchModal = $searchModal.modal({ onChange: handleModalChange, hideWhenWindowScroll: true });
+    var modalVisible = false;
+    search.searchModal = searchModal;
+
+    var $searchBox = null;
+    var $searchInput = null;
+    var $searchClear = null;
+
+    function getModalVisible() {
+      return modalVisible;
+    }
+    search.getModalVisible = getModalVisible;
+
+    function handleModalChange(visible) {
+      modalVisible = visible;
+      if (visible) {
+        search.onShow && search.onShow();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].focus();
+      } else {
+        search.onShow && search.onHide();
+        useDefaultSearchBox && $searchInput[0] && $searchInput[0].blur();
+        setTimeout(function() {
+          useDefaultSearchBox && ($searchInput.val(''), $searchBox.removeClass('not-empty'));
+          search.clear && search.clear();
+          window.pageAsideAffix && window.pageAsideAffix.refresh();
+        }, 400);
+      }
+    }
+
+    $searchToggle.on('click', function() {
+      modalVisible ? searchModal.hide() : searchModal.show();
+    });
+    // Char Code: 83  S, 191 /
+    $(window).on('keyup', function(e) {
+      if (!modalVisible && !window.isFormElement(e.target || e.srcElement) && (e.which === 83 || e.which === 191)) {
+        modalVisible || searchModal.show();
+      }
+    });
+
+    if (useDefaultSearchBox) {
+      $searchBox = $('.js-search-box');
+      $searchInput = $searchBox.children('input');
+      $searchClear = $searchBox.children('.js-icon-clear');
+      search.getSearchInput = function() {
+        return $searchInput.get(0);
+      };
+      search.getVal = function() {
+        return $searchInput.val();
+      };
+      search.setVal = function(val) {
+        $searchInput.val(val);
+      };
+
+      $searchInput.on('focus', function() {
+        $(this).addClass('focus');
+      });
+      $searchInput.on('blur', function() {
+        $(this).removeClass('focus');
+      });
+      $searchInput.on('input', window.throttle(function() {
+        var val = $(this).val();
+        if (val === '' || typeof val !== 'string') {
+          search.clear && search.clear();
+        } else {
+          $searchBox.addClass('not-empty');
+          search.onInputNotEmpty && search.onInputNotEmpty(val);
+        }
+      }, 400));
+      $searchClear.on('click', function() {
+        $searchInput.val(''); $searchBox.removeClass('not-empty');
+        search.clear && search.clear();
+      });
+    }
+  });
+})();
+</script><div class="search search--dark">
+  <div class="main">
+    <div class="search__header">Search</div>
+    <div class="search-bar">
+      <div class="search-box js-search-box">
+        <div class="search-box__icon-search"><i class="fas fa-search"></i></div>
+        <input type="text" />
+        <div class="search-box__icon-clear js-icon-clear">
+          <a><i class="fas fa-times"></i></a>
+        </div>
+      </div>
+      <button class="button button--theme-dark button--pill search__cancel js-search-toggle">
+        Cancel</button>
+    </div>
+    <div class="search-result js-search-result"></div>
+  </div>
+</div>
+<script>var SOURCES = window.TEXT_VARIABLES.sources;
+var PAHTS = window.TEXT_VARIABLES.paths;
+window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
+  var search = (window.search || (window.search = {}));
+  var searchData = window.TEXT_SEARCH_DATA || {};
+
+  function memorize(f) {
+    var cache = {};
+    return function () {
+      var key = Array.prototype.join.call(arguments, ',');
+      if (key in cache) return cache[key];
+      else return cache[key] = f.apply(this, arguments);
+    };
+  }
+
+  /// search
+  function searchByQuery(query) {
+    var i, j, key, keys, cur, _title, result = {};
+    keys = Object.keys(searchData);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      for (j = 0; j < searchData[key].length; j++) {
+        cur = searchData[key][j], _title = cur.title;
+        if ((result[key] === undefined || result[key] && result[key].length < 4 )
+          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          if (result[key] === undefined) {
+            result[key] = [];
+          }
+          result[key].push(cur);
+        }
+      }
+    }
+    return result;
+  }
+
+  var renderHeader = memorize(function(header) {
+    return $('<p class="search-result__header">' + header + '</p>');
+  });
+
+  var renderItem = function(index, title, url) {
+    return $('<li class="search-result__item" data-index="' + index + '"><a class="button" href="' + url + '">' + title + '</a></li>');
+  };
+
+  function render(data) {
+    if (!data) { return null; }
+    var $root = $('<ul></ul>'), i, j, key, keys, cur, itemIndex = 0;
+    keys = Object.keys(data);
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      $root.append(renderHeader(key));
+      for (j = 0; j < data[key].length; j++) {
+        cur = data[key][j];
+        $root.append(renderItem(itemIndex++, cur.title, cur.url));
+      }
+    }
+    return $root;
+  }
+
+  // search box
+  var $result = $('.js-search-result'), $resultItems;
+  var lastActiveIndex, activeIndex;
+
+  function clear() {
+    $result.html(null);
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+  }
+  function onInputNotEmpty(val) {
+    $result.html(render(searchByQuery(val)));
+    $resultItems = $('.search-result__item'); activeIndex = 0;
+    $resultItems.eq(0).addClass('active');
+  }
+
+  search.clear = clear;
+  search.onInputNotEmpty = onInputNotEmpty;
+
+  function updateResultItems() {
+    lastActiveIndex >= 0 && $resultItems.eq(lastActiveIndex).removeClass('active');
+    activeIndex >= 0 && $resultItems.eq(activeIndex).addClass('active');
+  }
+
+  function moveActiveIndex(direction) {
+    var itemsCount = $resultItems ? $resultItems.length : 0;
+    if (itemsCount > 1) {
+      lastActiveIndex = activeIndex;
+      if (direction === 'up') {
+        activeIndex = (activeIndex - 1 + itemsCount) % itemsCount;
+      } else if (direction === 'down') {
+        activeIndex = (activeIndex + 1 + itemsCount) % itemsCount;
+      }
+      updateResultItems();
+    }
+  }
+
+  // Char Code: 13  Enter, 37  ⬅, 38  ⬆, 39  ➡, 40  ⬇
+  $(window).on('keyup', function(e) {
+    var modalVisible = search.getModalVisible && search.getModalVisible();
+    if (modalVisible) {
+      if (e.which === 38) {
+        modalVisible && moveActiveIndex('up');
+      } else if (e.which === 40) {
+        modalVisible && moveActiveIndex('down');
+      } else if (e.which === 13) {
+        modalVisible && $resultItems && activeIndex >= 0 && $resultItems.eq(activeIndex).children('a')[0].click();
+      }
+    }
+  });
+
+  $result.on('mouseover', '.search-result__item > a', function() {
+    var itemIndex = $(this).parent().data('index');
+    itemIndex >= 0 && (lastActiveIndex = activeIndex, activeIndex = itemIndex, updateResultItems());
+  });
+});
+</script></div></div>
+
+
+<script>(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function scrollToAnchor(anchor, duration, callback) {
+      var $root = this;
+      $root.animate({ scrollTop: $(anchor).position().top }, duration, function() {
+        window.history.replaceState(null, '', window.location.href.split('#')[0] + anchor);
+        callback && callback();
+      });
+    }
+    $.fn.scrollToAnchor = scrollToAnchor;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function affix(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroll,
+        offsetBottom = 0, scrollTarget = window, scroll = window.document, disabled = false, isOverallScroller = true,
+        rootTop, rootLeft, rootHeight, scrollBottom, rootBottomTop,
+        hasInit = false, curState;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.offsetBottom && (offsetBottom = _options.offsetBottom);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroll && (scroll = _options.scroll);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $scrollTarget = $(scrollTarget);
+        isOverallScroller = window.isOverallScroller($scrollTarget[0]);
+        $scroll = $(scroll);
+      }
+      function preCalc() {
+        top();
+        rootHeight = $root.outerHeight();
+        rootTop = $root.offset().top + (isOverallScroller ? 0 :  $scrollTarget.scrollTop());
+        rootLeft = $root.offset().left;
+      }
+      function calc(needPreCalc) {
+        needPreCalc && preCalc();
+        scrollBottom = $scroll.outerHeight() - offsetBottom - rootHeight;
+        rootBottomTop = scrollBottom - rootTop;
+      }
+      function top() {
+        if (curState !== 'top') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: 0
+          });
+          curState = 'top';
+        }
+      }
+      function fixed() {
+        if (curState !== 'fixed') {
+          $root.addClass('fixed').css({
+            left: rootLeft + 'px',
+            top: 0
+          });
+          curState = 'fixed';
+        }
+      }
+      function bottom() {
+        if (curState !== 'bottom') {
+          $root.removeClass('fixed').css({
+            left: 0,
+            top: rootBottomTop + 'px'
+          });
+          curState = 'bottom';
+        }
+      }
+      function setState() {
+        var scrollTop = $scrollTarget.scrollTop();
+        if (scrollTop >= rootTop && scrollTop <= scrollBottom) {
+          fixed();
+        } else if (scrollTop < rootTop) {
+          top();
+        } else {
+          bottom();
+        }
+      }
+      function init() {
+        if(!hasInit) {
+          var interval, timeout;
+          calc(true); setState();
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState();
+          });
+          $window.on('resize', function() {
+            disabled || (calc(true), setState());
+          });
+          hasInit = true;
+        }
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions,
+        refresh: function() {
+          calc(true, { animation: false }); setState();
+        }
+      };
+    }
+    $.fn.affix = affix;
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    function toc(options) {
+      var $root = this, $window = $(window), $scrollTarget, $scroller, $tocUl = $('<ul class="toc toc--ellipsis"></ul>'), $tocLi, $headings, $activeLast, $activeCur,
+        selectors = 'h1,h2,h3', container = 'body', scrollTarget = window, scroller = 'html, body', disabled = false,
+        headingsPos, scrolling = false, hasRendered = false, hasInit = false;
+
+      function setOptions(options) {
+        var _options = options || {};
+        _options.selectors && (selectors = _options.selectors);
+        _options.container && (container = _options.container);
+        _options.scrollTarget && (scrollTarget = _options.scrollTarget);
+        _options.scroller && (scroller = _options.scroller);
+        _options.disabled !== undefined && (disabled = _options.disabled);
+        $headings = $(container).find(selectors).filter('[id]');
+        $scrollTarget = $(scrollTarget);
+        $scroller = $(scroller);
+      }
+      function calc() {
+        headingsPos = [];
+        $headings.each(function() {
+          headingsPos.push(Math.floor($(this).position().top));
+        });
+      }
+      function setState(element, disabled) {
+        var scrollTop = $scrollTarget.scrollTop(), i;
+        if (disabled || !headingsPos || headingsPos.length < 1) { return; }
+        if (element) {
+          $activeCur = element;
+        } else {
+          for (i = 0; i < headingsPos.length; i++) {
+            if (scrollTop >= headingsPos[i]) {
+              $activeCur = $tocLi.eq(i);
+            } else {
+              $activeCur || ($activeCur = $tocLi.eq(i));
+              break;
+            }
+          }
+        }
+        $activeLast && $activeLast.removeClass('active');
+        ($activeLast = $activeCur).addClass('active');
+      }
+      function render() {
+        if(!hasRendered) {
+          $root.append($tocUl);
+          $headings.each(function() {
+            var $this = $(this);
+            $tocUl.append($('<li></li>').addClass('toc-' + $this.prop('tagName').toLowerCase())
+              .append($('<a></a>').text($this.text()).attr('href', '#' + $this.prop('id'))));
+          });
+          $tocLi = $tocUl.children('li');
+          $tocUl.on('click', 'a', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            scrolling = true;
+            setState($this.parent());
+            $scroller.scrollToAnchor($this.attr('href'), 400, function() {
+              scrolling = false;
+            });
+          });
+        }
+        hasRendered = true;
+      }
+      function init() {
+        var interval, timeout;
+        if(!hasInit) {
+          render(); calc(); setState(null, scrolling);
+          // run calc every 100 millisecond
+          interval = setInterval(function() {
+            calc();
+          }, 100);
+          timeout = setTimeout(function() {
+            clearInterval(interval);
+          }, 45000);
+          window.pageLoad.then(function() {
+            setTimeout(function() {
+              clearInterval(interval);
+              clearTimeout(timeout);
+            }, 3000);
+          });
+          $scrollTarget.on('scroll', function() {
+            disabled || setState(null, scrolling);
+          });
+          $window.on('resize', window.throttle(function() {
+            if (!disabled) {
+              render(); calc(); setState(null, scrolling);
+            }
+          }, 100));
+        }
+        hasInit = true;
+      }
+
+      setOptions(options);
+      if (!disabled) {
+        init();
+      }
+      $window.on('resize', window.throttle(function() {
+        init();
+      }, 200));
+      return {
+        setOptions: setOptions
+      };
+    }
+    $.fn.toc = toc;
+  });
+})();
+/*(function () {
+
+})();*/
+</script><script>
+  /* toc must before affix, since affix need to konw toc' height. */(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  var TOC_SELECTOR = window.TEXT_VARIABLES.site.toc.selectors;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window);
+    var $articleContent = $('.js-article-content');
+    var $tocRoot = $('.js-toc-root'), $col2 = $('.js-col-aside');
+    var toc;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+    var hasToc = $articleContent.find(TOC_SELECTOR).length > 0;
+
+    function disabled() {
+      return $col2.css('display') === 'none' || !hasToc;
+    }
+
+    tocDisabled = disabled();
+
+    toc = $tocRoot.toc({
+      selectors: TOC_SELECTOR,
+      container: $articleContent,
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      tocDisabled = disabled();
+      toc && toc.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+  });
+})();
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $window = $(window), $pageFooter = $('.js-page-footer');
+    var $pageAside = $('.js-page-aside');
+    var affix;
+    var tocDisabled = false;
+    var hasSidebar = $('.js-page-root').hasClass('layout--page--sidebar');
+
+    affix = $pageAside.affix({
+      offsetBottom: $pageFooter.outerHeight(),
+      scrollTarget: hasSidebar ? '.js-page-main' : null,
+      scroller: hasSidebar ? '.js-page-main' : null,
+      scroll: hasSidebar ? $('.js-page-main').children() : null,
+      disabled: tocDisabled
+    });
+
+    $window.on('resize', window.throttle(function() {
+      affix && affix.setOptions({
+        disabled: tocDisabled
+      });
+    }, 100));
+
+    window.pageAsideAffix = affix;
+  });
+})();
+</script><script type="text/x-mathjax-config">
+	var _config = { tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']]
+	}};_config.TeX = { equationNumbers: { autoNumber: "all" } };MathJax.Hub.Config(_config);
+</script>
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+    </div>
+    <script>(function () {
+  var $root = document.getElementsByClassName('root')[0];
+  if (window.hasEvent('touchstart')) {
+    $root.dataset.isTouch = true;
+    document.addEventListener('touchstart', function(){}, false);
+  }
+})();
+</script>
+  </body>
+</html>

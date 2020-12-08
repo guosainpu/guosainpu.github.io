@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU - 一只草履虫</title>
 
 <meta name="description" content="上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片组合逻辑芯片一个最基本的CPU主要由两类芯片组成：  组合逻辑芯片（Combinational Chips）：...">
-<link rel="canonical" href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -619,7 +619,7 @@ CHIP Mux4Way16 {
 <center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1ga1yf94f4ej314x0u0jsn.jpg" width="600" /></center>
 <center><figcaption>ALU真值表</figcaption></center>
 
-<p>下面我们就用上面实现的芯片来实现一下ALU（由于比较复杂，就先不画电路图了）。</p>
+<p>下面我们就用上面实现的芯片来实现一下ALU（。</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
  * The ALU (Arithmetic Logic Unit).
  * Computes one of the following functions:
@@ -683,6 +683,8 @@ CHIP ALU {
     And(a=true, b=outMSB, out=ng);
 }
 </code></pre></div></div>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg8btxnyuaj30uz0u0gma.jpg" width="1000" /></center>
 
 <h3 id="补码">补码</h3>
 <p>最后我们再来谈一下补码，上面我们提到的加法器都没有考虑正负符号的问题，如果引入符号，那么电路会变得更加复杂。通过使用补码可以很好的规避这个问题，因为补码有一个很重要的特性：<strong>任何两个用补码表示的有符号数的加法和正数的加法完全相同</strong>，例如用正数加法操作（-2）+（-3），所得的结果正好是（-5）的补码；补码的减法可以用加法来代替实现，例如x-y == x+(-y)。</p>

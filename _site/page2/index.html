@@ -5,7 +5,7 @@
 
 <meta name="description" content="Your Site Description
 ">
-<link rel="canonical" href="/page2/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/page2/"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -336,6 +336,72 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
 <!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/WebPage"><header style="display:none;"><h1>Home</h1></header><meta itemprop="headline" content="Home"><meta itemprop="author" content="Your Name"/><div class="js-article-content"><div class="layout--articles"><div class="article-list items items--divided"><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/02/29/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(10/12)--简单的操作系统</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置绘制上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简单一些。
+
+操作系统就是用来衔接计算机的硬件系统和软件系统的，以使得计算机对程序员和用户而言更容易使用。本篇的操作系统包含了一个最小规模的操作系统（其实就是一个Jack标准库的集合），主要包括：数学运算、字符串操作、内存管理、文本和图形输出到屏幕、键盘输入处理等功能，不包括：进程管理、磁盘管理、通信等功能。
+
+数学操作
+
+目前Hack在硬件上只支持加法和减法，因此我们需要在软...</div><p><a href="/2020/02/29/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 29, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-29T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(9/12)--实现编译器</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。
+
+高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则的语法（上下文无关语法）组织的，结构上层次化的语言。程序的每个类，每条语句都是符合某种语法规则的，所以我们反过来能够使用这些语法规则对其进行准确地解析，而我们日常使用的自然语言则不太受语法的严格的约束，所以用算法解释自然语言会更困难。
+
+词法分析
+
+程序基本上由语句组成，语句由单词和符号组成，每个单词或符号都有它要表达的含义：或是某种预算操作，或是某块内存的指针，或是指明当...</div><p><a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 25, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-25T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(8/12)--高级语言：Jack</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">本篇我们将设计一门高级语言：Jack。Jack是一门基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性（其实Jack非常寒酸，只是支持了“对象”的功能）。本篇的内容非常简单，主要是介绍Jack的语法。
+
+Hello, World
+
+众所周知，学习一门新语言的第一步，是写一个 Hello, World。
+
+class Main {
+    function void main() {  // Jack程序要包含一个Main类，且包含main方法，这是程序的入口函数。
+       do Output.printString("Hello, World");
+       do Output.println(); //换行
+       ret...</div><p><a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 24, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-24T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
+          <header><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(7/12)--实现一个虚拟机</h2></a></header>
+          <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回参等。如何解决这些问题呢？我们需要在简单的Hack之上，再构建一个更加复杂，能力更强的虚拟计算机，这个虚拟机向上提供了一套新的操作指令，即虚拟机的字节码（在Hack中这套字节码更接近我们常用的CPU指令集），其中每条虚拟机指令都是通过封装汇编层一系列的汇编指令来实现的，在本篇中我们会再一次看到在计算...</div><p><a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
+            </li><li>
+              <a class="button button--secondary button--pill button--sm"
+                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
+            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 21, 2020</span>
+            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2020-02-21T00:00:00+08:00">
+    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
+      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
           <header><a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(6/12)--汇编语言与汇编器</h2></a></header>
           <div class="item__description"><div class="article__content" itemprop="description articleBody">前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器
 
@@ -414,94 +480,8 @@ hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是�
             </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Dec 16, 2019</span>
             </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-12-16T00:00:00+08:00">
     <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(2/12)--与非门实现CPU的数理基础</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">CPU和布尔函数
-
-CPU本质上是一个函数计算器：
-
-  信号通过输入管脚输入，对应着函数的入参
-  CPU的内部电路是函数的黑盒实现
-  信号通过输出管脚输出，对应着函数的出参
-
-
-
-8086 CPU
-
-大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于织布机，有兴趣的同学可以翻翻计算机发展史，有助于加深对计算机原理的理解）。我认为现代计算机基于二进制的原因主要有两个：一方面是基于二进制，在物理实现上会更加容易，例如电路设计更加简单，0和1的表示也更加稳定（高低电平）；另一方面，既然CPU是函数的实现，那么就需要有完备的数学理论做支撑，其中布尔代数...</div><p><a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 17, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-17T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/10/12/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html"><h2 itemprop="headline" class="item__header">从0到1构建计算机(1/12)--从与非门到俄罗斯方块</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">Mark!!! 开始学习课程：From Nand To Tetris
-
-本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。
-
-
-现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架构（同时工业级的计算机每一层的实现也是非常复杂的），封装导致我们往往只能够看到冰山一角，至于水面下的实现原理，特色社会主义下的程序员在996的工作制之下，往往只能靠推测理解，或者通过学习一些零散的技术资料来形成一个不太完整，甚至理解有一些偏差的知识体系（我经常会陷入对某个知识点的理解是不是正确的无限自我...</div><p><a href="/2019/10/12/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA">从0到1构建计算机</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Oct 12, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-10-12T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础,从0到1构建计算机"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2019/02/18/%E4%B9%A6%E5%8D%95.html"><h2 itemprop="headline" class="item__header">技术书单</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">计算机基础：
-* 编码的奥秘（Charles Petzold）
-* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
-* 程序员的自我修养--链接、装载与库 (俞甲子等)
-* 深入理解计算机系统 (Randal E. Bryant)
-* 汇编语言 (王爽)
-* 编译原理（龙书）（Alfred V.Fho等）
-
-
-语言：
-* C程序设计语言（Brain W. Kernighan等）
-
-
-iOS：
-* runtime技术博客 (刘小壮)
-* 深入解析MacOS&amp;iOS操作系统 (Jonatan Levin)</div><p><a href="/2019/02/18/%E4%B9%A6%E5%8D%95.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E6%8A%80%E6%9C%AF%E4%B9%A6%E5%8D%95">技术书单</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Feb 18, 2019</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2019-02-18T00:00:00+08:00">
-    <meta itemprop="keywords" content="技术书单"></div>
-      </article><article class="item" itemscope itemtype="http://schema.org/BlogPosting"><div class="item__content">
-          <header><a href="/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0.html"><h2 itemprop="headline" class="item__header">定点数&浮点数</h2></a></header>
-          <div class="item__description"><div class="article__content" itemprop="description articleBody">浮点数的概念是相对于定点数来说的:
-
-
-  定点数：小数点的位置是固定的。(小数点的左边表示整数部分，小数点的右边表示小数部分)
-  浮点数：小数点的位置是浮动的。
-
-
-假设目前只有8bit存储空间可供表示一个数，我们把第一位用于符号位，剩下7位用于数值位。那么一个数值用两种方式的表示规则如下。
-
-定点数表示
-假定将小数点放在第五个bit，那么前三位将用于表示整数部分，后四位则用于表示小数部分。
-
-定点数表示举例：10000.000 == +1.0 ；00000.000 == -1.0；10011.000 == +3.0；00111.101 == -(7+5/8)
-
-取值范围
-
-整数部分的可表示的最大绝对值是：2^4 = 16，小数部分可表示的最大绝对值是：2(n-1)/2n = 1/...</div><p><a href="/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0.html">Read more</a></p></div><div class="article__info clearfix"><ul class="left-col menu"><li>
-              <a class="button button--secondary button--pill button--sm"
-                href="/archive.html?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80">计算机基础</a>
-            </li></ul><ul class="right-col menu"><li><i class="far fa-calendar-alt"></i> <span>Jul 11, 2016</span>
-            </li></ul></div><meta itemprop="author" content="Your Name"/><meta itemprop="datePublished" content="2016-07-11T00:00:00+08:00">
-    <meta itemprop="keywords" content="计算机基础"></div>
       </article></div>
-</div><div class="layout--home"><div class="pagination"><p>16 post articles, 2 pages.</p>
+</div><div class="layout--home"><div class="pagination"><p>20 post articles, 3 pages.</p>
     <div class="pagination__menu">
       <ul class="menu menu--nowrap"><li><a class="button button--secondary button--circle" href="/">
             <i class="fas fa-angle-left"></i>
@@ -509,9 +489,11 @@ iOS：
               <a class="button button--secondary button--circle" href="/"><span>1</span></a>
             </li><li>
               <div class="button button--primary button--circle focus"><span>2</span></div>
-            </li><li><div class="button button--secondary button--circle disabled">
+            </li><li>
+                <a class="button button--secondary button--circle" href="/page3"><span>3</span></a>
+              </li><li><a class="button button--secondary button--circle" href="/page3">
             <i class="fas fa-angle-right"></i>
-          </div></li></ul>
+          </a></li></ul>
     </div>
   </div></div>
 <script>/*(function () {

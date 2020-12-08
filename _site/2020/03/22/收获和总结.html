@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>从0到1构建计算机(12/12)--收获和总结 - 一只草履虫</title>
 
 <meta name="description" content="完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。之所以说是暂时的收尾，是因为我觉得课程中很多...">
-<link rel="canonical" href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
+<link rel="canonical" href="http://localhost:4000/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93.html"><link rel="alternate" type="application/rss+xml" title="一只草履虫" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png"><link rel="manifest" href="/assets/site.webmanifest"><link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#fc4d50"><link rel="shortcut icon" href="/assets/favicon.ico">
 
 <meta name="msapplication-TileColor" content="#ffc40d"><meta name="msapplication-config" content="/assets/browserconfig.xml">
 
@@ -368,11 +368,11 @@ l-3 -45 644 0 643 0 0 43 c0 23 -7 77 -15 118 -9 41 -13 80 -9 86 4 6 3 8 -4
 
 <h3 id="思想上的收获">思想上的收获</h3>
 
-<h4 id="合理的分层设计">合理的分层设计</h4>
+<h4 id="抽象">抽象</h4>
 
 <p>有的时候我们面对的问题会过于复杂以至于一时不知如何处理，在这种情况下我们不妨使用分层的方式来解决问题，一方面可以把一些细枝末节的逻辑封装在底层，使上层逻辑变得清晰；另一方面，通过合理的设计也可以直接简化某些逻辑，例如，Hack通过引入虚拟机，很好的简化了对栈的操作。还有把静态变量的内存分配规则交给底层汇编器来做，减轻了编译器的负担。但如何进行合理的分层设计，则又是另一个哲学问题了。</p>
 
-<h4 id="虚拟的概念">虚拟的概念</h4>
+<h4 id="虚拟">虚拟</h4>
 
 <h4 id="else待总结">else待总结</h4>
 
