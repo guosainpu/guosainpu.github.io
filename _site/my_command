@@ -1,8 +1,0 @@
-
-// 杀掉jekyll进程
-ps aux |grep jekyll |awk '{print $2}' | xargs kill -9
-
-// 给图片添加标题
-<center><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g921635xlzj30d00d2wed.jpg" width="25%"></center>
-<center><figcaption>真值表</figcaption></center>
-

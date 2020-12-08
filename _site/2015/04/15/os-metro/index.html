@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="关于程序与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="黄玄, Hux黄玄, Hux, 鬼栈, huxpro, @huxpro, 黄玄的博客, Hux Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="hUX 随想录（二）：操作系统的浪漫主义 —— Metro 篇 - 黄玄的博客 | Hux Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  操作系统的背后不只是冷冰冰的 0 和 1 ，数字时代的设计师们，如初神般刻画着新世界的秩序。信息、量子、宇宙，他们取世间万物为灵感来表达自己，那是它们对数字时代最浪漫的隐喻。
+
+">
+    
+    <meta property="article:published_time" content="2015-04-15T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="hUX 随想录">
+    
+    <meta property="article:tag" content="UX/UI">
+    
+    
+    <meta property="og:image" content="https://huangxuan.me/img/avatar-hux-ny.jpg">
+    <meta property="og:url" content="https://huangxuan.me/2015/04/15/os-metro/">
+    <meta property="og:site_name" content="黄玄的博客 | Hux Blog">
+    
+    <title>hUX 随想录（二）：操作系统的浪漫主义 —— Metro 篇 - 黄玄的博客 | Hux Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://huangxuan.me/2015/04/15/os-metro/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Hux Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-os-metro.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-os-metro.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=hUX+%E9%9A%8F%E6%83%B3%E5%BD%95" title="hUX 随想录">hUX 随想录</a>
+                        
+                        <a class="tag" href="/archive/?tag=UX%2FUI" title="UX/UI">UX/UI</a>
+                        
+                    </div>
+                    <h1>hUX 随想录（二）：操作系统的浪漫主义 —— Metro 篇</h1>
+                    
+                    <h2 class="subheading">信息、载体、抽象、UI 设计乱谈</h2>
+                    <span class="meta">Posted by Hux on April 15, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>操作系统的背后不只是冷冰冰的 0 和 1 ，数字时代的设计师们，如初神般刻画着新世界的秩序。信息、量子、宇宙，他们取世间万物为灵感来表达自己，那是它们对数字时代最浪漫的隐喻。</p>
+</blockquote>
+
+<h2 id="前言">前言</h2>
+
+<p>操作系统，数字时代当之无愧的地基。当大部分从业人员都更关注它的技术与功能时，操作系统的 UI 设计师们却赋予了它无限的艺术气息：他们用充满着浪漫主义幻想色彩的设计语言，配合着物理定律般严谨的交互体系，描绘着自己心目中的数字世界，那些界面 的背后是他们对数字世界的思考、理解、期待、抽象与隐喻，<strong>这些艺术思想支撑着浮在表面的设计</strong>。他们用一切你熟悉或不熟悉的方式，告诉世人：</p>
+
+<p><em>“看呐，那个虚拟又真实的世界”</em></p>
+
+<h2 id="metro">Metro</h2>
+
+<p>我们第一个要聊的，就是 <a href="http://en.wikipedia.org/wiki/Metro_(design_language\)">Metro</a> 。虽然它已经改名为 Modern UI ，虽然它作为 Windows Phone 、Windows 8 甚至 Windows 10 的 UI 风格算不上成功，但是作为一个设计语言，它却是声名显赫。以它而非 Windows 来命名这一章节，就是出于对它的敬意。</p>
+
+<p><img src="/img/in-post/post-metro-ui.jpg" alt="img" /></p>
+
+<p>众所周知 Metro 借鉴了交通标示语言、包豪斯现代风格与瑞士国际主义平面设计，其核心思想在于剔除多余信息，专注于内容传达（Content, not chrome），所以 Metro 采用了以 Typography、Color 为主要元素的视觉语言，另外它也非常重视动效设计（Motion Design），这是同期 UI 设计的共识，Motion provides meaning，动效对于表达隐喻有着巨大得作用。</p>
+
+<p>我们暂且不去讨论 Metro 在实际运用中的情况，而是尝试去猜想一下 Metro 的设计师们对数字世界的思考，以及那些隐藏在 Metro 背后的奇思妙想：</p>
+
+<h4 id="思考--极致抽象信息">思考 —— 极致抽象信息</h4>
+
+<p>数字时代是基于信息的。这也是为什么我们称这个产业为 IT (Information Technology) ，我们每天使用 PC、Mobile 等数字设备、其实本质是主动或被动的接收、筛选、消化与产生信息。</p>
+
+<p>语言与文字的发明是人类信息革命的第一个里程碑，掌握同种语言或文字的人类从此可以高效得进行信息的交换与传播。而现在我们正在走进人机交互与万物互联的时代：人类不但要和人类通信，还要和智能设备建立连接。历史总是上演着重复因此值得借鉴，为什么不把已经发明的东西在数字世界重新发明一次呢？<strong>于是 Cortana 承担了微软在数字时代复刻语音的使命，而 Metro 则继承了老祖宗文字的魔力。</strong></p>
+
+<p>无论 Typography-based 还是 Content, not chrome ，<strong>Metro 试图对一切数字时代的信息进行一种非常极致的抽象 —— 我们的 UI 不需要来自真实世界的隐喻，我们只需要足够直接的信息。</strong> 既然文字就是信息、图片就是信息、音视频就是信息，所以它们理所当然应该直接呈现；而所有的样式也都必须直接传达信息，于是网格和灰度表示层级，颜色的存在也更多代表着符号化的视觉传达：比如用于 VI 的品牌色，或者是刻板印象心情。</p>
+
+<p>这种对信息简单粗暴的抽象使得 Metro 的首秀极具冲击，却也成为其日后发展最大的绊脚石。</p>
+
+<h4 id="载体--信息平面">载体 —— 信息平面</h4>
+
+<p>信息总归需要载体，而设计师们的目的就是寻找，或者创造一种介质来承载、传递、可视化这些信息，然后呈现给用户， 最后才得以成为 UI</p>
+
+<p>我们都看着屏幕越来越趋于一种扁平的状态，所有设计师们理所当然的想到这种介质可能是一种类似平面的东西，比如说 WebOS 具有抽象意义的“卡片纸” ，或是 iOS/OS X 改变风格前使用的“亚麻桌布”，他们尝试告诉你藏在屏幕后面的数字世界，可能是由某种类似真实世界的平面状物体来承载信息的。<br />
+而 Metro 则做得更加彻底，在它看来这种拟物是强加给数字世界的不必要信息，于是它抛开了所有自然界存在的元素，又一次将信息抽象做到了极致 ：其实那就是一个单纯放置信息的平面而已，或者说，<strong>其实是信息组成了这个平面，数字世界的信息根本无需额外的载体——文字与图像，一方面可以看作是狭义信息的载体，另一方面也可以被看作是广义信息的一种表现形态。</strong></p>
+
+<p><strong>所以我们可以看到 Metro UI 的背景经常是一个空旷的黑色，其实那个黑色代表着 Nothing ，意味着这个平面的下方没有任何东西。</strong>而如果你在下方使用了图像作为背景，你就会发现这其实是两个平面 —— 上层是一个背景透明、漂浮在图像层上的信息平面。而下层则是另一个完全由图像信息组成的信息平面，当我们去划动上层时，产生的视差移动也在告诉我们：这是两个层级。</p>
+
+<p><img src="/img/in-post/post-metro-panorama.jpg" alt="img" /></p>
+
+<p>在所有的 Metro 组件里，我印象最深刻的叫 Panorama Panel（上图） ，Panorama 在我看来是 Metro 对信息最直接的隐喻：<strong>不同的信息体，聚合成了一个完整的信息平面</strong>。当我们在手机屏幕上左右滑动 Panorama 时就好像在操作一个摄像机平移镜头。这种“数字报纸”区别于报纸的最大感受就好像它可以随着信息的量级在 X 轴和 Y 轴 上无限延伸下去，变成一个信息的海洋，在你的面前流动。</p>
+
+<p>对啊，那不就是信息流吗。</p>
+
+<h4 id="世界--卡片飞舞的世界">世界 —— 卡片飞舞的世界</h4>
+
+<p>我之所以不愿称 Metro 的信息平面为纸片，是因为它不能卷曲也不能折叠；<br />
+而之所以不愿称 Metro 的信息平面为卡片，是因为它并非实体，而且尺寸无限；</p>
+
+<p><strong>可 Metro 的世界却又让我觉得是卡片飞舞的。</strong></p>
+
+<p>一张卡片的秩序是动态磁贴（Live Tiles），它很硬，只能翻转。却又具备魔力，好像在每一次的翻转中，信息都可以得到重组和再现。<br />
+二张卡片的秩序是视差原理（Parallax），当你移动镜头时，任意两张卡片在你眼中的位移，都必须由它们距离屏幕 (Z=0) 的深度决定<br />
+三张卡片的秩序就像飞来咒，原有的平面撤离，被呼唤的卡片俏皮的翻滚着从侧后方飞进视野，Metro UI 的动画设计隐喻着一切。</p>
+
+<p>Status Bar 和 Application Bar 就像是紧贴在屏幕上的卡片，所以不受视差影响。而 Pivot Control 则更有魔幻色彩一点，你操纵它就如操作交通枢纽，指挥一个个小的信息片，来来去去在你的面前。</p>
+
+<p>所有这些零厚度的卡片，或近，或远，最终组成了整个 Metro 世界。<strong>在我的想象里，那个次元就好像，所有的信息都以片状飞在空中，而你只能看见你所需要的那些，它们有条不紊的在纵横间穿梭，就好像到处都是信息流的交通轨道，你仿佛置身于，那个数据包飞来飞去、路由器控制地址的 —— 网路世界。</strong></p>
+
+<p><img src="/img/in-post/post-metro-real.jpg" alt="img" /></p>
+
+<h2 id="结语">结语</h2>
+
+<p>Metro 对信息极致的抽象与压平，与同期的 iOS 6- 风格形成鲜明对比，引发大家对于数字世界与用户界面的新一轮思考，里程碑式的推动了 Flat Design 在新一代数字设计中的普及。不过我们也知道 Metro UI 在微软的实际运用中却其实不成功，这又是为什么呢？</p>
+
+<p>笔者抛砖引玉一些自己的观点：</p>
+
+<p>当年 Metro 第一次运用在 Zune 身上时是非常惊艳的，风格超前、细节精致、动画细腻。再看现在的 Xbox （图一），Pivot 配合磁贴组、简单大气，几乎成为电视 UI 设计的模版。可偏偏在 PC 和 Mobile 两个场景，Metro 却饱受非议。</p>
+
+<p>在我看来 PC 和 Mobile 其实代表着两个信息密度最高的场景、PC 是传统互联网的计算中心，而 Mobile 则是移动互联网和可以预见的未来内的个人计算中心。
+<strong>在如此复杂的场景下，其实 Metro 作为设计语言的尺度是不够的。</strong>为什么这么说呢，虽然 Metro 对信息的抽象方式不无道理，但其实还是过分理想和纯粹了。有太多的屏幕像素因此被浪费，有太多其他维度的信息表达方式因此被舍弃掉了。</p>
+
+<p>也就是说：Metro 这个设计语言本身是没有问题的，但是拿目前的它作为 PC/Mobile 这种操作系统级别的设计语言却是存在问题的。<strong>一个操作系统的设计语言与交互体系，一定不能太小，必须是一套包容性足够强又可被拓展和延伸的体系。</strong>其实我们能看到 Windows Phone 的 UI 设计容纳度是非常低的，这或许就可以说明问题。</p>
+
+<p><strong>这也是为什么 Win 10 for PC 和 Win 10 for Mobile 都开始削弱最初的那个纯粹的 Metro 体系，转而采用一种 Metro 的视觉语言混搭非 Metro 交互逻辑的方式来设计。</strong>
+期待 new Metro (Metro 2.0) 能在 Win 10 上逐步走向成熟，让我们一同见证。</p>
+
+<hr />
+
+<p>本文是“操作系统的浪漫主义”系列的第一篇文章，如果您喜欢，请继续关注我的博客 ;)</p>
+
+<p>尽请期待：</p>
+
+<ul>
+  <li><strong>Android 篇</strong>
+    <ul>
+      <li>思考 —— 从卡片的层叠说起</li>
+      <li>载体 —— 量子纸</li>
+      <li>世界 —— 魔法材质统一世界</li>
+    </ul>
+  </li>
+  <li><strong>iOS 篇</strong>
+    <ul>
+      <li>思考 —— 盒子里的蒸汽朋克</li>
+      <li>载体 —— 景深的无穷近与无穷远</li>
+      <li>世界 —— 小宇宙里的小宇宙</li>
+    </ul>
+  </li>
+</ul>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2015/04/14/unix-linux-note/" data-toggle="tooltip" data-placement="top" title="Unix/Linux 扫盲笔记">
+                        Previous<br>
+                        <span>Unix/Linux 扫盲笔记</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2015/05/11/see-u-ali/" data-toggle="tooltip" data-placement="top" title="See you, Alibaba ">
+                        Next<br>
+                        <span>See you, Alibaba </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0069" 
+                    href="/archive/?tag=%E7%9F%A5%E4%B9%8E"
+                    title="知乎"
+                    rel="10">知乎</a>
+        
+                <a data-sort="0037" 
+                    href="/archive/?tag=%E7%AC%94%E8%AE%B0"
+                    title="笔记"
+                    rel="42">笔记</a>
+        
+                <a data-sort="0043" 
+                    href="/archive/?tag=Coq"
+                    title="Coq"
+                    rel="36">Coq</a>
+        
+                <a data-sort="0043" 
+                    href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29"
+                    title="SF (软件基础)"
+                    rel="36">SF (软件基础)</a>
+        
+                <a data-sort="0060" 
+                    href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29"
+                    title="PLF (编程语言基础)"
+                    rel="19">PLF (编程语言基础)</a>
+        
+                <a data-sort="0060" 
+                    href="/archive/?tag=Web"
+                    title="Web"
+                    rel="19">Web</a>
+        
+                <a data-sort="0063" 
+                    href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29"
+                    title="LF (逻辑基础)"
+                    rel="16">LF (逻辑基础)</a>
+        
+                <a data-sort="0072" 
+                    href="/archive/?tag=UX%2FUI"
+                    title="UX/UI"
+                    rel="7">UX/UI</a>
+        
+                <a data-sort="0073" 
+                    href="/archive/?tag=%E4%BA%A7%E5%93%81"
+                    title="产品"
+                    rel="6">产品</a>
+        
+                <a data-sort="0073" 
+                    href="/archive/?tag=PWA"
+                    title="PWA"
+                    rel="6">PWA</a>
+        
+                <a data-sort="0075" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="4">JavaScript</a>
+        
+                <a data-sort="0075" 
+                    href="/archive/?tag=Slides"
+                    title="Slides"
+                    rel="4">Slides</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E5%9F%BA%E7%A1%80"
+                    title="基础"
+                    rel="3">基础</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E7%94%9F%E6%B4%BB"
+                    title="生活"
+                    rel="3">生活</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E8%AF%91"
+                    title="译"
+                    rel="3">译</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E9%98%BF%E9%87%8C"
+                    title="阿里"
+                    rel="3">阿里</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%F0%9F%87%AC%F0%9F%87%A7"
+                    title="🇬🇧"
+                    rel="3">🇬🇧</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=C"
+                    title="C"
+                    rel="3">C</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=C%2B%2B"
+                    title="C++"
+                    rel="3">C++</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=Vim"
+                    title="Vim"
+                    rel="3">Vim</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6"
+                    title="计算机科学"
+                    rel="2">计算机科学</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA"
+                    title="计算理论"
+                    rel="2">计算理论</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=CSS"
+                    title="CSS"
+                    rel="2">CSS</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=Wechat"
+                    title="Wechat"
+                    rel="2">Wechat</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=hUX+%E9%9A%8F%E6%83%B3%E5%BD%95"
+                    title="hUX 随想录"
+                    rel="2">hUX 随想录</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="http://mida.re/">乱序</a></li>
+  
+  <li><a href="https://xuechundesign.github.io">Sherry Wu</a></li>
+  
+  <li><a href="http://hmqk1995.github.io">Luke 的自留地</a></li>
+  
+  <li><a href="http://ebnbin.com/">Ebn's Blog</a></li>
+  
+  <li><a href="http://blog.smdcn.net">SmdCn's Blog</a></li>
+  
+  <li><a href="http://tiye.me/">JiyinYiyong</a></li>
+  
+  <li><a href="https://www.ruoyaowu.com/">David's Game</a></li>
+  
+  <li><a href="http://dhong.co">DHong Say</a></li>
+  
+  <li><a href="http://ingf.github.io/">尹峰以为</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hux";
+    var disqus_identifier = "/2015/04/15/os-metro";
+    var disqus_url = "https://huangxuan.me/2015/04/15/os-metro/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Hux Blog 2020
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'huangxuan.me';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
