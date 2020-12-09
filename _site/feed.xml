@@ -3,10 +3,10 @@
   <channel>
     <title>一只草履虫</title>
     <description>关于程序与设计、黑客与画家 | 黄玄，Web &amp; Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 09 Dec 2020 16:26:20 +0800</pubDate>
-    <lastBuildDate>Wed, 09 Dec 2020 16:26:20 +0800</lastBuildDate>
+    <link>https://huangxuan.me/</link>
+    <atom:link href="https://huangxuan.me/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Wed, 09 Dec 2020 16:46:23 +0800</pubDate>
+    <lastBuildDate>Wed, 09 Dec 2020 16:46:23 +0800</lastBuildDate>
     <generator>Jekyll v4.1.1</generator>
     
       <item>
@@ -26,8 +26,8 @@
 &lt;/ul&gt;
 </description>
         <pubDate>Sun, 21 Jun 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/06/21/data-rep-todo/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/06/21/data-rep-todo/</guid>
+        <link>https://huangxuan.me/2020/06/21/data-rep-todo/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2020/06/21/data-rep-todo/</guid>
         
         <category>笔记</category>
         
@@ -425,8 +425,8 @@ neither in C or C++ standard. Though compiler extension might include it.&lt;/p&
 &lt;/ul&gt;
 </description>
         <pubDate>Sun, 21 Jun 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/06/21/data-rep-float/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/06/21/data-rep-float/</guid>
+        <link>https://huangxuan.me/2020/06/21/data-rep-float/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2020/06/21/data-rep-float/</guid>
         
         <category>笔记</category>
         
@@ -879,8 +879,8 @@ not the case of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&
 
 </description>
         <pubDate>Fri, 19 Jun 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/06/19/data-rep-int/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/06/19/data-rep-int/</guid>
+        <link>https://huangxuan.me/2020/06/19/data-rep-int/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2020/06/19/data-rep-int/</guid>
         
         <category>笔记</category>
         
@@ -899,8 +899,8 @@ not the case of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&
 &lt;/iframe&gt;
 </description>
         <pubDate>Tue, 05 May 2020 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2020/05/05/pl-chart/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/05/05/pl-chart/</guid>
+        <link>https://huangxuan.me/2020/05/05/pl-chart/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2020/05/05/pl-chart/</guid>
         
         
       </item>
@@ -940,8 +940,8 @@ I am sure it will be an enjoyable read.&lt;/p&gt;
 
 </description>
         <pubDate>Fri, 13 Sep 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/09/13/peter-john-landin/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/09/13/peter-john-landin/</guid>
+        <link>https://huangxuan.me/2019/09/13/peter-john-landin/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/09/13/peter-john-landin/</guid>
         
         <category>CS Idols</category>
         
@@ -998,8 +998,8 @@ I am sure it will be an enjoyable read.&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 08 Sep 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/09/08/spacemacs-workflow/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/09/08/spacemacs-workflow/</guid>
+        <link>https://huangxuan.me/2019/09/08/spacemacs-workflow/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/09/08/spacemacs-workflow/</guid>
         
         <category>Vim</category>
         
@@ -1072,8 +1072,8 @@ I am sure it will be an enjoyable read.&lt;/p&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Tue, 03 Sep 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/09/03/vim-from-finder/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/09/03/vim-from-finder/</guid>
+        <link>https://huangxuan.me/2019/09/03/vim-from-finder/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/09/03/vim-from-finder/</guid>
         
         <category>Vim</category>
         
@@ -2232,8 +2232,8 @@ When this happens, it is unpredictable which instance will be found first by the
 
 </description>
         <pubDate>Mon, 02 Sep 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/09/02/sf-qc-02-typeclasses/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/09/02/sf-qc-02-typeclasses/</guid>
+        <link>https://huangxuan.me/2019/09/02/sf-qc-02-typeclasses/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/09/02/sf-qc-02-typeclasses/</guid>
         
         <category>SF (软件基础)</category>
         
@@ -2251,8 +2251,8 @@ When this happens, it is unpredictable which instance will be found first by the
         <description>&lt;p&gt;TBD&lt;/p&gt;
 </description>
         <pubDate>Tue, 19 Mar 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/03/19/sf-plf-19-partial-eval/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/03/19/sf-plf-19-partial-eval/</guid>
+        <link>https://huangxuan.me/2019/03/19/sf-plf-19-partial-eval/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/03/19/sf-plf-19-partial-eval/</guid>
         
         <category>SF (软件基础)</category>
         
@@ -2309,8 +2309,8 @@ When this happens, it is unpredictable which instance will be found first by the
 
 </description>
         <pubDate>Mon, 18 Mar 2019 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/03/18/sf-plf-18-use-auto/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/03/18/sf-plf-18-use-auto/</guid>
+        <link>https://huangxuan.me/2019/03/18/sf-plf-18-use-auto/</link>
+        <guid isPermaLink="true">https://huangxuan.me/2019/03/18/sf-plf-18-use-auto/</guid>
         
         <category>SF (软件基础)</category>
         
