@@ -1,0 +1,13 @@
+I"�<hr />
+<p>layout:     post
+title:      “Hello 2015”
+subtitle:   “ "Hello World, Hello Blog"”
+—</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="err">'我是郭赛，在这里练习基本功'</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g924tzerroj31400u0k1s.jpg" alt="SOHO" /></p>
+
+:ET

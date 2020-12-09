@@ -1,0 +1,7 @@
+I"z
+<p><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1g924tzerroj31400u0k1s.jpg" alt="SOHO" /></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">我是郭赛，在这里练习基本功</span><span class="dl">'</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET
