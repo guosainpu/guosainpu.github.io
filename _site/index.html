@@ -16,8 +16,8 @@
     <meta property="og:type" content="website">
     <meta property="og:description" content="我干了什么 究竟拿了时间换了什么">
     
-    <meta property="og:image" content="http://localhost:4000/img/avatar-hux-ny.jpg">
-    <meta property="og:url" content="http://localhost:4000/">
+    <meta property="og:image" content="https://huangxuan.me/img/avatar-hux-ny.jpg">
+    <meta property="og:url" content="https://huangxuan.me/">
     <meta property="og:site_name" content="一只草履虫">
     
     <title>一只草履虫</title>
@@ -29,7 +29,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/">
+    <link rel="canonical" href="https://huangxuan.me/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -94,12 +94,6 @@
                         <li>
                             <a href="/archive/">Archive</a>
                         </li>
-                        
-                        
-                        
-                        
-                        
-                        
                         
                         
                         
@@ -236,272 +230,305 @@
             ">
     			
 <div class="post-preview">
-    <a href="/2020/06/21/data-rep-float/">
+    <a href="/2020/08/07/%E6%8E%A2%E7%A9%B6Runtime/">
         <h2 class="post-title">
-            Data Representation - Floating Point Numbers
+            探究OC Runtime
         </h2>
-        
-        <h3 class="post-subtitle">
-            「数据表示」浮点数
-        </h3>
         
         <div class="post-content-preview">
             
-                In the last episode we talked about the data representation of integer, a kind
-of fixed-point numbers. Today we’re going to learn about floating-point numbers.
+                Runtime理解
 
-Floating-point numbers are used to a...
+OC是基于C的，在C的基础上扩展出了面向对象的能力，支持其面向对象能力的核心就是OC的runtime机制。OC中我们编写的类，最终按照某种数据结构存储在可执行文件的__DATA段中，然后可执行文件被操作系统加载到进程空间，此时进程空间中就有了各个类和函数的信息。runtime是一个动态链接库，在程序执行过程中，我们通过runtime提供的各种能力，来访问、操作、读写各个...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on June 21, 2020
+        Posted by guosai on August 7, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2020/06/19/data-rep-int/">
+    <a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++/">
         <h2 class="post-title">
-            Data Representation - Integer
+            重修C++
         </h2>
-        
-        <h3 class="post-subtitle">
-            「数据表示」整数
-        </h3>
         
         <div class="post-content-preview">
             
-                Integers, or whole number from elemental mathematics, are the most common and 
-fundamental numbers used in the computers. It’s represented as 
-fixed-point numbers, contrast to floating-point number...
+                准备重学下C++
+
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on June 19, 2020
+        Posted by guosai on July 1, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2019/09/13/peter-john-landin/">
+    <a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/">
         <h2 class="post-title">
-            Peter John Landin
+            静态链接分析
         </h2>
-        
-        <h3 class="post-subtitle">
-            「计算机科学偶像」- 彼得·约翰·兰丁
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  
-    wiki
-    维基
-  
+                注：本篇内容基本参考自：Mach-O 与静态链接。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。
 
+材料准备
 
-I was long curious about how does λ calculus become the foundation of formalizaing programming languages. It’s strange that I haven’t look up the answer until today: It’s i...
+首先手写一个简单的C程序：a.c，b.c
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+/* a.c */
+#include &lt;stdio.h&gt;
+
+extern int gl...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on September 13, 2019
+        Posted by guosai on June 22, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2019/09/08/spacemacs-workflow/">
+    <a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/">
         <h2 class="post-title">
-            My Spacemacs Workflow
+            x86_64汇编下的函数调用过程
         </h2>
-        
-        <h3 class="post-subtitle">
-            From Vim to Spacemacs
-        </h3>
         
         <div class="post-content-preview">
             
-                Emacs tend to provide a good support for functional programming languages. Indeed, many FP language community exclusively use Emacs and give only first-party IDE supports to Emacs, such as Coq, Agd...
+                材料准备
+
+首先手写一个简单的C程序：main.c
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+#include &lt;stdio.h&gt;
+
+void empty();
+i...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on September 8, 2019
+        Posted by guosai on June 10, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2019/09/03/vim-from-finder/">
+    <a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2/">
         <h2 class="post-title">
-            把「终端下的 Vim」作为 macOS Finder 的打开方式
+            计算机发展史
         </h2>
-        
-        <h3 class="post-subtitle">
-            Open file with terminal Vim from the macOS Finder
-        </h3>
         
         <div class="post-content-preview">
             
-                我的日常主力编辑器主要是：
+                发展阶段
+
+【计算】 –&gt; 【计算 + 存储】 –&gt; 【可编程化计算 + 存储】 –&gt; 【人工智能 + 存储】
+
+早期计算机
+
+简单的加减乘除算数运算工具，目的是利用工具辅助人工计算
+
+1、纯手动工具：结绳记事、算盘、计算尺
 
 
-  (Neo)Vim
-  Spacemacs (via Emacs-plus)
-  Visual Studio Code
-  IntelliJ IDEA
+算盘
 
+2、手动机械工具：
 
-这里面只有 (Neo)Vim 是存活在终端中的（我并不在终端内使用 Emacs），而由于我日常主要是从终端（via iTerm）来使用电脑，所以会把他们都加入到 $PATH 里以方便从终端中唤起，VSCo...
+  1623年，德国科学家施卡德建造出世界已知的第一部机械式计算器，成为计算机世代之父，这部机械改良自时钟的齿轮技术...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on September 3, 2019
+        Posted by guosai on June 9, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2018/10/06/vim-cn-im/">
+    <a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97/">
         <h2 class="post-title">
-            Vim 与中文输入法
+            C语言拾遗
         </h2>
-        
-        <h3 class="post-subtitle">
-            Using Vim with non-english input method
-        </h3>
         
         <div class="post-content-preview">
             
-                Update: 我最后还是放弃把 Vim 作为主要编辑器来输入中文了，整体使用下来 mental model 的 cost 太重了。记笔记时用用中文呀或者改改博客时偶尔用一下还蛮去，这个时候这个功能至少能帮助你 Esc 之后不煞笔，所以也不算完全没有价值吧……
+                short, long
+
+1
+2
+short int x;
+long int y;
 
 
+short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。
 
-我相信很多中文世界的 Vimer 都遇到过这个烦恼，在 vim 的 insert 模式时可能突然想输个中文，输完之后会本能的...
+short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on October 6, 2018
+        Posted by guosai on March 29, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2018/09/27/avoiding-success-at-all-cost/">
+    <a href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93/">
         <h2 class="post-title">
-            Avoiding success at all cost
+            从0到1构建计算机(12/12)--收获和总结
         </h2>
-        
-        <h3 class="post-subtitle">
-            Watching "Escape from the Ivory Tower: The Haskell Journey"
-        </h3>
         
         <div class="post-content-preview">
             
-                “Avoiding success at all cost” is the informal motto behinds Haskell. It could be parenthesized in two ways, either “Avoiding (success at all cost)” or “(Avoiding sucess) (at all cost)”.
+                完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。
 
-I’m not going to interpret them directly but rather to share some thoughts on “the success vs. costs” basing ...
+之所以说是暂时的收尾，是因为我觉得课程中很多知识点自己理解得还不到位，很多精华的思想也没有完全get到。这门课程是一门基...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on September 27, 2018
+        Posted by guosai on March 22, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2018/06/30/dreamer/">
+    <a href="/2020/03/21/%E5%B0%8F%E6%B8%B8%E6%88%8F/">
         <h2 class="post-title">
-            程序员中的梦想家
+            从0到1构建计算机(11/12)--在Hack上运行小游戏
         </h2>
-        
-        <h3 class="post-subtitle">
-            Dreamers among programmers
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  本文首发于我的知乎专栏 The Little Programmer，转载请保留链接 ;)
+                经过了前面10章漫长的旅程，我们终于要达成我们的目标了：在一个完全由自己实现的计算机平台上运行一个小游戏。这个小游戏要经过编写、编译、转换虚拟机字节码、汇编、生成机器代码等步骤，最终运行在自己搭建的虚拟计算机上。在游戏的运行过程中，每一条指令都是我们亲手编写，每一个细节我们都了如指掌，是我们完完全全地创造了它（虽然需要基于一个硬件虚拟机），这确实是一件非常有意思的事情。
 
+骑手快跑
 
-有一类程序员是 visionary 型的，为了实现一些超前的 idea，绕过某些技术的限制，他们写的 code 晦涩高深得只有他们自己能懂，做出来的 tool 看上去很美好结果处处是坑出了 bug 根本没法查，但正是这类人不断创造出新的东西，在洗礼之后成为一个个 big thing。
-
-我每周...
+我这里...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on June 30, 2018
+        Posted by guosai on March 21, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/12/12/uncomputable-funcs/">
+    <a href="/2020/02/29/%E7%AE%80%E5%8D%95%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">
         <h2 class="post-title">
-            「知乎」如何证明不可计算的函数比可计算的函数多？
+            从0到1构建计算机(10/12)--简单的操作系统
         </h2>
-        
-        <h3 class="post-subtitle">
-            Why is there more uncomputable functions?
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  这篇文章转载自我在知乎上的回答
+                上一篇我们完成了Jack的编译器，这就意味着我们可以随心所欲地在Hack上编写Jack程序了。但是以Jack目前的能力，即使是想完成一些简单的操作也要编写非常复杂的代码，例如我们想要在屏幕上输出“Hello Workd!”，就必须在屏幕上特定位置绘制上几百个像素点。所以我们需要实现一个简单的操作系统来让事情变得更简单一些。
 
-
-严谨的证明的话，可以使用「形式语言」（Formal language）来证明：
-
-在可计算理论和计算复杂度理论中，每个「计算问题」都被描述为一个一个「形式语言」，即字符串的集合。比如对于判断一个图是否是无向连通图这个问题：我们可以写为一个描述所有无向连通图的集合：
-
-\[A = \{ \langle G \rangle \vert G \text{ ...
+操作系统就是用来衔接计算机的硬件系统和软件系统的，以使得计算机对程...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on December 12, 2017
+        Posted by guosai on February 29, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/12/12/halting-problem/">
+    <a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8/">
         <h2 class="post-title">
-            「知乎」如何通俗地解释停机问题？
+            从0到1构建计算机(9/12)--实现编译器
         </h2>
-        
-        <h3 class="post-subtitle">
-            How to explain the Halting Problem?
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  这篇文章转载自我在知乎上的回答
+                本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。
 
-
-我用 Python 伪代码来解释下，我觉得对这个问题有兴趣的应该都是有点编程基础的，所以直接上 code 应该是最容易的。
-
-背景知识
-
-「停机问题」研究的是：是否存在一个「程序」，能够判断另外一个「程序」在特定的「输入」下，是会给出结果（停机），还是会无限执行下去（不停机）。
-
-在下文中，我们用「函数」来表示「程序」，「函数返回」即表示给出了结果。...
+高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则的语法（上下文无关语法）组织的，结构上层次化的语言。程序的每个类，每条语句都...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on December 12, 2017
+        Posted by guosai on February 25, 2020
     </p>
 </div>
 <hr>
@@ -542,130 +569,30 @@ I’m not going to interpret them directly but rather to share some thoughts on 
         
         
         
-                <a data-sort="0069" 
-                    href="/archive/?tag=%E7%9F%A5%E4%B9%8E"
-                    title="知乎"
-                    rel="10">知乎</a>
+                <a data-sort="0002" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
+                    title="计算机基础"
+                    rel="18">计算机基础</a>
         
-                <a data-sort="0037" 
-                    href="/archive/?tag=%E7%AC%94%E8%AE%B0"
-                    title="笔记"
-                    rel="42">笔记</a>
+                <a data-sort="0008" 
+                    href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
+                    title="从0到1构建计算机"
+                    rel="12">从0到1构建计算机</a>
         
-                <a data-sort="0043" 
-                    href="/archive/?tag=Coq"
-                    title="Coq"
-                    rel="36">Coq</a>
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
+                    title="汇编语言"
+                    rel="3">汇编语言</a>
         
-                <a data-sort="0043" 
-                    href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29"
-                    title="SF (软件基础)"
-                    rel="36">SF (软件基础)</a>
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
+                    title="计算机硬件体系"
+                    rel="3">计算机硬件体系</a>
         
-                <a data-sort="0060" 
-                    href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29"
-                    title="PLF (编程语言基础)"
-                    rel="19">PLF (编程语言基础)</a>
-        
-                <a data-sort="0060" 
-                    href="/archive/?tag=Web"
-                    title="Web"
-                    rel="19">Web</a>
-        
-                <a data-sort="0063" 
-                    href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29"
-                    title="LF (逻辑基础)"
-                    rel="16">LF (逻辑基础)</a>
-        
-                <a data-sort="0072" 
-                    href="/archive/?tag=UX%2FUI"
-                    title="UX/UI"
-                    rel="7">UX/UI</a>
-        
-                <a data-sort="0073" 
-                    href="/archive/?tag=%E4%BA%A7%E5%93%81"
-                    title="产品"
-                    rel="6">产品</a>
-        
-                <a data-sort="0073" 
-                    href="/archive/?tag=PWA"
-                    title="PWA"
-                    rel="6">PWA</a>
-        
-                <a data-sort="0075" 
-                    href="/archive/?tag=JavaScript"
-                    title="JavaScript"
-                    rel="4">JavaScript</a>
-        
-                <a data-sort="0075" 
-                    href="/archive/?tag=Slides"
-                    title="Slides"
-                    rel="4">Slides</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E5%9F%BA%E7%A1%80"
-                    title="基础"
-                    rel="3">基础</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E7%94%9F%E6%B4%BB"
-                    title="生活"
-                    rel="3">生活</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E8%AF%91"
-                    title="译"
-                    rel="3">译</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E9%98%BF%E9%87%8C"
-                    title="阿里"
-                    rel="3">阿里</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%F0%9F%87%AC%F0%9F%87%A7"
-                    title="🇬🇧"
-                    rel="3">🇬🇧</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=C"
-                    title="C"
-                    rel="3">C</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=C%2B%2B"
-                    title="C++"
-                    rel="3">C++</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=Vim"
-                    title="Vim"
-                    rel="3">Vim</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6"
-                    title="计算机科学"
-                    rel="2">计算机科学</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA"
-                    title="计算理论"
-                    rel="2">计算理论</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=CSS"
-                    title="CSS"
-                    rel="2">CSS</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=Wechat"
-                    title="Wechat"
-                    rel="2">Wechat</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=hUX+%E9%9A%8F%E6%83%B3%E5%BD%95"
-                    title="hUX 随想录"
-                    rel="2">hUX 随想录</a>
+                <a data-sort="0018" 
+                    href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
+                    title="数学基础"
+                    rel="2">数学基础</a>
     </div>
 </section>
 

@@ -16,8 +16,8 @@
     <meta property="og:type" content="website">
     <meta property="og:description" content="我干了什么 究竟拿了时间换了什么">
     
-    <meta property="og:image" content="http://localhost:4000/img/avatar-hux-ny.jpg">
-    <meta property="og:url" content="http://localhost:4000/page2/">
+    <meta property="og:image" content="https://huangxuan.me/img/avatar-hux-ny.jpg">
+    <meta property="og:url" content="https://huangxuan.me/page2/">
     <meta property="og:site_name" content="一只草履虫">
     
     <title>一只草履虫</title>
@@ -29,7 +29,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/page2/">
+    <link rel="canonical" href="https://huangxuan.me/page2/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -94,12 +94,6 @@
                         <li>
                             <a href="/archive/">Archive</a>
                         </li>
-                        
-                        
-                        
-                        
-                        
-                        
                         
                         
                         
@@ -236,307 +230,255 @@
             ">
     			
 <div class="post-preview">
-    <a href="/2017/10/06/css-complaints/">
+    <a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack/">
         <h2 class="post-title">
-            「知乎」为什么 CSS 这么难学？
+            从0到1构建计算机(8/12)--高级语言：Jack
         </h2>
-        
-        <h3 class="post-subtitle">
-            Why I dislike CSS as a programming language
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  这篇文章转载自我在知乎上的回答
+                本篇我们将设计一门高级语言：Jack。Jack是一门基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性（其实Jack非常寒酸，只是支持了“对象”的功能）。本篇的内容非常简单，主要是介绍Jack的语法。
 
+Hello, World
 
-对我来说，CSS 难学以及烦人是因为它「出乎我意料之外的复杂」且让我觉得「定位矛盾」。
+众所周知，学习一门新语言的第一步，是写一个 Hello, World。
 
-@方应杭 老师的答案我赞了：CSS 的属性互不正交，大量的依赖与耦合难以记忆。
-
-@顾轶灵 @王成 说得也没错：CSS 的很多规则是贯彻整个体系的，而且都记在规范里了，是有规律的，你应该好好读文档而不是去瞎试。
-
-「CSS是一门正儿八经的编程语言，请拿出你学C+...
+1
+2
+3
+4
+5
+6
+7
+class M...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on October 6, 2017
+        Posted by guosai on February 24, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/07/26/farewell-flash/">
+    <a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/">
         <h2 class="post-title">
-            Farewell, Flash. 感谢你，但这一次是真正的永别。
+            从0到1构建计算机(7/12)--实现一个虚拟机
         </h2>
-        
-        <h3 class="post-subtitle">
-            So long, and thanks for all the Flash
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  本文首发于我的知乎专栏 The Little Programmer，转载请保留链接 ;)
-
-
-一年半前，我曾和 Flash 作过一次告别。那一次，Adobe Flash Professional CC 被重新命名为了 Adobe Animate CC，宣告着 Flash 作为一个创作工具走到了尽头。
-
-
-
-而今天，通过 Chromium 博客 So long, and thanks f...
+                计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on July 26, 2017
+        Posted by guosai on February 21, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/07/12/upgrading-eleme-to-pwa/">
+    <a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8/">
         <h2 class="post-title">
-            饿了么的 PWA 升级实践
+            从0到1构建计算机(6/12)--汇编语言与汇编器
         </h2>
-        
-        <h3 class="post-subtitle">
-            Upgrading Ele.me to Progressive Web App
-        </h3>
         
         <div class="post-content-preview">
             
-                
+                前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器
 
-    
-    
+汇编语言和汇编器
 
-  很荣幸在今年 2 月到 5 月的时间里，以顾问的身份加入饿了么，参与 PWA 的相关工作。这篇文章其实最初是在以英文写作发表在 medium 上的：Upgrading Ele.me to Progressive Web Apps，获得了一定的关注。所以也决定改写为中文版本再次分享出来，希望能对你有所帮助 ;) 
-本文首发于 CSDN 与《程序员》2017 年 7...
+汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on July 12, 2017
+        Posted by guosai on February 19, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/05/28/sw-precache/">
+    <a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86/">
         <h2 class="post-title">
-            How does SW-Precache works?
+            从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集
         </h2>
         
         <div class="post-content-preview">
             
-                SW-Precache is a great Service Worker tool from Google. It is a node module designed to be integrated into your build process and to generate a service worker for you. Though you can use sw-precache out of the box, you might still wonder what happens under the hood. There you go, this article is ...
+                经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。
+
+计算机架构
+
+hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是将中央处理单元和存储器，通过存储器中存储的程序指令控制中央处理器的执行...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on May 28, 2017
+        Posted by guosai on February 1, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/04/06/html-document/">
+    <a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8/">
         <h2 class="post-title">
-            「知乎」如何理解 <code>document</code> 对象是 <code>HTMLDocument</code> 的实例？
+            从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器
         </h2>
-        
-        <h3 class="post-subtitle">
-            Why is <code>document</code> an instance of <code>HTMLDocument</code>?
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  这篇文章转载自我在知乎上的回答
+                上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。
 
+反馈电路、时钟系统、D触发器
 
-谢邀。
-
-首先要理解的是 DOM 是 API，是一组无关编程语言的接口（Interfaces）而非实现（Implementation）。前端平时常说的 DOM 其实只是浏览器通过 ECMAScript（JavaScript）对 DOM 接口的一种实现。
-
-其次要知道的是，DOM 既是为 HTML 制定的，也是为 XML 制定的。而两者各有一些特异的部...
+组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on April 6, 2017
+        Posted by guosai on January 29, 2020
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/02/09/nextgen-web-pwa/">
+    <a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU/">
         <h2 class="post-title">
-            下一代 Web 应用模型 —— Progressive Web App
+            从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU
         </h2>
-        
-        <h3 class="post-subtitle">
-            The Next Generation Application Model For The Web - Progressive Web App
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  今年 9 月份的时候，《程序员》杂志社就邀请我写一篇关于 PWA 的文章。后来花式拖稿，拖过了 10 月的 QCon，11 月的 GDG DevFest，终于在 12 月把这篇长文熬了出来。几次分享的不成熟，这次的结构算是比较满意了。「 可能是目前中文世界里对 PWA 最全面详细的长文了」，希望你能喜欢。
-本文首发于 CSDN 与《程序员》2017 年 2 月刊，同步发布于 Hux B...
+                上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片
+
+组合逻辑芯片
+
+一个最基本的CPU主要由两类芯片组成：
+
+  组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算
+  时...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on February 9, 2017
+        Posted by guosai on December 16, 2019
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2017/01/09/wechat-miniapp-ux/">
+    <a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80/">
         <h2 class="post-title">
-            如何客观地评价「小程序」的体验?
+            从0到1构建计算机(2/12)--与非门实现CPU的数理基础
         </h2>
-        
-        <h3 class="post-subtitle">
-            Wechat Mini-Program vs. the Web, a UX comparison
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  本文首发于我的知乎专栏 The Little Programmer，转载请保留链接 ;)
+                CPU和布尔函数
+
+CPU本质上是一个函数计算器：
+
+  信号通过输入管脚输入，对应着函数的入参
+  CPU的内部电路是函数的黑盒实现
+  信号通过输出管脚输出，对应着函数的出参
 
 
-2017 年 1 月 9 号凌晨，看完《星战》回家，发现朋友圈都炸了……原来是「小程序」如约公测（以下简称小程序）。果然贵圈人都睡得晚啊，一个个大半夜了精神得不行。
 
-截图推荐什么的已经漫天都是了，而且连 「推荐小程序的小程序」都已经出现了，我们就直入正题吧，今天笔者不跟你们聊情怀，就聊体验：...
+8086 CPU
+
+大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on January 9, 2017
+        Posted by guosai on October 17, 2019
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2016/11/20/sw-101-gdgdf/">
+    <a href="/2019/10/12/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97/">
         <h2 class="post-title">
-            Service Worker 101「GDG DevFest 2016 北京」
+            从0到1构建计算机(1/12)--从与非门到俄罗斯方块
         </h2>
-        
-        <h3 class="post-subtitle">
-            🎞  Slides:Service Worker 101, Working Offline and Instant Loading (GDG DevFest 2016 Beijing)
-        </h3>
         
         <div class="post-content-preview">
             
                 
-  下滑这里查看更多内容
+
+Mark!!! 开始学习课程：From Nand To Tetris
+
+本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。
 
 
-TLDR; It covers lots of cool stuff about Service Worker!
-
-Watching Fullscreen → 
-
-
-    
-    Scanning on mobile
-
-
-Demo Code → 
-
-
-  Hello World of Service Worker
-  Make your own Offli...
+现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on November 20, 2016
+        Posted by guosai on October 12, 2019
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2016/10/20/pwa-qcon2016/">
+    <a href="/2019/02/18/%E4%B9%A6%E5%8D%95/">
         <h2 class="post-title">
-            Progressive Web Apps，复兴序章「QCon 上海 2016」
+            技术书单
         </h2>
-        
-        <h3 class="post-subtitle">
-            🎞  Slides:Progressive Web Apps, Make Web Great Again. (QCon Shanghai 2016)
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  下滑这里查看更多内容
-
-
-Watching Fullscreen →
-
-Watching Video →
-
-
-    
-    Scanning on mobile
-
-
-Catalog
-
-
-  The State Of Web
-  Rethinking Hybridzation
-  PWA 101
-    
-      Definition
-      Add To HomeScree...
+                计算机基础：
+1
+2
+3
+4
+5
+6
+* 编码的奥秘（Charles Petzold）
+* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
+* 程序员的自我修养--链接、装载与库 (俞甲子等)
+* 深入理解计算机系统 (Randal E. Bryant)
+* 汇编语言 (王爽)
+* 编译原理（龙书）（Alfred V.Fho等）
+...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on October 20, 2016
+        Posted by guosai on February 18, 2019
     </p>
 </div>
 <hr>
 
 <div class="post-preview">
-    <a href="/2016/09/22/the-open-web/">
+    <a href="/2016/07/11/%E5%AE%9A%E7%82%B9%E6%95%B0&%E6%B5%AE%E7%82%B9%E6%95%B0/">
         <h2 class="post-title">
-            Web 在继续离我们远去
+            定点数&浮点数
         </h2>
-        
-        <h3 class="post-subtitle">
-            After the release of Wechat Mini-Program
-        </h3>
         
         <div class="post-content-preview">
             
-                
-  本文首发于我的知乎专栏 The Little Programmer，转载请保留链接 ;)
+                浮点数的概念是相对于定点数来说的:
 
 
-今天微信又刷爆了我的朋友圈 —— 小程序，之前传说的应用号。
+  定点数：小数点的位置是固定的。(小数点的左边表示整数部分，小数点的右边表示小数部分)
+  浮点数：小数点的位置是浮动的。
 
-不过这篇不谈小程序的技术细节，也不去猜测（因为知道得很清楚……），
 
-也不谈小程序会对中国互联网带来什么影响（自有产品经理会来谈……），
+假设目前只有8bit存储空间可供表示一个数，我们把第一位用于符号位，剩下7位用于数值位。那么一个数值用两种方式的表示规则如下。
 
-我们说说 Web，the Web。
-
-我们常说的 Web，其实是 World Wide W...
+定点数表示
+假定将小数点放在第五个bit，那么前三位将用于表示整数部分，后四位则用于表示小数部...
             
         </div>
     </a>
     <p class="post-meta">
-        Posted by Hux on September 22, 2016
+        Posted by guosai on July 11, 2016
     </p>
 </div>
 <hr>
@@ -550,10 +492,6 @@ Catalog
         <a href="/">&larr; Newer Posts</a>
     </li>
     
-    
-    <li class="next">
-        <a href="/page3">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 
@@ -581,130 +519,30 @@ Catalog
         
         
         
-                <a data-sort="0069" 
-                    href="/archive/?tag=%E7%9F%A5%E4%B9%8E"
-                    title="知乎"
-                    rel="10">知乎</a>
+                <a data-sort="0002" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
+                    title="计算机基础"
+                    rel="18">计算机基础</a>
         
-                <a data-sort="0037" 
-                    href="/archive/?tag=%E7%AC%94%E8%AE%B0"
-                    title="笔记"
-                    rel="42">笔记</a>
+                <a data-sort="0008" 
+                    href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
+                    title="从0到1构建计算机"
+                    rel="12">从0到1构建计算机</a>
         
-                <a data-sort="0043" 
-                    href="/archive/?tag=Coq"
-                    title="Coq"
-                    rel="36">Coq</a>
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
+                    title="汇编语言"
+                    rel="3">汇编语言</a>
         
-                <a data-sort="0043" 
-                    href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29"
-                    title="SF (软件基础)"
-                    rel="36">SF (软件基础)</a>
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
+                    title="计算机硬件体系"
+                    rel="3">计算机硬件体系</a>
         
-                <a data-sort="0060" 
-                    href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29"
-                    title="PLF (编程语言基础)"
-                    rel="19">PLF (编程语言基础)</a>
-        
-                <a data-sort="0060" 
-                    href="/archive/?tag=Web"
-                    title="Web"
-                    rel="19">Web</a>
-        
-                <a data-sort="0063" 
-                    href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29"
-                    title="LF (逻辑基础)"
-                    rel="16">LF (逻辑基础)</a>
-        
-                <a data-sort="0072" 
-                    href="/archive/?tag=UX%2FUI"
-                    title="UX/UI"
-                    rel="7">UX/UI</a>
-        
-                <a data-sort="0073" 
-                    href="/archive/?tag=%E4%BA%A7%E5%93%81"
-                    title="产品"
-                    rel="6">产品</a>
-        
-                <a data-sort="0073" 
-                    href="/archive/?tag=PWA"
-                    title="PWA"
-                    rel="6">PWA</a>
-        
-                <a data-sort="0075" 
-                    href="/archive/?tag=JavaScript"
-                    title="JavaScript"
-                    rel="4">JavaScript</a>
-        
-                <a data-sort="0075" 
-                    href="/archive/?tag=Slides"
-                    title="Slides"
-                    rel="4">Slides</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E5%9F%BA%E7%A1%80"
-                    title="基础"
-                    rel="3">基础</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E7%94%9F%E6%B4%BB"
-                    title="生活"
-                    rel="3">生活</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E8%AF%91"
-                    title="译"
-                    rel="3">译</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%E9%98%BF%E9%87%8C"
-                    title="阿里"
-                    rel="3">阿里</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=%F0%9F%87%AC%F0%9F%87%A7"
-                    title="🇬🇧"
-                    rel="3">🇬🇧</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=C"
-                    title="C"
-                    rel="3">C</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=C%2B%2B"
-                    title="C++"
-                    rel="3">C++</a>
-        
-                <a data-sort="0076" 
-                    href="/archive/?tag=Vim"
-                    title="Vim"
-                    rel="3">Vim</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6"
-                    title="计算机科学"
-                    rel="2">计算机科学</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA"
-                    title="计算理论"
-                    rel="2">计算理论</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=CSS"
-                    title="CSS"
-                    rel="2">CSS</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=Wechat"
-                    title="Wechat"
-                    rel="2">Wechat</a>
-        
-                <a data-sort="0077" 
-                    href="/archive/?tag=hUX+%E9%9A%8F%E6%83%B3%E5%BD%95"
-                    title="hUX 随想录"
-                    rel="2">hUX 随想录</a>
+                <a data-sort="0018" 
+                    href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
+                    title="数学基础"
+                    rel="2">数学基础</a>
     </div>
 </section>
 

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="关于程序与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。">
+    <meta name="keywords"  content="黄玄, Hux黄玄, Hux, 鬼栈, huxpro, @huxpro, 黄玄的博客, Hux Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="从0到1构建计算机(12/12)--收获和总结 - 一只草履虫">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。
+">
+    
+    <meta property="article:published_time" content="2020-03-22T00:00:00Z">
+    
+    
+    <meta property="article:author" content="guosai">
+    
+    
+    <meta property="article:tag" content="计算机基础">
+    
+    <meta property="article:tag" content="从0到1构建计算机">
+    
+    <meta property="article:tag" content="思考总结">
+    
+    
+    <meta property="og:image" content="https://huangxuan.me/img/avatar-hux-ny.jpg">
+    <meta property="og:url" content="https://huangxuan.me/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93/">
+    <meta property="og:site_name" content="一只草履虫">
+    
+    <title>从0到1构建计算机(12/12)--收获和总结 - 一只草履虫</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://huangxuan.me/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">一只草履虫</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80" title="计算机基础">计算机基础</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA" title="从0到1构建计算机">从0到1构建计算机</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E6%80%9D%E8%80%83%E6%80%BB%E7%BB%93" title="思考总结">思考总结</a>
+                        
+                    </div>
+                    <h1>从0到1构建计算机(12/12)--收获和总结</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by guosai on March 22, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<p>完成Nand2Tetris这门课，我大概用了4个多月的时间；完成从0到1构建计算机系列博客，大概用了5个多月的时间（课程和博客时间上有交集）。期间也因为工作较忙的原因，挂起过若干次，很高兴最后还是坚持完成了。最后在这里再次做一些总结，算是对这段学习过程的一个暂时的收尾。</p>
+
+<p>之所以说是暂时的收尾，是因为我觉得课程中很多知识点自己理解得还不到位，很多精华的思想也没有完全get到。这门课程是一门基础性的课程，也是一门常读常新的课程，值得经常回顾和思考。这门课程也是一门很好的入门课程、框架课程（哈佛大学的学生把它戏称为计算机专业101课程），它让我们对计算机科学知识体系有了一个很直观的感受和实践（至少是我作为一个iOS程序员能够接触到的知识体系）。师傅领进门，如果后续我们对其中的某些方向比较感兴趣，可以再去深入地展开学习和研究。</p>
+
+<h3 id="知识上的收获">知识上的收获</h3>
+
+<h4 id="计算机架构硬件">计算机架构&amp;硬件</h4>
+
+<p>虽然在学校的时候修过计算机组成原理等课程，对计算机的架构和硬件的工作原理有过一定了解，但基本是停留在理论上，理解并不深入。通过这次亲手实践，对这些知识有了更直观的印象和理解。例如，时序芯片如何记录数值状态，ALU如何支持各种操作，CPU如何解析指令并执行，程序技计数器如何工作，CPU和内存通过哪些线连接等等。虽然我们平时的工作可能不会接触到这些细节，但学习这些知识，我了解到了我每天工作时面对的计算机到底是如何工作的，否则总会有一种心虚的感觉。九层之台，起于累土，我觉得了解这些知识对我的意义在于，它给了我继续学习和研究计算机上层知识时内心的踏实感。</p>
+
+<h4 id="函数调用过程">函数调用过程</h4>
+
+<p>对函数调用过程有了更清晰的认识。虽然Hack不支持直接对栈的指针操作指令，用虚拟机进行了模拟，但总体原理是一致的。例如栈帧的开辟和回收，局部变量内存的分配，寄存器的保存，函数返回地址，入参&amp;回参等。理解函数调用过程对我们是有实际意义的，例如对我们阅读汇编语言，提高debug能力，写出效率更高的代码，学习一门新语言等都有很大的帮助。</p>
+
+<h4 id="编译原理">编译原理</h4>
+
+<p>可能绝大多数程序员都不会有机会去从0到1地编写一款编译器。虽然Jack编译器几乎是一款最简单的编译器，但我们从中仍能了解到编译器工作的基本原理，其中很多的优秀思想也能被我们应用到日常的工作当中。同上面说到的学习函数调用过程一样，理解编译原理也是十分富有实际意义的，可以帮助我们更快更好的学习理解其他知识。况且自己实现一款编译器本身就是一件有趣且有挑战的事情，我们只要花一点点精力和耐心就可以开发一款属于自己的编译器了，作为程序员你心动了吗？</p>
+
+<h4 id="内存管理和io管理">内存管理和I/O管理</h4>
+
+<p>从Hack的操作系统的实现中，我们学到了最基本的内存分配、回收管理方式，为我们继续学习其他更高级的内存管理操作开了一个头。我们也学到了操作系统如何监听键盘事件，如何在屏幕上绘制文字和图案。只有先掌握了屏幕绘制的最基本的原理，然后再逐渐掌握一些GPU原理、openGL、计算机图形学、特定平台的渲染框架等相关的知识后，我们再做界面渲染的性能优化时才能做到有法可依，甚至做到技术创新，这是一个前端&amp;客户端程序员通向高阶程序员的必经之路。</p>
+
+<h3 id="思想上的收获">思想上的收获</h3>
+
+<h4 id="抽象">抽象</h4>
+
+<p>有的时候我们面对的问题会过于复杂以至于一时不知如何处理，在这种情况下我们不妨使用分层的方式来解决问题，一方面可以把一些细枝末节的逻辑封装在底层，使上层逻辑变得清晰；另一方面，通过合理的设计也可以直接简化某些逻辑，例如，Hack通过引入虚拟机，很好的简化了对栈的操作。还有把静态变量的内存分配规则交给底层汇编器来做，减轻了编译器的负担。但如何进行合理的分层设计，则又是另一个哲学问题了。</p>
+
+<h4 id="虚拟">虚拟</h4>
+
+<h4 id="else待总结">else待总结</h4>
+
+<h3 id="关于基本功的思考">关于基本功的思考</h3>
+
+<h4 id="练习基本功的意义">练习基本功的意义</h4>
+
+<p>工作后记得自己发过一条朋友圈：”年少不学C，老大徒伤悲“。虽然我是软件工程专业出身，但是在学校时并没有意识到计算机基础课程的重要性，反而把精力放到如何能写出一个Android小程序，如何多刷两道LeetCode上，如果在学校时就能遇到这门课程该多好~~。回头想想，我会把一半的锅推给大学，老师只知道照本宣科，其实并没有把心思放在教学上😏，和本课程的两位作者形成鲜明对比（吐槽完毕）。</p>
+
+<p>工作以后也并没马上意识到基本功的重要性，又把很多精力投入到阅读iOS平台源码，学习一些黑魔法上，学得即片面又不成体系，导致我总觉得学什么也学不透，学不精。工业级的计算机是一个非常复杂的系统，一层层的封装结构把计算机的工作原理埋藏的很深，大多数程序员也往往是知其然，而不太知其所以然（或者理解了错误的所以然）。在这种情况下，我们一般只能应付日常的工作，一旦遇到需要深入研究，需要创新的工作时，就无能为力的。举个例子，我在做APP的性能优化时，一般就是照葫芦画瓢，看看公司内或业界有什么方案，借鉴到过来，或者就是单纯地从业务特点出发，做一些力所能及的优化。不能够产出自己的创新方案，说到底还是对计算机底层运行的细节不够了解，自然也难以产出有针对性的方案，不知道发动机的工作原理，又怎么能让车子跑的更快呢？</p>
+
+<p>计算机发展的这么快，但最基本的原理仍没有变。掌握了扎实的基本功，能让我们更快更好的学习其他技能，以不变应万变，更好的在这个快速发展的行业中立足。</p>
+
+<h4 id="找到自己的学习路径">找到自己的学习路径</h4>
+
+<p>无论是学习什么，找到一套行之有效的学习方法，才能让事半功倍。在本次学习的过程中，我再次认识到了计算机科学是一门需要实践的学科。我个人觉得理论、实践、总结三件套是非常合适计算机科学的，没有系统的理论学习直接开干效率是不高的，也不利于形成自己的知识框架，所以屯一套经典的书单还是很有必要的；只学理论又缺乏实践也不太好，总有一种吃不透不感觉，而且只有亲身实践过了，才会有更深刻的理解和印象，毕竟 talk is cheap，我们还需要 show code 才行；至于总结可能因人而异吧，我觉得总结是一个很好的思考和复习的过程，同时能锻炼自己的表达能力，博客也算是自己一笔可见的财产（虽然写博客确实很花费时间，相信会越写越快的）。</p>
+
+<h4 id="资源在哪里">资源在哪里</h4>
+
+<p>我是在Google上搜索如何学习汇编语言时，找到这个课程的。我觉得Google就是最好的学习资料。想学什么，Google一下；不知道怎么学？Google一下；没有资料，Google一下；想免费下载PDF？Baidu一下。当我们准备开始一段新的征程时，不必太着急，先调研几天甚至几周，做好准备后再打长期仗（长期有耐心）。</p>
+
+<h3 id="后续规划">后续规划</h3>
+
+<h4 id="深入学习c语言">深入学习C语言</h4>
+
+<p>现代常用语言集合中，C语言相较于其他语言，是更”基本“的语言。掌握好C语言能帮助我们更好的理解内存、指针等主题，对学习其他语言也很有帮助，例如，Objective-C就是基于对C语言的扩展，runtime等底层基础库都是用C实现，所以想要深入掌握OC的前提就是深入掌握C语言。或者你想要阅读某个操作系统的源码（例如Linux），也需要先对C语言很熟悉。所以C语言是一门很重要的基本功，是我们想要掌握好其他技能的前提条件。</p>
+
+<p>附带条件：需要一定程度的掌握汇编语言，最好能达到可以阅读理解较复杂的汇编代码的程度。</p>
+
+<h4 id="剖析一门简单的操作系统">剖析一门简单的操作系统</h4>
+
+<p>Hack的操作系统是在过于简单，和现代操作系统相去甚远。例如，它不支持多进程和多线程，不支持文件系统，也不支持网络。我需要在找一门简单但由不那么简单的操作系统来继续提高一下，目的主要是加强自己对多进程和多线程的了解，并在学习的过程中学到一些经典的模式和算法。</p>
+
+<h4 id="界面渲染原理">界面渲染原理</h4>
+
+<p>作为一个客户端程序员，理解现代计算机的界面渲染原理是十分必要的。在这方面我还很渣，而且目前还没有较好的学习思路，如果有同学在这方面比较有经验的话，欢迎给我一些指导🙏。</p>
+
+<h4 id="算法的意义">算法的意义</h4>
+
+<p>我自己平时的工作很少会需要用到算来解决问题，大部分情况下还真的是搬砖。我个人觉得不是算法不重要，而是我们的工作太简单了，以至于根本不出要算法这位大佬出面。但通过实践这门课程，我还是发现了很多地方是需要用到算法，需要用到优秀的设计模式的，而且越是重要，越是核心的地方，越需要我们用算法和设计来优化。所以如果我们想要摆脱搬砖，向更高级的程序员进发，算法和设计模式都是很重要的课题。而学习算法也不仅仅是刷刷LeetCode这么简单，需要系统地学习，从理论到实践，最终能把算法应用到工作中，应用到解决实际问题上。</p>
+
+<p><strong>千里之行，始于足下。苦练基本功之路才刚刚开始。</strong>💪💪💪</p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/03/21/%E5%B0%8F%E6%B8%B8%E6%88%8F/" data-toggle="tooltip" data-placement="top" title="从0到1构建计算机(11/12)--在Hack上运行小游戏">
+                        Previous<br>
+                        <span>从0到1构建计算机(11/12)--在Hack上运行小游戏</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97/" data-toggle="tooltip" data-placement="top" title="C语言拾遗">
+                        Next<br>
+                        <span>C语言拾遗</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0002" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
+                    title="计算机基础"
+                    rel="18">计算机基础</a>
+        
+                <a data-sort="0008" 
+                    href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
+                    title="从0到1构建计算机"
+                    rel="12">从0到1构建计算机</a>
+        
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
+                    title="汇编语言"
+                    rel="3">汇编语言</a>
+        
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
+                    title="计算机硬件体系"
+                    rel="3">计算机硬件体系</a>
+        
+                <a data-sort="0018" 
+                    href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
+                    title="数学基础"
+                    rel="2">数学基础</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hux";
+    var disqus_identifier = "/2020/03/22/收获和总结";
+    var disqus_url = "https://huangxuan.me/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'huangxuan.me';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

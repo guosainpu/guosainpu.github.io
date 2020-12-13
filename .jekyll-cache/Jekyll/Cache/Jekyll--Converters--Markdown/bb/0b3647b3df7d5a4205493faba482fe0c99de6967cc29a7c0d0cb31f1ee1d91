@@ -1,0 +1,195 @@
+I"�%<p>本篇我们将设计一门高级语言：Jack。Jack是一门基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性（其实Jack非常寒酸，只是支持了“对象”的功能）。本篇的内容非常简单，主要是介绍Jack的语法。</p>
+
+<h3 id="hello-world">Hello, World</h3>
+
+<p>众所周知，学习一门新语言的第一步，是写一个 Hello, World。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">()</span> <span class="o">{</span>  <span class="c1">// Jack程序要包含一个Main类，且包含main方法，这是程序的入口函数。</span>
+       <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="s">"Hello, World"</span><span class="o">);</span>
+       <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">println</span><span class="o">();</span> <span class="c1">//换行</span>
+       <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="精通jack">精通Jack</h3>
+
+<p>学习完 Hello, World，下面让我们再花5分钟时间来精通Jack。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>class 类名 {
+	---------变量声明区-----------
+	可以声明2种变量：
+	1.成员变量：field
+	2.静态变量：static
+
+	变量类型有4种：
+	1.基本类型：int, bool, char
+	2.对象类型：自己定义的类
+	-----------------------------
+
+	--------方法声明区-------------
+	可以声明3种类型的方法:
+	1.构造函数：constructor
+	2.类方法：function
+	3.实例方式：method
+
+	constructor 对象类型 new(入参列表) {
+		......
+		return this；	//constructor最后一定是return this，this是指向实例的指针
+	}
+	 
+	function/method 返回类型（可以是void）方法名(入参列表) {
+		var 类型 变量名  	//用var声明局部变量
+		do xxx.xxx();  	//do语句：方法调用
+		let a = b;	//let语句：赋值语句
+		if else
+		while
+		return
+	 }
+	-----------------------------
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>举例：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre></td><td class="rouge-code"><pre><span class="cm">/** 一个链表类，一个节点存储一个整数. */</span>
+<span class="kd">class</span> <span class="nc">List</span> <span class="o">{</span> 	<span class="c1">// 声明类</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">data</span><span class="o">;</span> <span class="c1">// field语句：声明成员变量</span>
+    <span class="n">field</span> <span class="nc">List</span> <span class="n">next</span><span class="o">;</span>
+
+    <span class="cm">/* 构造函数 */</span>
+    <span class="n">constructor</span> <span class="nc">List</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="n">car</span><span class="o">,</span> <span class="nc">List</span> <span class="n">cdr</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 参数列表</span>
+        <span class="n">let</span> <span class="n">data</span> <span class="o">=</span> <span class="n">car</span><span class="o">;</span>       <span class="c1">// let语句：语句类型是赋值语句</span>
+        <span class="n">let</span> <span class="n">next</span> <span class="o">=</span> <span class="n">cdr</span><span class="o">;</span>       
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span> <span class="c1">// return语句</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** getter. */</span>
+    <span class="n">method</span> <span class="kt">int</span> <span class="nf">getData</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">data</span><span class="o">;</span> <span class="o">}</span>
+    <span class="n">method</span> <span class="kt">int</span> <span class="nf">getNext</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">next</span><span class="o">;</span> <span class="o">}</span>
+
+    <span class="cm">/** 打印链表 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">()</span> <span class="o">{</span> <span class="c1">//method语句：类的实例方法</span>
+        <span class="kt">var</span> <span class="nc">List</span> <span class="n">current</span><span class="o">;</span>    <span class="c1">// var语句：声明局部变量</span>
+        <span class="n">let</span> <span class="n">current</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>  <span class="c1">// this关键字：指向当前对象本身</span>
+        <span class="k">while</span> <span class="o">(~(</span><span class="n">current</span> <span class="o">=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>  <span class="c1">//while语句</span>
+            <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printInt</span><span class="o">(</span><span class="n">current</span><span class="o">.</span><span class="na">getData</span><span class="o">());</span> <span class="c1">// do语句：后面接一个方法调用</span>
+            <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printChar</span><span class="o">(</span><span class="mi">32</span><span class="o">);</span>
+            <span class="n">let</span> <span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="na">getNext</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 销毁链表 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span> 
+        <span class="k">if</span> <span class="o">(~(</span><span class="n">next</span> <span class="o">=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// if语句</span>
+            <span class="k">do</span> <span class="n">next</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">do</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">deAlloc</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> <span class="c1">// 回收内存，调用操作系统方法</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+   <span class="n">function</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">()</span> <span class="o">{</span> <span class="c1">// fuction语句：声明类方法</span>
+      <span class="kt">var</span> <span class="nc">List</span> <span class="n">v</span><span class="o">;</span>
+      <span class="n">let</span> <span class="n">v</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span><span class="kc">null</span><span class="o">);</span>
+      <span class="n">let</span> <span class="n">v</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span><span class="nc">List</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="n">v</span><span class="o">));</span>
+      <span class="k">do</span> <span class="n">v</span><span class="o">.</span><span class="na">print</span><span class="o">();</span>      
+      <span class="k">do</span> <span class="n">v</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+      <span class="k">return</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>OK，掌握了Jack后我们下一步的工作是实现Jack的编译器。</p>
+:ET

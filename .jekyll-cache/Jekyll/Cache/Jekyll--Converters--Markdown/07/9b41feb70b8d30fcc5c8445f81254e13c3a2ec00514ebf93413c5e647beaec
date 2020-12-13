@@ -1,0 +1,307 @@
+I"�T<p>前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器</p>
+
+<h3 id="汇编语言和汇编器">汇编语言和汇编器</h3>
+
+<p>汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下两种指令是一一对应的，例如：1000100111011000对应mov ax,bx，把机器指令拆成3段，其中前8位代表mov，中间4位代表寄存器ax，最后四位代表寄存器bx。此外，我们还可以在汇编语言中用引用一些符号，用于代表某些数值（例如内存地址，指令地址等），这可以把我们从处理这些繁琐的数值的工作中解放出来（例如我们用符号i来代表一块内存地址，然后不用去记忆地址具体的值是多少，分配在什么位置，是否和其他地址冲突等），提高代码的编写效率。</p>
+
+<p>汇编器负责把汇编语言翻译成机器语言。因为汇编语言和机器语言的高度一致性，所以实现汇编器是比较简单的。唯一的难点可能就在于上面所提到的如何把一些符号和它们所对应的数值联系起来，即符号解析(symbol resolution)的过程。</p>
+
+<h3 id="hack的汇编语言设计">Hack的汇编语言设计</h3>
+
+<p>想要设计一门汇编语言，那么必须要参考它的机器语言。Hack的机器指令集过于简单，只有A、C两种命令，所以相应的它的汇编语言也很简单😂。</p>
+
+<h4 id="a指令">A指令</h4>
+<p>我们copy一些上一篇文章的内容：A指令，即Address指令。它的功能很简单，就是把一个数值传送到CPU中的A寄存器即可，多数情况下这个数字后续会当做地址使用，用于定位内存中的存储单元。</p>
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh0rj8yj6j30we0480sn.jpg" width="600" /></center>
+
+<p>我们定义A指令的汇编指令格式是：<strong>@value</strong>。</p>
+
+<p><strong>1.</strong>value可以是一个立即数。这种格式是两种语言的天然映射。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>@3  //把数字3传送到A寄存器
+@5  //把数字5传送到A寄存器
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>2.</strong>value也可以是一个符号（变量名）</p>
+
+<p>我们支持把符号当做数值代入，这更像我们在高级语言中编码的方式。例如@number，它的含义是：把变量number的首地址传送到A寄存器，number的首地址可能是1000或者2000，我们并不去关心它。如果不支持@+符号这种命令，我们该怎么编写Hack的A汇编指令呢？我们可能需要先梳理出该程序需要几个变量，例如i，j，k，然后画一个表格，安排一下i，j，k的地址，并保证他们不互相冲突，然后用@+立即数的方式编写，每次遇到需要传入变量地址的时候，去检查下表格，填入变量对应的数值。在复杂的程序中，这可能是相当繁琐且容器出错的，所以把他交给汇编器去做是一个明智的选择。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>@number  //把变量number对应的数值（变量地址）传送到A寄存器
+@END     //把标签END对应的数值（指令地址）传送到A寄存器
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>到目前为止，这好像是我们第一次使用某种技巧（借助一些数据结构和算法），来把一个问题解决地更快更好</strong>，这可能就是编程中最有意思也最有挑战的地方吧。</p>
+
+<h4 id="c指令">C指令</h4>
+
+<p>C指令较为复杂，分成4部分。</p>
+<ul>
+  <li>第一位是标志位：为1时就代表该指令是C指令</li>
+  <li>3-10位是comp位：：这几位的排列用于表示执行不同的元素&amp;逻辑运算</li>
+  <li>11——13位是dest位：指示需要把计算出的数据传送到哪里（寄存器或内存）</li>
+  <li>14-16位是jump位：指示CPU执行跳转指令的条件</li>
+</ul>
+
+<center><img src="https://tva1.sinaimg.cn/large/006tNbRwly1gbh0v8yf1cj311604st8o.jpg" width="600" /></center>
+
+<p>我们定义C指令的汇编指令格式是：<strong>dest=comp ; jump</strong>。其中”dest=”，或”; jump”可以被省略，所以还可以演化出另外两种更常用的指令：”dest=comp”和”comp ; jump”。</p>
+
+<p><strong>1.</strong>计算后赋值指令：dest=comp</p>
+
+<p>下图我们可以看到dest，comp，jump各自的操作和code的对应方式。例如comp中0000010对代表算D+A的和，然后从out输出；dest中010代表把comp计算的赋给寄存器D；那么D=D+A，这句汇编指令就代表：进行D+A的计算操作，然后把结果传送到寄存器D。D=D+A对应的机器指令是：111(0000010)(010)(000)（后三位000代表跳转指令为null，即不跳转）</p>
+
+<p><strong>2.</strong>计算后跳转指令：comp ; jump</p>
+
+<p>jump中001代表判断comp输出的值，如果&gt;0，则进行指令跳转操作。那么D ; JGT，这句汇编指令就代表：进行D的计算操作（即简单的把D输出），然后判断如果值&gt;0，则进行指令跳转操作。D ; JGT对应的机器指令是：111(0001100)(000)(001)。（倒数后三位000代表赋值指令为null，即不需赋值）</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc2zbfy0mmj30uq0kgt9m.jpg" width="800" /></center>
+
+<p><em>需要注意的是：无论是要进行指令跳转操作，还是对内存的数据进行读或写，都需要先调用A指令，把目标地址写入A寄存器</em></p>
+
+<h4 id="符号与符号表">符号与符号表</h4>
+
+<p>Hack汇编语言中涉及3中符号：预定义符号、标签符号、变量符号</p>
+
+<p><strong>1.</strong>预定义符号：预定义符号绑定了内存中的一些地址值，在编写汇编语言时起到辅助作用。例如SP, lCL, ARG等用于辅助函数调用栈的实现；R0-R15可以被当做扩展的寄存器使用；SCREEN, KBD代表屏幕和键盘的内存区域首地址。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc316bfi83j30im0cmmxe.jpg" width="300" /></center>
+
+<p><strong>2.</strong>标签符号：标签符号绑定了指令的地址值，用于跳转指令。用（大写字母符号）声明，独占一行。</p>
+
+<p><strong>3.</strong>变量符号：变量符号绑定了变量的地址值。每遇到新的变量，则连续地在内存空间为其分配地址（变量地址从内存中16地址开始）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc31216n0qj30ss19yq65.jpg" width="300" /></center>
+
+<p>符号表是一个字典结构，key是符号本身，value可以是和该符号相关的若干信息，在这里符号表的value就是符号代表的内存地址的值。在使用符号表的时候，往往需要先构建符号表（符号表可能会被动态地修改），然后在处理程序数据的时候，通过查找符号表来获取符号相关的信息。符号表是一个重要的数据结构，在汇编器、编译器、链接器中都扮演了重要的角色。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc31ywvwbaj30u80lwq3z.jpg" width="800" /></center>
+
+<h4 id="举例">举例</h4>
+
+<p>这里我们举一个例子，把一个C语言风格的代码，转化为Hack上的汇编语言实现。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc32onh098j31390u0t9w.jpg" width="800" /></center>
+
+<h3 id="实现">实现</h3>
+
+<p>实现Hack的汇编器相对比较简单，主要方法是逐行的分析汇编指令，判断指令类型和组成成分，然后生成对应的机器指令。唯一的难点在于对符号的处理，而实现的技巧在于对符号表的运用。</p>
+
+<p>汇编器实现：（完整实现放在:<a href="https://github.com/guosainpu/Nand2Tetris">github</a>）</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+</pre></td><td class="rouge-code"><pre><span class="k">class</span> <span class="nc">SymbolTable</span>
+    <span class="c1"># void add_entry(entry)      新增一个符号</span>
+    <span class="c1"># bool contains(symbol)      是否包含符号</span>
+    <span class="c1"># string get_address(symbol) 获取符号的值</span>
+    <span class="c1"># ......</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Parser</span>
+    <span class="c1"># bool hasMoreCommand        是否还有下一条指令</span>
+    <span class="c1"># void advance               指令游标前进</span>
+    <span class="c1"># string commandType         当前指令的类型</span>
+    <span class="c1"># string symbol              当前指令的符号</span>
+    <span class="c1"># string dest                当前指令dest部分的符号</span>
+    <span class="c1"># string comp                当前指令comp部分的符号</span>
+    <span class="c1"># string jump                当前指令jump部分的符号</span>
+    <span class="c1"># ......</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Code</span>
+    <span class="c1"># string dest(mnemonic)      根据符号获取dest的机器码</span>
+    <span class="c1"># string comp(mnemonic)      根据符号获取comp的机器码</span>
+    <span class="c1"># string jump(mnemonic)      根据符号获取jump的机器码</span>
+    <span class="c1"># ......</span>
+<span class="k">end</span>
+
+<span class="c1"># main</span>
+<span class="n">file_name</span> <span class="o">=</span> <span class="no">ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">hack_name</span> <span class="o">=</span> <span class="n">file_name</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".hack"</span>
+
+<span class="n">parser</span><span class="o">=</span><span class="no">Parser</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+<span class="n">code</span> <span class="o">=</span> <span class="no">Code</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<span class="n">symbol_table</span> <span class="o">=</span> <span class="no">SymbolTable</span><span class="p">.</span><span class="nf">new</span><span class="p">();</span>
+<span class="vg">$command_line</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">#第一次遍历源文件，构建符号表（初始化所有标签符号的值，因为标签符号可以先使用后声明，所以需要先遍历一遍；变量符号可以边生成机器代码时边初始化，因为变量符号是先声明后使用）</span>
+<span class="nb">puts</span> <span class="s2">"generate symbol table:"</span> 
+<span class="k">while</span> <span class="n">parser</span><span class="p">.</span><span class="nf">hasMoreCommand</span><span class="p">()</span>
+    <span class="n">parser</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">command_type</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">commandType</span><span class="p">()</span>
+    <span class="n">command_symbol</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"L_COMMAND"</span>
+        <span class="k">if</span> <span class="o">!</span><span class="n">symbol_table</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
+            <span class="n">symbol_table</span><span class="p">.</span><span class="nf">add_entry</span><span class="p">({</span><span class="n">command_symbol</span><span class="o">=&gt;</span><span class="n">completeBinary</span><span class="p">((</span><span class="vg">$command_line</span><span class="p">).</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))})</span>
+        <span class="k">end</span>
+    <span class="k">else</span>
+        <span class="vg">$command_line</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="s2">"generate code:"</span>
+<span class="c1">#第二次遍历源文件，把汇编代码汇编成机器代码</span>
+<span class="n">parser</span><span class="p">.</span><span class="nf">reset</span><span class="p">()</span>
+<span class="vg">$variabel_address</span> <span class="o">=</span> <span class="mi">16</span> <span class="c1">#变量从地址16开始连续分配</span>
+<span class="n">hack_file</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">hack_name</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">parser</span><span class="p">.</span><span class="nf">hasMoreCommand</span><span class="p">()</span>
+    <span class="n">new_command</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">parser</span><span class="p">.</span><span class="nf">advance</span><span class="p">()</span>
+    <span class="n">command_type</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">commandType</span><span class="p">()</span>
+    <span class="n">command_symbol</span> <span class="o">=</span> <span class="n">parser</span><span class="p">.</span><span class="nf">symbol</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"A_COMMAND"</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"0"</span>
+        <span class="n">address_value</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="k">if</span> <span class="n">is_number</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
+            <span class="n">address_value</span> <span class="o">=</span> <span class="n">completeBinary</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">.</span><span class="nf">to_i</span><span class="p">.</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">elsif</span> <span class="n">symbol_table</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span> <span class="c1">#如果符号表已经包含符号，则直接取出符号的值</span>
+            <span class="n">address_value</span> <span class="o">=</span> <span class="n">symbol_table</span><span class="p">.</span><span class="nf">get_address</span><span class="p">(</span><span class="n">command_symbol</span><span class="p">)</span>
+        <span class="k">else</span>
+            <span class="n">address_value</span> <span class="o">=</span> <span class="n">completeBinary</span><span class="p">(</span><span class="vg">$variabel_address</span><span class="p">.</span><span class="nf">to_s</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1">#如果符号表不包含符号，则把符号加入到符号表，并把下一个变量地址+1</span>
+            <span class="n">symbol_table</span><span class="p">.</span><span class="nf">add_entry</span><span class="p">({</span><span class="n">command_symbol</span><span class="o">=&gt;</span><span class="n">address_value</span><span class="p">})</span>
+            <span class="vg">$variabel_address</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">end</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">address_value</span>
+    <span class="k">elsif</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"C_COMMAND"</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"111"</span>
+        <span class="n">dest_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">dest</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">dest</span><span class="p">())</span>
+        <span class="n">comp_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">comp</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">comp</span><span class="p">())</span>
+        <span class="n">jump_value</span> <span class="o">=</span> <span class="n">code</span><span class="p">.</span><span class="nf">jump</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="nf">jump</span><span class="p">())</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">comp_value</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">dest_value</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="n">jump_value</span>
+    <span class="k">elsif</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">"L_COMMAND"</span>
+        <span class="k">next</span>
+    <span class="k">else</span>
+        <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"unknow command type"</span>
+    <span class="k">end</span>
+
+    <span class="n">new_command</span> <span class="o">&lt;&lt;</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="n">hack_file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">new_command</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">completeBinary</span><span class="p">(</span><span class="n">binary_string</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">binary_string</span><span class="p">.</span><span class="nf">length</span> <span class="o">&lt;</span> <span class="mi">15</span>
+        <span class="n">binary_string</span><span class="p">.</span><span class="nf">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">"0"</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">binary_string</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">is_number</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">string</span> <span class="o">!~</span> <span class="sr">/\D/</span> 
+<span class="k">end</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们用不到200行的代码就实现了一个汇编器，是不是很简单？</p>
+
+<h3 id="总结">总结</h3>
+
+<p>汇编语言是人操作计算机工作最直接的方式，它描述了计算机最终执行的指令序列。学习汇编语言能让我们充分获得底层编程的体验，理解计算机运行的机理，这能让我在学习理解上层知识的时候更加准确。Hack的汇编指令只具备了最必要的功能，和我们常用的动辄几百条的汇编指令集有很大差距，但这并不妨碍Hack成为一个完整的计算机。下一篇我们会基于Hack的汇编指令扩展出一个虚拟机，这个虚拟机的指令集更接近我们常用的CPU的指令集。</p>
+
+<p>推荐王爽的《汇编语言》，这本书不仅能高效地指导大家学习汇编语言，同时也是一本用于指导如何学习的书，字里行间蕴含了王爽老师自己对如何学习，如何教学的理解。相比较于很多苍白的翻译书籍，这本本土书籍更加优秀。</p>
+
+:ET

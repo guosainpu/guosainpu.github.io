@@ -1,0 +1,1120 @@
+I"��<h3 id="材料准备">材料准备</h3>
+
+<p>首先手写一个简单的C程序：main.c</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="kt">void</span> <span class="nf">empty</span><span class="p">();</span>
+<span class="kt">int</span>  <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">myPrint</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">testParams</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">e</span><span class="p">,</span> <span class="kt">int</span> <span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">g</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="c1">// 测试空函数</span>
+	<span class="n">empty</span><span class="p">();</span>
+
+	<span class="c1">// 测试传2个参数的函数</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+
+	<span class="c1">// 测试传多个参数的函数</span>
+	<span class="n">testParams</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">);</span>
+
+	<span class="c1">// 测试print函数（不定参数）</span>
+	<span class="n">myPrint</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+	
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">empty</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">myPrint</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"%s %s %s: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="s">"hello"</span><span class="p">,</span> <span class="s">"world"</span><span class="p">,</span> <span class="s">"print"</span><span class="p">,</span> <span class="n">num</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">testParams</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">e</span><span class="p">,</span> <span class="kt">int</span> <span class="n">f</span><span class="p">,</span> <span class="kt">int</span> <span class="n">g</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="kt">int</span> <span class="n">j</span><span class="p">,</span> <span class="kt">int</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>然后执行 clang main.c，默认生成 a.out 文件。查看 a.out，可以看到 a.out 是一个 x86_64 架构下的 Mach-O 格式的文件。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>➜  函数调用过程 git:(master) ✗ clang main.c
+➜  函数调用过程 git:(master) ✗ ls
+a.out  main.c
+➜  函数调用过程 git:(master) ✗ file a.out 
+a.out: Mach-O 64-bit executable x86_64
+➜  函数调用过程 git:(master) ✗ 
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="查看mach-o">查看Mach-O</h3>
+
+<p>我们使用工具来分析Mach-O文件：<a href="https://github.com/gdbinit/MachOView">MachOView</a></p>
+
+<p>展开段：__TEXT_text，我们可以看到 main.c 中我们自定义的函数的以汇编指令的形式顺序的排列在这里。
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfubijrys3j30u01rc4c2.jpg" width="800" /></p>
+
+<h3 id="rbp-和-rsp">RBP 和 RSP</h3>
+
+<p>分析函数调用过程，其实就是分析程序执行过程中<strong>指令的跳转和栈内存区域的变化</strong></p>
+
+<p>在函数调用过程中有2个非常重要的指针寄存器：<strong>bp 和 sp</strong></p>
+<ol>
+  <li>bp始终指向当前最顶部的栈帧的栈底</li>
+  <li>sp指向当前最顶部的栈帧的栈顶（原则上是需要指向栈顶，但由于代码优化的原因，并不是总是）</li>
+</ol>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfucqsz6rpj30hq0q20tk.jpg" width="300" /></center>
+
+<h3 id="空函数的调用过程">空函数的调用过程</h3>
+
+<p>接着让我们用debug的方式来看下 x86_64 下函数的调用过程。首先程序会先进入 main 函数，然后调用 empty 函数，empty 函数非常简单，什么都不做就退出了。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre>1 // 调用 lldb 开始调试 a.out
+➜  函数调用过程 git:(master) ✗ lldb a.out 
+(lldb) target create "a.out"
+Current executable set to 'a.out' (x86_64).
+
+2 // 设置断点到 main
+(lldb) breakpoint set --name main 
+Breakpoint 1: where = a.out`main, address = 0x0000000100000e20
+
+3 // run 程序
+(lldb) run
+Process 42767 launched: '/Users/guosai/practice_C/函数调用过程/a.out' (x86_64)
+Process 42767 stopped
+
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+    frame #0: 0x0000000100000e20 a.out`main
+a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;: pushq  %rbp
+    0x100000e21 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;: subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;: movl   $0x0, -0x4(%rbp)
+Target 0: (a.out) stopped.
+(lldb) 
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以看到，程序停留在了 main 函数的第一条指令 pushq    %rbp。然后我们再来分析看下 main 函数和 empty 函数的汇编代码（用 disassemble –name 命令）</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre>a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+    0x100000e2f &lt;+15&gt;:  callq  0x100000f60               ; empty
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;:  movl   -0x8(%rbp), %edi
+    0x100000e45 &lt;+37&gt;:  movl   -0xc(%rbp), %esi
+    0x100000e48 &lt;+40&gt;:  callq  0x100000eb0               ; add
+    0x100000e4d &lt;+45&gt;:  movl   %eax, -0x10(%rbp)
+    0x100000e50 &lt;+48&gt;:  movl   $0x1, %edi
+    0x100000e55 &lt;+53&gt;:  movl   $0x2, %esi
+    0x100000e5a &lt;+58&gt;:  movl   $0x3, %edx
+    0x100000e5f &lt;+63&gt;:  movl   $0x4, %ecx
+    0x100000e64 &lt;+68&gt;:  movl   $0x5, %r8d
+    0x100000e6a &lt;+74&gt;:  movl   $0x6, %r9d
+    0x100000e70 &lt;+80&gt;:  movl   $0x7, (%rsp)
+    0x100000e77 &lt;+87&gt;:  movl   $0x8, 0x8(%rsp)
+    0x100000e7f &lt;+95&gt;:  movl   $0x9, 0x10(%rsp)
+    0x100000e87 &lt;+103&gt;: movl   $0xa, 0x18(%rsp)
+    0x100000e8f &lt;+111&gt;: movl   $0xb, 0x20(%rsp)
+    0x100000e97 &lt;+119&gt;: callq  0x100000ed0               ; testParams
+    0x100000e9c &lt;+124&gt;: movl   -0x10(%rbp), %edi
+    0x100000e9f &lt;+127&gt;: callq  0x100000f20               ; myPrint
+    0x100000ea4 &lt;+132&gt;: xorl   %eax, %eax
+    0x100000ea6 &lt;+134&gt;: addq   $0x40, %rsp
+    0x100000eaa &lt;+138&gt;: popq   %rbp
+    0x100000eab &lt;+139&gt;: retq   
+    0x100000eac &lt;+140&gt;: nopl   (%rax)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>a.out`empty:
+    0x100000f60 &lt;+0&gt;: pushq  %rbp
+    0x100000f61 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000f64 &lt;+4&gt;: popq   %rbp
+    0x100000f65 &lt;+5&gt;: retq   
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>要分析一个空函数的调用过程，主要是分析一下几个指令（或指令组合）</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>指令（指令组合）</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>callq  数值</td>
+      <td>跳转到某函数</td>
+    </tr>
+    <tr>
+      <td>pushq  %rbp 和 movq   %rsp, %rbp</td>
+      <td>暂存bp指针，并开辟新的栈帧</td>
+    </tr>
+    <tr>
+      <td>popq   %rbp 和 retq</td>
+      <td>函数结束，返回上一级函数</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="callq">callq</h4>
+
+<p>callq 就是 call 指令（q代表要处理的字节长度，q是8字节，l是4字节，w是2字节）。call 指令指示 CPU 应跳转到某个地址去执行新的函数。</p>
+
+<p>现在我们执行4次step指令，让 CPU 停留在第五条指令上：callq  0x100000f60（去跳转 empty 函数），在分析这条指令之前，我们先来看下 CPU 中各寄存器的状态（register read 命令）</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>a.out`main:
+    0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+-&gt;  0x100000e2f &lt;+15&gt;:  callq  0x100000f60               ; empty
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    ............
+
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff330
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000e2f  a.out`main + 15
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfudzgrh42j31jq0i874t.jpg" width="800" /></center>
+
+<p>可以看到此时：</p>
+<ul>
+  <li>rbp = 0x00007ffeefbff370，main栈帧的栈底的地址就是 0x00007ffeefbff370</li>
+  <li>rsp = 0x00007ffeefbff330，main栈帧的栈顶的地址就是 0x00007ffeefbff330（因为栈是向下生长的，所以sp小于dp）</li>
+</ul>
+
+<p>由此可以算出 main 的栈帧占的内存空间大小是 0x40 ，正好符合第三条指令：subq   $0x40, %rsp</p>
+
+<ul>
+  <li>rip 指向当前等待执行的指令的地址，此时 rip = 0x0000000100000e2f，正好是（0x100000e2f &lt;+15&gt;:  callq  0x100000f60）</li>
+</ul>
+
+<p>那么 callq  0x100000f60 指令做了什么呢？我们首先抛出结论：</p>
+<ol>
+  <li>首先 call 指令把当前指令的下一条指令 push 入栈（先把这条指令的地址暂存下来，等后面被调用函数返回的时候才能找到它，并继续执行）</li>
+  <li>找到下一条需要执行的指令的地址（即 empty 的地址），并跳转执行。</li>
+</ol>
+
+<p>首先我们来验证第2点，当前的跳转指令是：callq  0x100000f60，empty 的第一条指令的地址也是 0x100000f60（0x100000f60 &lt;+0&gt;: pushq  %rbp）。这里 0x100000f60 是 lldb帮我们计算出来的值，算法是：目的值 = 偏移值+下一条指令的地址，这个逻辑就是地址无关代码（position independent code）</p>
+
+<p>然后我们验证第一点，先看一下当前内存中栈顶附近（rsp = 0x00007ffeefbff330）存储的数值（memory read 指令）</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>memory read --size 4 --format x --count 16 0x00007ffeefbff310
+
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff380 0x00007ffe (0x00000000 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) 
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>上面的(0x00000000 0x00000001)表示0x7ffeefbff328地址存的现在存的值是 0000000100000000(小端模式)，后面在会被覆盖成函数返回地址 0x100000e34。</p>
+
+<p>然后执行 step。再次观察寄存器和内存数值的变化：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre></td><td class="rouge-code"><pre>memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff380 0x00007ffe (0x00000e34 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f60  a.out`empty
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以看到有三个地方变化了</p>
+<ol>
+  <li>0x7ffeefbff328 地址内存的值有(0x00000000 0x00000001)变成了(0x00000e34 0x00000001，即小端模式下的 0000000100000e34)，正好是 callq  0x100000f60 的下一条指令的地址 0x100000e34。</li>
+  <li>因为有新的值入栈了，所以rsp的值也需要更新到新的栈顶，即 0x00007ffeefbff330 - 8 = 0x00007ffeefbff328（push入栈的指针占8个字节）</li>
+  <li>rip指向了新的指令地址：empty函数的第一条指令：rip = 0x0000000100000f60  a.out`empty</li>
+</ol>
+
+<p>执行完call指令后，执行逻辑就从main跳出来，去执行empty了。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfufv8slmmj31dg0u0jsc.jpg" width="800" /></center>
+
+<h4 id="pushq---rbp--movq--rsp-rbp">pushq   %rbp &amp; movq  %rsp, %rbp</h4>
+
+<p>所有函数的开头都需要执行这两行函数，它的目的是暂存上一个函数的rbp指针，并把rbp指针更新指向到新的栈帧</p>
+<ol>
+  <li>pushq %rbp：暂存一个函数的rbp指针</li>
+  <li>movq  %rsp, %rbp：rbp指针更新指向到新的栈帧</li>
+</ol>
+
+<p>第一步：验证一下 pushq  %rbp，首先看下当前寄存器和内存的状态：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: (0xefbff380 0x00007ffe) 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f60  a.out`empty
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>其中 0x7ffeefbff320 地址中的值（0x00000001 0x0000000e）一会儿是要被当前 rbp 的值（rbp = 0x00007ffeefbff370）覆盖的，然后 rsp 会减“1”，变成 0x00007ffeefbff320。ok，我们执行以下 step，看下结果：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: (0xefbff370 0x00007ffe) 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f61  a.out`empty + 1
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>结果和预料的一样，现在：rsp = 0x00007ffeefbff320，地址 0x7ffeefbff320 存储的值是 0x00007ffeefbff370（小端模式）。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv1ltg2exj31cz0u075c.jpg" width="800" /></center>
+
+<p>第二步：movq  %rsp, %rbp，是把 rsp 的值赋值给 rbp，这样 rbp 就指向了新的栈帧的栈底，代表开辟了了一个新的栈帧，即 empty 函数的栈帧。执行 step ，看下结果：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+</pre></td><td class="rouge-code"><pre>General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff320 // rbp的值更新了，目前和 rsp 相同
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f64  a.out`empty + 4
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv1sgy0i1j31dv0u0gmu.jpg" width="800" /></center>
+
+<p>以上就是一个空函数调用时，CPU跳转新函数和新栈帧开辟的逻辑。因为 empty 函数中没有任何实现，所以接着会马上返回。</p>
+
+<h4 id="popq---rbp--retq">popq   %rbp &amp; retq</h4>
+
+<p>所有函数的汇编指令也都是有这两条指令作为结尾，这两条指令的含义是：取回暂存的 rbp 指针并恢复 rbp 寄存器的值，然后取出暂存的返回指令的地址，并跳转执行。</p>
+<ol>
+  <li>popq   %rbp： 取回暂存的 rbp 指针并恢复 rbp 寄存器的值。</li>
+  <li>取出暂存的返回指令的地址，并跳转执行。</li>
+</ol>
+
+<p>第一步验证：popq   %rbp。看下执行这一步之前，寄存器和内存的状态：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre></td><td class="rouge-code"><pre>(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff320
+       rsp = 0x00007ffeefbff320
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f64  a.out`empty + 4
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+
+(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff370 0x00007ffe 0x00000e34 0x00000001
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>当前栈顶地址是：rsp = 0x00007ffeefbff320，栈顶地址存储的值是：0xefbff370 0x00007ffe，也就是我们之前暂存的上一个函数的栈帧的基地址。然后执行 step，看下结果：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre>(lldb) register read 
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f65  a.out`empty + 5
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>现在 rbp = 0x00007ffeefbff370，rbp 寄存器恢复了，同时 rsp 增加了 “1”（因为执行了 pop 指令，栈的长度减少了），此时：</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv27e3rp6j31dd0u0myf.jpg" width="800" /></center>
+
+<p>第二步执行：retq，这一步会取出当前栈顶的值，即暂存的需要返回到的指令的地址（此时是 0x100000e34）。先看一下当前状态：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+</pre></td><td class="rouge-code"><pre>(lldb) memory read --size 4 --format x --count 16 0x00007ffeefbff310
+0x7ffeefbff310: 0x00000000 0x00000000 0xefbff398 0x00007ffe
+0x7ffeefbff320: 0xefbff370 0x00007ffe (0x00000e34 0x00000001)
+0x7ffeefbff330: 0x00000001 0x0000000e 0x00000000 0x00000000
+0x7ffeefbff340: 0x00000000 0x00000000 0x00000000 0x00000000
+(lldb) register read
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff328
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000f65  a.out`empty + 5
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>rsp = 0x00007ffeefbff328，rsp 执行当前栈顶，当前栈顶存储的值是 (0x00000e34 0x00000001)。然后执行 step， 看下结果：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+</pre></td><td class="rouge-code"><pre>(lldb) disassemble 
+a.out`empty:
+    0x100000f60 &lt;+0&gt;: pushq  %rbp
+    0x100000f61 &lt;+1&gt;: movq   %rsp, %rbp
+    0x100000f64 &lt;+4&gt;: popq   %rbp
+-&gt;  0x100000f65 &lt;+5&gt;: retq   
+(lldb) step
+Process 45685 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = instruction step into
+    frame #0: 0x0000000100000e34 a.out`main + 20
+a.out`main:
+-&gt;  0x100000e34 &lt;+20&gt;: movl   $0x3, -0x8(%rbp)
+    0x100000e3b &lt;+27&gt;: movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;: movl   -0x8(%rbp), %edi
+    0x100000e45 &lt;+37&gt;: movl   -0xc(%rbp), %esi
+Target 0: (a.out) stopped.
+(lldb) register read 
+General Purpose Registers:
+       rax = 0x0000000100000e20  a.out`main
+       rbx = 0x0000000000000000
+       rcx = 0x00007ffeefbff5a8
+       rdx = 0x00007ffeefbff3a8
+       rdi = 0x0000000000000001
+       rsi = 0x00007ffeefbff398
+       rbp = 0x00007ffeefbff370
+       rsp = 0x00007ffeefbff330
+        r8 = 0x0000000000000000
+        r9 = 0x0000000000000000
+       r10 = 0x0000000000000000
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000000000
+       r13 = 0x0000000000000000
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x0000000100000e34  a.out`main + 20
+    rflags = 0x0000000000000206
+        cs = 0x000000000000002b
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>可以看到，执行完 retq 后，CPU指向了需要返回的指令地址：0x100000e34（rip = 0x0000000100000e34）；rsp 继续加“1”。此时 函数的栈帧恢复了之前在main函数的状态：</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv2exw2p0j31d70u0wfr.jpg" width="800" /></center>
+
+<p>到此为止，一个空函数的调用和返回过程就结束了，我们再来总结一下整个过程：</p>
+
+<h3 id="函数调用过程">函数调用过程</h3>
+
+<center><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfv3dqvw9uj31800u0gn0.jpg" width="800" /></center>
+
+<h3 id="传参--返回值">传参 &amp; 返回值</h3>
+
+<p>函数调用时，有两种传参方式：</p>
+<ol>
+  <li>寄存器够用时，是寄存器传参</li>
+  <li>寄存器不够用时，把参数 push 到栈上，用栈内存传参。</li>
+</ol>
+
+<p>返回值：</p>
+<ol>
+  <li>利用寄存器 eax 存储返回值，返回给上一级函数。</li>
+</ol>
+
+<h4 id="寄存器传参">寄存器传参</h4>
+
+<p>我们以 add 函数为例分析：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>// 测试传2个参数的函数
+int i = 3;
+int j = 4;
+int k = add(i, j);
+
+	int add(int i, int j)
+{
+	int k = i + j;
+	return k;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre>a.out`main:
+-&gt;  0x100000e20 &lt;+0&gt;:   pushq  %rbp
+    0x100000e21 &lt;+1&gt;:   movq   %rsp, %rbp
+    0x100000e24 &lt;+4&gt;:   subq   $0x40, %rsp
+    0x100000e28 &lt;+8&gt;:   movl   $0x0, -0x4(%rbp)
+    0x100000e2f &lt;+15&gt;:  callq  0x100000f60
+    0x100000e34 &lt;+20&gt;:  movl   $0x3, -0x8(%rbp)      
+    0x100000e3b &lt;+27&gt;:  movl   $0x4, -0xc(%rbp)
+    0x100000e42 &lt;+34&gt;:  movl   -0x8(%rbp), %edi      // 参数：数字 3 放入 edi 中
+    0x100000e45 &lt;+37&gt;:  movl   -0xc(%rbp), %esi      // 参数：数字 4 放入 esi 中
+    0x100000e48 &lt;+40&gt;:  callq  0x100000eb0           ; add
+    ..........
+
+a.out`add:
+    0x100000eb0 &lt;+0&gt;:  pushq  %rbp
+    0x100000eb1 &lt;+1&gt;:  movq   %rsp, %rbp
+    0x100000eb4 &lt;+4&gt;:  movl   %edi, -0x4(%rbp)      // 从 edi 中取出参数 3
+    0x100000eb7 &lt;+7&gt;:  movl   %esi, -0x8(%rbp)      // 从 esi 中取出参数 4
+    0x100000eba &lt;+10&gt;: movl   -0x4(%rbp), %esi      
+    0x100000ebd &lt;+13&gt;: addl   -0x8(%rbp), %esi      // 计算 3 + 4
+    0x100000ec0 &lt;+16&gt;: movl   %esi, -0xc(%rbp)
+    0x100000ec3 &lt;+19&gt;: movl   -0xc(%rbp), %eax      // 3 + 4 的结果放入 eax 中，作为返回参数返回
+    0x100000ec6 &lt;+22&gt;: popq   %rbp
+    0x100000ec7 &lt;+23&gt;: retq   
+    0x100000ec8 &lt;+24&gt;: nopl   (%rax,%rax)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="栈内存传参">栈内存传参</h4>
+
+<p>我们以 testParams 函数为例分析：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre>// 测试传多个参数的函数
+testParams(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+
+void testParams(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k)
+{
+	return;
+}
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+</pre></td><td class="rouge-code"><pre>a.out`main:
+    ........
+    0x100000e50 &lt;+48&gt;:  movl   $0x1, %edi        // 数字1，2，3，4，5，6 分别放入了 6 个寄存器
+    0x100000e55 &lt;+53&gt;:  movl   $0x2, %esi
+    0x100000e5a &lt;+58&gt;:  movl   $0x3, %edx
+    0x100000e5f &lt;+63&gt;:  movl   $0x4, %ecx
+    0x100000e64 &lt;+68&gt;:  movl   $0x5, %r8d
+    0x100000e6a &lt;+74&gt;:  movl   $0x6, %r9d
+    0x100000e70 &lt;+80&gt;:  movl   $0x7, (%rsp)      // 数字7，8，9，10，11 分别放入栈内存（main的栈帧空间）
+    0x100000e77 &lt;+87&gt;:  movl   $0x8, 0x8(%rsp)
+    0x100000e7f &lt;+95&gt;:  movl   $0x9, 0x10(%rsp)
+    0x100000e87 &lt;+103&gt;: movl   $0xa, 0x18(%rsp)
+    0x100000e8f &lt;+111&gt;: movl   $0xb, 0x20(%rsp)
+    0x100000e97 &lt;+119&gt;: callq  0x100000ed0               ; testParams
+    ........
+
+a.out`testParams:
+    0x100000ed0 &lt;+0&gt;:  pushq  %rbp
+    0x100000ed1 &lt;+1&gt;:  movq   %rsp, %rbp
+    0x100000ed4 &lt;+4&gt;:  pushq  %r14
+    0x100000ed6 &lt;+6&gt;:  pushq  %rbx
+    0x100000ed7 &lt;+7&gt;:  movl   0x30(%rbp), %eax   // 从栈内存中把参数读取出来，并放入testParams的栈帧空间
+    0x100000eda &lt;+10&gt;: movl   0x28(%rbp), %r10d
+    0x100000ede &lt;+14&gt;: movl   0x20(%rbp), %r11d
+    0x100000ee2 &lt;+18&gt;: movl   0x18(%rbp), %ebx
+    0x100000ee5 &lt;+21&gt;: movl   0x10(%rbp), %r14d
+    0x100000ee9 &lt;+25&gt;: movl   %edi, -0x14(%rbp)
+    0x100000eec &lt;+28&gt;: movl   %esi, -0x18(%rbp)
+    0x100000eef &lt;+31&gt;: movl   %edx, -0x1c(%rbp)
+    0x100000ef2 &lt;+34&gt;: movl   %ecx, -0x20(%rbp)
+    0x100000ef5 &lt;+37&gt;: movl   %r8d, -0x24(%rbp)
+    0x100000ef9 &lt;+41&gt;: movl   %r9d, -0x28(%rbp)
+    0x100000efd &lt;+45&gt;: movl   %eax, -0x2c(%rbp)
+    0x100000f00 &lt;+48&gt;: movl   %r10d, -0x30(%rbp)
+    0x100000f04 &lt;+52&gt;: movl   %r11d, -0x34(%rbp)
+    0x100000f08 &lt;+56&gt;: movl   %ebx, -0x38(%rbp)
+    0x100000f0b &lt;+59&gt;: movl   %r14d, -0x3c(%rbp)
+    0x100000f0f &lt;+63&gt;: popq   %rbx
+    0x100000f10 &lt;+64&gt;: popq   %r14
+    0x100000f12 &lt;+66&gt;: popq   %rbp
+    0x100000f13 &lt;+67&gt;: retq   
+    0x100000f14 &lt;+68&gt;: nopw   %cs:(%rax,%rax)
+    0x100000f1e &lt;+78&gt;: nop    
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="不定参数传参">不定参数传参</h4>
+
+:ET

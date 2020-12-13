@@ -1,0 +1,16 @@
+I"�<p><img src="/post_image/nand_start/adam_god_nand.png" alt="adam_god_nand" /></p>
+
+<p>Mark!!! 开始学习课程：<a href="https://www.nand2tetris.org/">From Nand To Tetris</a></p>
+
+<p>本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc0kvqha75j31140mcgn0.jpg" width="800" /></center>
+
+<p>现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架构（同时工业级的计算机每一层的实现也是非常复杂的），封装导致我们往往只能够看到冰山一角，至于水面下的实现原理，特色社会主义下的程序员在996的工作制之下，往往只能靠推测理解，或者通过学习一些零散的技术资料来形成一个不太完整，甚至理解有一些偏差的知识体系（我经常会陷入对某个知识点的理解是不是正确的无限自我怀疑之中）。</p>
+<center><img src="https://tva1.sinaimg.cn/large/0082zybply1gc0mo58x1fj30nq0w6467.jpg" width="300" /></center>
+
+<p>我们把将要构建的这个计算机命名为Hack，Hack是一个麻雀虽小，但五脏俱全的冯·诺依曼架构的现代计算机。Hack极其精简，它只保留了计算机最基本的功能，一方面降低了我们的实现成本，更重要的是它把我们从计算机科学中众多复杂的实现细节中解脱出来，瞄准计算机工作的原理和本质。我们在构建Hack的同时，也加深了自己对计算机理解的准确性和系统性。</p>
+
+<p>还有一篇类似课程：<a href="https://www.youtube.com/watch?v=WqrNphu6HaU&amp;list=PLdYq_l3Bzf1elCyzIfx2JgHfSMTsWbnfg&amp;index=1">计算机科学速成课</a></p>
+
+<p>😀😀😀</p>
+:ET

@@ -1,0 +1,344 @@
+I"�n<h3 id="short-long">short, long</h3>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kt">short</span> <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+<span class="kt">long</span> <span class="kt">int</span> <span class="n">y</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。</p>
+
+<p>short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位。</p>
+
+<h3 id="extern">extern</h3>
+
+<p>引用全局变量（外部变量）时需要先使用 extern 关键字来声明对变量的引用，格式：extern dataType dateName; 如果全局变量的声明和引用都在同一个源文件中，那么可以省略使用 extern。</p>
+
+<h3 id="const">const</h3>
+
+<p>任何变量的声明都可以用const修饰，该修饰符表示所修饰的变量的值不能够被修改，如果const修饰的是数组，那么所有数组元素的值都不能被修改。const也可以用来修饰作为函数参数的数组，表明函数不能对入参数组的元素的值进行修改。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="k">const</span> <span class="kt">double</span> <span class="n">e</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span><span class="mi">718281</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">"warning:"</span>
+
+<span class="kt">int</span> <span class="nf">strlen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="p">[]);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="static">static</h3>
+
+<p>用static修饰的变量或函数，可以将其声明后的对象的作用域限定在被编译的源文件的剩余的部分，以达到隐藏对象的目的。简单说就是：全局对象对于程序全局可见，静态对象只在文件内可见。</p>
+
+<p>另外，static可以在函数内修饰变量。此时该变量只在函数内可见，但变量的生命周期不跟随函数声明周期变化，是一直存在的（会一直占用内存）。</p>
+
+<h3 id="register">register</h3>
+
+<p>用register修饰变量，所要表达的是意思：想要编译器把变量存放在寄存器中，这样可以让函数占用的内存更小，运行的速度更快。不同的硬件环境对register变量的支持不一样，而且编译器可以也忽略register修饰。</p>
+
+<h3 id="指针和数组">指针和数组</h3>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gdbwcu9wcfj312g0au0ty.jpg" width="500" /></center>
+
+<ul>
+  <li>代码中使用数组名a，即代表数组a的首地址。pa = a 等价于 pa = &amp;a[0]</li>
+  <li>无论数组a中的元素类型和数组长度是什么，对指针加1就意味着，pa+1指向pa所指向的对象的下一个对象（是对象个数的偏移量，而不是物理地址的偏移量）。</li>
+  <li>对数组元素a[i]的引用，也等价于*(a+i)的指针形式。</li>
+</ul>
+
+<h3 id="void-">void *</h3>
+
+<p>任何指针都可以转换为void *类型的指针，并且将它转换为原来的类型时不会丢失信息。</p>
+
+<h3 id="复杂指针声明举例">复杂指针声明举例</h3>
+
+<p>C语言的语法力图使声明和使用相一致，对于简单情况，这种做法是很有效的，但是对于情况比较复杂的情况，则容易让人混淆。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">;</span>       <span class="c1">// argc是指向char的指针的指针</span>
+
+<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">daytab</span><span class="p">)[</span><span class="mi">13</span><span class="p">];</span> <span class="c1">// daytab是指向数组（int[13]）的指针</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">daytab</span><span class="p">[</span><span class="mi">13</span><span class="p">];</span>   <span class="c1">// daytab是一个数组（int *[13]），数组存储指向int的指针</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">comp</span><span class="p">();</span>      <span class="c1">// com是一个函数，返回一个void *类型的指针</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">comp</span><span class="p">)();</span>    <span class="c1">// com是一个指向函数的指针，该函数返回void类型的对象</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>上面的几个声明还算好理解，下面这两个就更复杂了。如果想要分析复杂的指针声明，需要用递归下降的算法思想(从反方向)，在这些声明中，越靠近name的修饰符优先级越高，越能表达name的本质属性，越靠近外围的修饰符优先级越低，是对name的补充修饰。这里给出分析下面声明的递归定义：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>dcl：         前面带有可选的*的direct-dcl
+direct-dcl：  name
+              (dcl)
+              direct-dcl()
+              direct-dcl[可选长度]
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kt">char</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">())[])();</span>    <span class="c1">// x是一个函数，这个函数返回一个指向数组的指针；数组中的元素是一个指针，这个指针指向一个函数，这个函数返回一个char对象</span>
+<span class="kt">char</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">])())[</span><span class="mi">5</span><span class="p">];</span>  <span class="c1">// x是一个数组[3]；数组中的元素指向一个函数，该函数返回一个指针；该指针一个数组[5]，数组中的元素是char</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>我们以 char (* (* x())[] )(); 来解析一下：</p>
+<ol>
+  <li>x() 声明 x 是一个函数，*x() 的 * 修饰了函数 x 返回了一个指针，但指向何处需要外层继续修饰</li>
+  <li>(*x())[]，声明了上面返回的指针指向的是一个数组，数组里面存的什么值需要外层继续修饰</li>
+  <li>*(*x())[]，声明了上面的数组中存的是一个指针，指向何处需要外层继续修饰</li>
+  <li>(*(*x())[])()，声明了上面指针指向的是一个函数，函数的返回值需要外层继续修饰</li>
+  <li>char (*(*x())[])()，声明了上面的函数的返回值是一个char对象</li>
+</ol>
+
+<h3 id="结构体">结构体</h3>
+
+<p>结构体是可以嵌套的，但不能嵌套自己（可以通过指针）</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="k">struct</span> <span class="n">rect</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">point</span> <span class="n">pt1</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">point</span> <span class="n">pt2</span><span class="p">;</span>
+    <span class="c1">// struct react re1; 非法</span>
+    <span class="k">struct</span> <span class="n">react</span> <span class="o">*</span><span class="n">reptr</span><span class="p">;</span> <span class="c1">// 指针合法</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="typedef">typedef</h3>
+
+<p>typedef在C代码移植的时候可以发挥很大作用，只需要把typedef修饰的类型改为当前平台下的类型即可。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="c1">// 举例</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">tnode</span> <span class="o">*</span><span class="n">Treeptr</span><span class="p">;</span> <span class="c1">// 定义Treeptr是指向结构体tnode的指针</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">tnode</span> <span class="p">{</span>         <span class="c1">// 定义Treenode是结构体tnode的别名</span>
+    <span class="c1">//...</span>
+<span class="p">}</span> <span class="n">Treenode</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="kt">int</span><span class="p">(</span><span class="o">*</span><span class="n">PFI</span><span class="p">)(</span><span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="c1">// 定义PFI是一个指向函数的指针，该函数的入参是两个char指针，返回一个int对象</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="bitfield">bitfield</h3>
+
+<p>位段利用一个机器字（word）中的不同Bit表示信息，最大化的利用了内存。有些机器字段的分配是从左到右，有些方向相反。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="n">struce</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">id_keyword</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">id_extern</span>  <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">id_static</span>  <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">flags</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="内存对齐">内存对齐</h3>
+
+<p>为什么要进行内存对齐呢？</p>
+<ol>
+  <li>平台原因(移植原因)：不是所有的硬件平台都能访问任意地址上的任意数据的；某些硬件平台只能在某些地址处取某些特定类型的数据，否则抛出硬件异常。</li>
+  <li>性能原因：数据结构(尤其是栈)应该尽可能地在自然边界上对齐。原因在于，为了访问未对齐的内存，处理器需要作两次内存访问；而对齐的内存访问仅需要一次访问。</li>
+</ol>
+
+<p>参考资料：
+<a href="https://www.cnblogs.com/TenosDoIt/p/3590491.html">C++ 内存对齐</a>，<a href="https://www.cnblogs.com/TenosDoIt/p/3590491.html">失传的C结构体打包技艺</a></p>
+
+<h3 id="c实战">C实战</h3>
+
+<p>用C实现内存管理函数malloc()和free()</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+</pre></td><td class="rouge-code"><pre><span class="k">typedef</span> <span class="kt">long</span> <span class="n">Align</span><span class="p">;</span>        <span class="c1">// 按照Long对齐边界</span>
+
+<span class="c1">// 这里声明了一个union，长度为一个long的长度，其中Align x只为了占住内存长度（内存对齐用），本身无意义。struct s是有意义的数据，标明了当前可用内存块的大小和指向下一块可用内存。</span>
+<span class="k">union</span> <span class="n">header</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="p">{</span>
+		<span class="k">union</span> <span class="n">header</span> <span class="o">*</span><span class="n">ptr</span><span class="p">;</span> <span class="c1">// 之下下一块空闲内存</span>
+		<span class="kt">unsigned</span> <span class="n">size</span><span class="p">;</span>     <span class="c1">// 当前空前内存块的大小</span>
+	<span class="p">}</span> <span class="n">s</span><span class="p">;</span>
+	<span class="n">Align</span> <span class="n">x</span><span class="p">;</span>                   <span class="c1">// header块的对齐，x本身无用</span>
+<span class="p">}</span>
+
+<span class="k">typedef</span> <span class="k">union</span> <span class="n">header</span> <span class="n">Header</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="n">Header</span> <span class="n">base</span><span class="p">;</span>            <span class="c1">// 空闲内存的起始地址</span>
+<span class="k">static</span> <span class="n">Header</span> <span class="o">*</span><span class="n">freep</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>   <span class="c1">// 空闲链表</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">malloc</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">nbytes</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">Header</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">prep</span><span class="p">;</span>
+	<span class="n">Header</span> <span class="o">*</span><span class="n">moreCore</span><span class="p">(</span><span class="kt">unsigned</span><span class="p">);</span>
+	<span class="kt">unsigned</span> <span class="n">nunits</span><span class="p">;</span>
+
+	<span class="n">nunits</span> <span class="o">=</span> <span class="p">(</span><span class="n">nbytes</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Header</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Header</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 分配的内存是Header的整数倍（内存对齐用），且&gt;nbytes的需求</span>
+	<span class="k">if</span> <span class="p">((</span><span class="n">prep</span> <span class="o">=</span> <span class="n">freep</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// 当前没有空闲链表</span>
+		<span class="n">base</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">freep</span> <span class="o">=</span> <span class="n">prep</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">base</span><span class="p">;</span>
+		<span class="n">base</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">prep</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span> <span class="p">;</span> <span class="n">prep</span> <span class="o">=</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">nunits</span><span class="p">)</span> <span class="p">{</span>              <span class="c1">// 内存足够</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">nunits</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// 内存大小正好</span>
+				<span class="n">prep</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span><span class="c1">// 把这块内存拿去用，指向跨越p</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>                     <span class="c1">// 从末尾开始分配</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">-=</span> <span class="n">nunits</span><span class="p">;</span>   
+				<span class="n">p</span> <span class="o">+=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>      <span class="c1">// p指向</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">nunits</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">freep</span> <span class="o">=</span> <span class="n">prep</span><span class="p">;</span>
+			<span class="k">return</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">freep</span><span class="p">)</span> <span class="p">{</span>                    <span class="c1">// 空闲链表已闭环</span>
+			<span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">morecore</span><span class="p">(</span><span class="n">nunits</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+				<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>        <span class="c1">// 没有剩余空间了</span>
+		<span class="p">}</span> 
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#define NALLOC 1024;   // 申请最小单元
+</span>
+<span class="c1">// morealloc函数，向系统申请更多内存</span>
+<span class="k">static</span> <span class="n">Header</span> <span class="nf">morealloc</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">nunits</span> <span class="n">nu</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">char</span> <span class="o">*</span><span class="n">cp</span><span class="p">,</span> <span class="o">*</span><span class="n">sbrk</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+	<span class="n">Header</span> <span class="o">*</span><span class="n">up</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">nu</span> <span class="o">&lt;</span> <span class="n">NALLOC</span><span class="p">)</span>
+		<span class="n">nu</span> <span class="o">=</span> <span class="n">NALLOC</span><span class="p">;</span>
+	<span class="n">cp</span> <span class="o">=</span> <span class="n">sbrk</span><span class="p">(</span><span class="n">nu</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Header</span><span class="p">));</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">cp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>            <span class="c1">// 没有空间</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">up</span> <span class="o">=</span> <span class="p">(</span><span class="n">Header</span> <span class="o">*</span><span class="p">)</span><span class="n">cp</span><span class="p">;</span>
+	<span class="n">up</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">nu</span><span class="p">;</span>
+	<span class="n">free</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)(</span><span class="n">up</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+	<span class="k">return</span> <span class="n">freep</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ap</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">Header</span> <span class="o">*</span><span class="n">bp</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+	<span class="n">bp</span> <span class="o">=</span> <span class="p">(</span><span class="n">Header</span> <span class="o">*</span><span class="p">)</span><span class="n">ap</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>              <span class="c1">// 指向块头</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">freep</span><span class="p">;</span> <span class="o">!</span><span class="p">(</span><span class="n">bp</span> <span class="o">&gt;</span> <span class="n">p</span> <span class="o">&amp;&amp;</span> <span class="n">bp</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">);</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">)</span> 
+		<span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">bp</span> <span class="o">&gt;</span> <span class="n">p</span> <span class="o">||</span> <span class="n">bp</span> <span class="o">&lt;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">))</span>
+			<span class="k">break</span><span class="p">;</span>              <span class="c1">// 被释放的块在链表的开头或结尾</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">bp</span> <span class="o">+</span> <span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// 与上一个相邻的块合并</span>
+		<span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">+=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+		<span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">bp</span><span class="p">.)</span> <span class="p">{</span>          <span class="c1">// 与下一个相邻的块合并</span>
+		<span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span> <span class="o">+=</span> <span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+		<span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">bp</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">p</span><span class="o">-&gt;</span><span class="n">s</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">freep</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span> 
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

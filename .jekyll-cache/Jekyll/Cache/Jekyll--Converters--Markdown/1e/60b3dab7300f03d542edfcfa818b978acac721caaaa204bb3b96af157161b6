@@ -1,0 +1,744 @@
+I"�<p>经过了前面10章漫长的旅程，我们终于要达成我们的目标了：<strong>在一个完全由自己实现的计算机平台上运行一个小游戏</strong>。这个小游戏要经过编写、编译、转换虚拟机字节码、汇编、生成机器代码等步骤，最终运行在自己搭建的虚拟计算机上。在游戏的运行过程中，每一条指令都是我们亲手编写，每一个细节我们都了如指掌，是我们完完全全地创造了它（虽然需要基于一个硬件虚拟机），这确实是一件非常有意思的事情。</p>
+
+<h3 id="骑手快跑">骑手快跑</h3>
+
+<p>我这里编写了一个非常简单的小游戏：骑手快跑。在屏幕上会位置随机地出现<strong>食物</strong>和<strong>房子</strong>，我们扮演骑手，通过上下左右键控制骑手的行动。骑手需要先取到食物装到车上，然后运送到房子处并领取奖励金，完成配送后骑手又可以继续配送下一单，当奖励金达到一定数额后游戏通关🙄。</p>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1tl5zrv9j30tc0gga9v.jpg" width="500" /></center>
+<center><figcaption>骑手取货中</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1tn7ycv5j30tg0gkglf.jpg" width="500" /></center>
+<center><figcaption>骑手取到货</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1tplj00dj30tg0gsglf.jpg" width="500" /></center>
+<center><figcaption>骑手配送中</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1tv6zcbrj30tg0guglf.jpg" width="500" /></center>
+<center><figcaption>配送下一单</figcaption></center>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1to4ylhsj30tc0giq2r.jpg" width="500" /></center>
+<center><figcaption>奖励金达标，通关</figcaption></center>
+
+<h3 id="实现">实现</h3>
+
+<p>main() 先创建游戏实例，然后运行游戏，游戏结束后调用 dispose() 回收内存</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="nc">RunnerGame</span> <span class="n">game</span><span class="o">;</span>
+        <span class="k">do</span> <span class="nc">RunnerGame</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="n">let</span> <span class="n">game</span> <span class="o">=</span> <span class="nc">RunnerGame</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+
+        <span class="k">do</span> <span class="n">game</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="k">do</span> <span class="n">game</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>RunnerGame类是游戏的核心控制类。负责创建骑手、食物、房子等对象；然后监听用户键盘输入、控制游戏逻辑、调整游戏状态、控制屏幕刷新。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nc">RunnerGame</span> <span class="o">{</span>
+
+    <span class="kd">static</span> <span class="nc">RunnerGame</span> <span class="n">instance</span><span class="o">;</span>    <span class="c1">// 游戏单例</span>
+
+    <span class="n">field</span>  <span class="nc">Runner</span>     <span class="n">runner</span><span class="o">;</span>             <span class="c1">// 骑手</span>
+    <span class="n">field</span>  <span class="nc">Food</span>       <span class="n">food</span><span class="o">;</span>               <span class="c1">// 食物</span>
+    <span class="n">field</span>  <span class="nc">House</span>      <span class="n">house</span><span class="o">;</span>              <span class="c1">// 配送地点</span>
+    
+    <span class="n">field</span>  <span class="kt">int</span>        <span class="n">runnerX</span><span class="o">,</span> <span class="n">runnerY</span><span class="o">;</span>   <span class="c1">// 骑手当前位置</span>
+    <span class="n">field</span>  <span class="kt">int</span>        <span class="n">foodX</span><span class="o">,</span> <span class="n">foodY</span><span class="o">;</span>       <span class="c1">// 食物当前位置</span>
+    <span class="n">field</span>  <span class="kt">int</span>        <span class="n">houseX</span><span class="o">,</span> <span class="n">houseY</span><span class="o">;</span>     <span class="c1">// 房屋当前位置</span>
+    <span class="n">field</span>  <span class="kt">boolean</span>    <span class="n">picked</span><span class="o">;</span>             <span class="c1">// 是否取到货</span>
+    <span class="n">field</span>  <span class="kt">int</span>        <span class="n">score</span><span class="o">;</span>              <span class="c1">// 挣到的钱</span>
+
+    <span class="n">field</span>  <span class="kt">boolean</span>    <span class="n">exit</span><span class="o">;</span>               <span class="c1">// 游戏结束</span>
+
+    <span class="n">constructor</span> <span class="nc">RunnerGame</span> <span class="nf">new</span><span class="o">()</span> <span class="o">{</span>
+	    <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">clearScreen</span><span class="o">();</span>
+
+	    <span class="n">let</span> <span class="n">runnerX</span> <span class="o">=</span> <span class="mi">230</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">runnerY</span> <span class="o">=</span> <span class="mi">120</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">foodX</span> <span class="o">=</span> <span class="mi">100</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">foodY</span> <span class="o">=</span> <span class="mi">200</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">houseX</span> <span class="o">=</span> <span class="mi">400</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">houseY</span> <span class="o">=</span> <span class="mi">50</span><span class="o">;</span>
+
+	    <span class="n">let</span> <span class="n">runner</span> <span class="o">=</span> <span class="nc">Runner</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="n">runnerX</span><span class="o">,</span> <span class="n">runnerY</span><span class="o">);</span>
+	    <span class="n">let</span> <span class="n">house</span> <span class="o">=</span> <span class="nc">House</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="n">houseX</span><span class="o">,</span> <span class="n">houseY</span><span class="o">);</span>
+	    <span class="n">let</span> <span class="n">food</span> <span class="o">=</span> <span class="nc">Food</span><span class="o">.</span><span class="na">new</span><span class="o">(</span><span class="n">foodX</span><span class="o">,</span> <span class="n">foodY</span><span class="o">);</span>
+
+	    <span class="n">let</span> <span class="n">picked</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	    <span class="n">let</span> <span class="n">exit</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+	    <span class="c1">// 底部分数分数记录区</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawRectangle</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">238</span><span class="o">,</span> <span class="mi">511</span><span class="o">,</span> <span class="mi">240</span><span class="o">);</span>
+	    <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">moveCursor</span><span class="o">(</span><span class="mi">22</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+	    <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="s">"money: 0"</span><span class="o">);</span>
+	
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="n">runner</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+	    <span class="k">do</span> <span class="n">food</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+	    <span class="k">do</span> <span class="n">house</span><span class="o">.</span><span class="na">dispose</span><span class="o">();</span>
+        <span class="k">do</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">deAlloc</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">function</span> <span class="kt">void</span> <span class="nf">newInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">instance</span> <span class="o">=</span> <span class="nc">RunnerGame</span><span class="o">.</span><span class="na">new</span><span class="o">();</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="n">function</span> <span class="nc">RunnerGame</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 开始游戏。用键盘控制骑手位置，先取货，再送货，然后获得奖励</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">char</span> <span class="n">key</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">(~</span><span class="n">exit</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 等待按下按键</span>
+            <span class="k">while</span> <span class="o">((</span><span class="n">key</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(~</span><span class="n">exit</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">let</span> <span class="n">key</span> <span class="o">=</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">keyPressed</span><span class="o">();</span>
+                <span class="k">do</span> <span class="nc">Sys</span><span class="o">.</span><span class="na">wait</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">do</span> <span class="nf">moveRunner</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+
+            <span class="c1">// 等待按键松开</span>
+            <span class="k">while</span> <span class="o">((~(</span><span class="n">key</span> <span class="o">=</span> <span class="mi">0</span><span class="o">))</span> <span class="o">&amp;</span> <span class="o">(~</span><span class="n">exit</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">let</span> <span class="n">key</span> <span class="o">=</span> <span class="nc">Keyboard</span><span class="o">.</span><span class="na">keyPressed</span><span class="o">();</span>
+                <span class="k">do</span> <span class="nc">Sys</span><span class="o">.</span><span class="na">wait</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">do</span> <span class="nf">updateStatus</span><span class="o">();</span>
+            <span class="k">do</span> <span class="nf">reDraw</span><span class="o">();</span>
+        <span class="o">}</span>
+
+	    <span class="k">if</span> <span class="o">(</span><span class="n">exit</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">moveCursor</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">23</span><span class="o">);</span>
+            <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printString</span><span class="o">(</span><span class="s">"Congratulations!"</span><span class="o">);</span>
+	    <span class="o">}</span>
+            
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">moveRunner</span><span class="o">(</span><span class="kt">int</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 左 = 130，上 = 131，右 = 132，下 = 133</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">=</span> <span class="mi">130</span><span class="o">)</span> <span class="o">{</span> 
+        	<span class="n">let</span> <span class="n">runnerX</span> <span class="o">=</span> <span class="n">runnerX</span> <span class="o">-</span> <span class="mi">20</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">=</span> <span class="mi">131</span><span class="o">)</span> <span class="o">{</span> 
+            	<span class="n">let</span> <span class="n">runnerY</span> <span class="o">=</span> <span class="n">runnerY</span> <span class="o">-</span> <span class="mi">20</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">=</span> <span class="mi">132</span><span class="o">)</span> <span class="o">{</span>
+                	<span class="n">let</span> <span class="n">runnerX</span> <span class="o">=</span> <span class="n">runnerX</span> <span class="o">+</span> <span class="mi">20</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                	<span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">=</span> <span class="mi">133</span><span class="o">)</span> <span class="o">{</span>
+                		<span class="n">let</span> <span class="n">runnerY</span> <span class="o">=</span> <span class="n">runnerY</span> <span class="o">+</span> <span class="mi">20</span><span class="o">;</span>
+                	<span class="o">}</span>
+                <span class="o">}</span>
+	        <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 防止越界</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">runnerX</span> <span class="o">&gt;</span> <span class="mi">490</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="n">let</span> <span class="n">runnerX</span> <span class="o">=</span> <span class="mi">490</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">runnerX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="n">let</span> <span class="n">runnerX</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">runnerY</span> <span class="o">&gt;</span> <span class="mi">236</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="n">let</span> <span class="n">runnerY</span> <span class="o">=</span> <span class="mi">236</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">runnerY</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="n">let</span> <span class="n">runnerY</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">do</span> <span class="n">runner</span><span class="o">.</span><span class="na">moveTo</span><span class="o">(</span><span class="n">runnerX</span><span class="o">,</span> <span class="n">runnerY</span><span class="o">);</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">updateStatus</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="c1">// 取到食物</span>
+    	<span class="k">if</span> <span class="o">((</span><span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">foodX</span> <span class="o">-</span> <span class="n">runnerX</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">foodY</span> <span class="o">-</span> <span class="n">runnerY</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">))</span> <span class="o">{</span>
+    		<span class="n">let</span> <span class="n">picked</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    		<span class="k">do</span> <span class="n">runner</span><span class="o">.</span><span class="na">setPicked</span><span class="o">(</span><span class="n">picked</span><span class="o">);</span>
+    	<span class="o">}</span>
+
+    	<span class="c1">// 送到食物</span>
+    	<span class="k">if</span> <span class="o">(</span><span class="n">picked</span> <span class="o">&amp;</span> <span class="o">((</span><span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">houseX</span> <span class="o">-</span> <span class="n">runnerX</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)</span> <span class="o">&amp;</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">houseY</span> <span class="o">-</span> <span class="n">runnerY</span><span class="o">)</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)))</span> <span class="o">{</span>
+    		<span class="n">let</span> <span class="n">score</span> <span class="o">=</span> <span class="n">score</span> <span class="o">+</span> <span class="mi">30</span><span class="o">;</span>
+    		<span class="k">if</span> <span class="o">(</span><span class="n">score</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
+    			<span class="n">let</span> <span class="n">exit</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    		<span class="o">}</span>
+
+    		<span class="n">let</span> <span class="n">picked</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    		<span class="k">do</span> <span class="n">runner</span><span class="o">.</span><span class="na">setPicked</span><span class="o">(</span><span class="n">picked</span><span class="o">);</span>
+
+    		<span class="k">do</span> <span class="nf">newRound</span><span class="o">();</span>
+    	<span class="o">}</span>
+
+    	<span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 完成一次配送，更新食物和房屋的位置</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">newRound</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="c1">// 更新位置</span>
+    	<span class="n">let</span> <span class="n">foodX</span> <span class="o">=</span> <span class="n">mod</span><span class="o">(</span><span class="n">foodX</span> <span class="o">+</span> <span class="n">houseX</span> <span class="o">,</span> <span class="mi">490</span><span class="o">);</span>
+    	<span class="n">let</span> <span class="n">foodY</span> <span class="o">=</span> <span class="n">mod</span><span class="o">(</span><span class="n">foodY</span> <span class="o">+</span> <span class="n">houseY</span> <span class="o">,</span> <span class="mi">236</span><span class="o">);</span>
+    	<span class="n">let</span> <span class="n">houseX</span> <span class="o">=</span> <span class="n">mod</span><span class="o">(</span><span class="n">foodY</span> <span class="o">+</span> <span class="n">houseX</span> <span class="o">,</span> <span class="mi">490</span><span class="o">);</span>
+    	<span class="n">let</span> <span class="n">houseY</span> <span class="o">=</span> <span class="n">mod</span><span class="o">(</span><span class="n">houseX</span> <span class="o">+</span> <span class="n">foodY</span> <span class="o">,</span> <span class="mi">236</span><span class="o">);</span>
+
+    	<span class="k">do</span> <span class="n">food</span><span class="o">.</span><span class="na">moveTo</span><span class="o">(</span><span class="n">foodX</span><span class="o">,</span> <span class="n">foodY</span><span class="o">);</span>
+    	<span class="k">do</span> <span class="n">house</span><span class="o">.</span><span class="na">moveTo</span><span class="o">(</span><span class="n">houseX</span><span class="o">,</span> <span class="n">houseY</span><span class="o">);</span>
+
+    	<span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 重新绘制</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">reDraw</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="k">do</span> <span class="n">runner</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
+    	<span class="k">do</span> <span class="n">house</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>
+    	<span class="k">if</span> <span class="o">(</span><span class="n">picked</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="n">food</span><span class="o">.</span><span class="na">hide</span><span class="o">();</span>    		
+    	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="n">food</span><span class="o">.</span><span class="na">show</span><span class="o">();</span>   		
+    	<span class="o">}</span>
+
+    	<span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">moveCursor</span><span class="o">(</span><span class="mi">22</span><span class="o">,</span><span class="mi">7</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Output</span><span class="o">.</span><span class="na">printInt</span><span class="o">(</span><span class="n">score</span><span class="o">);</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 补充一个取模的方法</span>
+    <span class="n">method</span> <span class="kt">int</span> <span class="nf">mod</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">var</span> <span class="kt">int</span> <span class="n">q</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">q</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">divide</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="o">(</span><span class="n">q</span><span class="o">*</span><span class="n">y</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Runner，House，Food类负责表示个字的对象，维护对象位置信息，状态信息，并负责绘制自己的图形。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nc">Runner</span> <span class="o">{</span>
+
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">;</span>           <span class="c1">// 骑手位置</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="n">height</span><span class="o">;</span>  <span class="c1">// 骑手宽高 20*20</span>
+    <span class="n">field</span> <span class="n">boolen</span> <span class="n">picked</span><span class="o">;</span>          <span class="c1">// 是否已取货</span>
+
+    <span class="c1">// 新创建一个骑手</span>
+    <span class="n">constructor</span> <span class="nc">Runner</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Ax</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Ay</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">picked</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">do</span> <span class="nf">show</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Memory</span><span class="o">.</span><span class="na">deAlloc</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 在screen上展示骑手</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nf">draw</span><span class="o">();</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 抹掉当前在screen上展示的骑手</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">hide</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">setColor</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nf">draw</span><span class="o">();</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 绘制房屋 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">draw</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawRectangle</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">9</span><span class="o">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">19</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">10</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawCircle</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">5</span><span class="o">,</span>  <span class="n">y</span> <span class="o">+</span> <span class="mi">15</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawCircle</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">15</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">15</span><span class="o">,</span> <span class="mi">4</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawLine</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">15</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">9</span><span class="o">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">15</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">4</span><span class="o">);</span>
+        <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawLine</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">11</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">4</span><span class="o">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">19</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">4</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">picked</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">do</span> <span class="nc">Screen</span><span class="o">.</span><span class="na">drawCircle</span><span class="o">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span><span class="o">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">setPicked</span><span class="o">(</span><span class="kt">boolean</span> <span class="nc">Apicked</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">picked</span> <span class="o">=</span> <span class="nc">Apicked</span><span class="o">;</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">moveTo</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">do</span> <span class="nf">hide</span><span class="o">();</span>  <span class="c1">//先抹掉当前骑手</span>
+
+        <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Ax</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Ay</span><span class="o">;</span>
+        <span class="k">do</span> <span class="nf">draw</span><span class="o">();</span>   <span class="c1">// 重新画骑手</span>
+
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Food</span> <span class="o">{</span>
+
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">;</span>           <span class="c1">// 食物位置</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="n">height</span><span class="o">;</span>  <span class="c1">// 食物宽高 15*15</span>
+
+    <span class="c1">// 新创建一个食物</span>
+    <span class="n">constructor</span> <span class="nc">Food</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Ax</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Ay</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">15</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">15</span><span class="o">;</span>
+
+        <span class="k">do</span> <span class="nf">show</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 在screen上展示食物</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 抹掉当前在screen上展示的食物</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">hide</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 绘制食物 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">draw</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">moveTo</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">House</span> <span class="o">{</span>
+
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">;</span>           <span class="c1">// 房屋位置</span>
+    <span class="n">field</span> <span class="kt">int</span> <span class="n">width</span><span class="o">,</span> <span class="n">height</span><span class="o">;</span>  <span class="c1">// 房屋宽高 20*20</span>
+
+    <span class="c1">// 新创建一个房屋</span>
+    <span class="n">constructor</span> <span class="nc">House</span> <span class="nf">new</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">let</span> <span class="n">x</span> <span class="o">=</span> <span class="nc">Ax</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">y</span> <span class="o">=</span> <span class="nc">Ay</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+        <span class="n">let</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
+
+        <span class="k">do</span> <span class="nf">show</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">dispose</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 在screen上展示房屋</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">show</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="c1">// 抹掉当前在screen上展示的房屋</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">hide</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="cm">/** 绘制房屋 */</span>
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">draw</span><span class="o">()</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="n">method</span> <span class="kt">void</span> <span class="nf">moveTo</span><span class="o">(</span><span class="kt">int</span> <span class="nc">Ax</span><span class="o">,</span> <span class="kt">int</span> <span class="nc">Ay</span><span class="o">)</span> <span class="o">{</span>
+    	<span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="广告">广告</h3>
+
+<center><img src="https://tva1.sinaimg.cn/large/00831rSTly1gd1u99ll6aj31j60qcx0l.jpg" width="800" /></center>
+<center><figcaption><h2>当美团骑手，做有为青年</h2></figcaption></center>
+:ET
