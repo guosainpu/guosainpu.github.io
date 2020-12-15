@@ -11,16 +11,26 @@
     <meta name="theme-color" content="#000000">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="一只草履虫">
+    <meta property="og:title" content="美团外卖客户端容器化架构的演进 - 一只草履虫">
     
-    <meta property="og:type" content="website">
-    <meta property="og:description" content="关于程序与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Software Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。">
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="这是我在美团技术团队发表的技术博客：外卖客户端容器化架构的演进
+">
+    
+    <meta property="article:published_time" content="2020-09-30T00:00:00Z">
+    
+    
+    <meta property="article:author" content="guosai, tongtong, xuhong">
+    
+    
+    <meta property="article:tag" content="客户端架构">
+    
     
     <meta property="og:image" content="https://huangxuan.me/img/avatar-hux-ny.jpg">
-    <meta property="og:url" content="https://huangxuan.me/page2/">
+    <meta property="og:url" content="https://huangxuan.me/2020/09/30/%E5%A4%96%E5%8D%96%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%B9%E5%99%A8%E5%8C%96%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B/">
     <meta property="og:site_name" content="一只草履虫">
     
-    <title>一只草履虫</title>
+    <title>美团外卖客户端容器化架构的演进 - 一只草履虫</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -29,7 +39,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://huangxuan.me/page2/">
+    <link rel="canonical" href="https://huangxuan.me/2020/09/30/%E5%A4%96%E5%8D%96%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%B9%E5%99%A8%E5%8C%96%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -192,322 +202,124 @@
   </div>
 </div>
 
-    <!-- Page Header -->
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
 
 
 
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
 
+    
+</style>
 
+<header class="intro-header" >
 
-
-<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        
-        <div class="site-heading" id="tag-heading">
-        
-          <h1>Home</h1> <!-- 这里的Home是个硬编码。。。-->
-          <span class="subheading"></span>
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9E%B6%E6%9E%84" title="客户端架构">客户端架构</a>
+                        
+                    </div>
+                    <h1>美团外卖客户端容器化架构的演进</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by guosai, tongtong, xuhong on September 30, 2020</span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </header>
 
 
-<!-- Main Content -->
-<div class="container">
-	<div class="row">
-        
-
-<!-- USE SIDEBAR -->
-    <!-- PostList Container -->
-    		<div class="
-                col-lg-8 col-lg-offset-1
-                col-md-8 col-md-offset-1
-                col-sm-12
-                col-xs-12
-                postlist-container
-            ">
-    			
-<div class="post-preview">
-    <a href="/2020/02/25/%E5%AE%9E%E7%8E%B0%E7%BC%96%E8%AF%91%E5%99%A8/">
-        <h2 class="post-title">
-            从0到1构建计算机(9/12)--实现编译器
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                本篇实现Jack的编译器，也是从0到1构建计算机系列最复杂的一篇。编译器的实现本身是非常复杂的，但得益于Jack超简洁的语法，我们回避掉了很多复杂的问题。总体上Jack编译器是一个完整的编译器，它包括词法分析，语法分析，语义分析，代码生成等重要主题。
-
-高级语言为什么能够被编译器理解和编译？因为高级语言是按照某种规则的语法（上下文无关语法）组织的，结构上层次化的语言。程序的每个类，每条语句都...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 25, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/02/24/%E9%AB%98%E7%BA%A7%E8%AF%AD%E8%A8%80-Jack/">
-        <h2 class="post-title">
-            从0到1构建计算机(8/12)--高级语言：Jack
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                本篇我们将设计一门高级语言：Jack。Jack是一门基于面向的对象的语言，具备现代高级语言的基本特性和风格，但是语法相对简单，且不支持继承等高级属性（其实Jack非常寒酸，只是支持了“对象”的功能）。本篇的内容非常简单，主要是介绍Jack的语法。
-
-Hello, World
-
-众所周知，学习一门新语言的第一步，是写一个 Hello, World。
-
-1
-2
-3
-4
-5
-6
-7
-class M...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 24, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/02/21/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E8%99%9A%E6%8B%9F%E6%9C%BA/">
-        <h2 class="post-title">
-            从0到1构建计算机(7/12)--实现一个虚拟机
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                计算机工作的本质就是对内存中的数据进行操作，因此只需要具备两种能力即可：(1)对内存的读和写；(2)用对数据进行算数逻辑运算。此外，支持指令跳转能大大提高计算机的可编程能力。直观上看，Hack具备了以上三项能力，我们上一篇也举例了如何实现1+2+…+100。但Hack和我们常用的CPU具备几百条指令集的能力还相去甚远，例如支持四则运算，对栈的操作，指针寄存器的使用，支持函数调用，处理入参和回...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 21, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8/">
-        <h2 class="post-title">
-            从0到1构建计算机(6/12)--汇编语言与汇编器
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器
-
-汇编语言和汇编器
-
-汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 19, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86/">
-        <h2 class="post-title">
-            从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。
-
-计算机架构
-
-hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是将中央处理单元和存储器，通过存储器中存储的程序指令控制中央处理器的执行...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 1, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8/">
-        <h2 class="post-title">
-            从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。
-
-反馈电路、时钟系统、D触发器
-
-组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on January 29, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU/">
-        <h2 class="post-title">
-            从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片
-
-组合逻辑芯片
-
-一个最基本的CPU主要由两类芯片组成：
-
-  组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算
-  时...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on December 16, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/10/17/%E7%94%A8%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%AE%9E%E7%8E%B0CPU%E7%9A%84%E6%95%B0%E7%90%86%E5%9F%BA%E7%A1%80/">
-        <h2 class="post-title">
-            从0到1构建计算机(2/12)--与非门实现CPU的数理基础
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                CPU和布尔函数
-
-CPU本质上是一个函数计算器：
-
-  信号通过输入管脚输入，对应着函数的入参
-  CPU的内部电路是函数的黑盒实现
-  信号通过输出管脚输出，对应着函数的出参
 
 
 
-8086 CPU
 
-大家有没有思考过现代计算机为什么是基于二进制的🤔？事实上，在计算机的发展历程中确实出现过其他进制的计算机，例如10进制，3进制（现在计算机也是一步步演化过来了，其某些核心设计思想甚至来源于...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on October 17, 2019
-    </p>
-</div>
-<hr>
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
 
-<div class="post-preview">
-    <a href="/2019/10/12/%E4%BB%8E%E4%B8%8E%E9%9D%9E%E9%97%A8%E5%88%B0%E4%BF%84%E7%BD%97%E6%96%AF%E6%96%B9%E5%9D%97/">
-        <h2 class="post-title">
-            从0到1构建计算机(1/12)--从与非门到俄罗斯方块
-        </h2>
-        
-        <div class="post-content-preview">
-            
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
                 
 
-Mark!!! 开始学习课程：From Nand To Tetris
-
-本课程将从0到1地构建一个计算机，自底向上地一步步实现各种基本逻辑门、ALU、寄存器、RAM、CPU；定义机器语言、汇编语言，实现汇编器；定义高级语言，实现编译器；实现一套最简单的操作系统；最后编写一个小游戏并把它运行在这个完全由自己构建的计算机之上。
+				<h6 id="这是我在美团技术团队发表的技术博客外卖客户端容器化架构的演进">这是我在<strong>美团技术团队</strong>发表的技术博客：<a href="https://tech.meituan.com/2020/09/30/waimai-mobile-architecture-evolution.html">外卖客户端容器化架构的演进</a></h6>
 
 
-现代计算机是非常复杂的，复杂性之一就在于计算机一层层的封装架...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on October 12, 2019
-    </p>
-</div>
-<hr>
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/08/07/%E6%8E%A2%E7%A9%B6Runtime/" data-toggle="tooltip" data-placement="top" title="探究OC Runtime">
+                        Previous<br>
+                        <span>探究OC Runtime</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <hr style="visibility: hidden;">
 
-<div class="post-preview">
-    <a href="/2019/02/18/%E4%B9%A6%E5%8D%95/">
-        <h2 class="post-title">
-            技术书单
-        </h2>
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
         
-        <div class="post-content-preview">
-            
-                计算机基础：
-1
-2
-3
-4
-5
-6
-* 编码的奥秘（Charles Petzold）
-* 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
-* 程序员的自我修养--链接、装载与库 (俞甲子等)
-* 深入理解计算机系统 (Randal E. Bryant)
-* 汇编语言 (王爽)
-* 编译原理（龙书）（Alfred V.Fho等）
-...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 18, 2019
-    </p>
-</div>
-<hr>
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
 
-
-<!-- Pager -->
-
-<ul class="pager">
-    
-    <li class="previous">
-        <a href="/">&larr; Newer Posts</a>
-    </li>
-    
-    
-    <li class="next">
-        <a href="/page3">Older Posts &rarr;</a>
-    </li>
-    
-</ul>
-
-
-    		</div>
     <!-- Sidebar Container -->
             <div class="
-                col-lg-3 col-lg-offset-0
-                col-md-3 col-md-offset-0
-                col-sm-12
-                col-xs-12
-                sidebar-container
-            ">
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
                 <!-- Featured Tags -->
                 
 
 
 <section>
+    
+        <hr class="hidden-sm hidden-xs">
     
     <h5><a href="/archive/">FEATURED TAGS</a></h5>
     <div class="tags">
@@ -550,40 +362,71 @@ Mark!!! 开始学习课程：From Nand To Tetris
 </section>
 
 
-                <!-- Short About -->
-                <section class="visible-md visible-lg">
-<!--   <hr>
-  <h5><a href="/about/">ABOUT ME</a></h5>
-  <div class="short-about">
-    
-    <img src="/img/avatar-hux-ny.jpg" />
-    
-    
-    <p>For the next quantum leap<br>离开世界之前，一切都是过程</p>
-    
-    
-
-
-<ul class="list-inline">
-
-
-  
-  
-  
-  
-  
-  
-  
-</ul>
-  </div> -->
-</section>
-
                 <!-- Friends Blog -->
                 
-    		</div>
-        
-	</div>
-</div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hux";
+    var disqus_identifier = "/2020/09/30/外卖客户端容器化架构的演进";
+    var disqus_url = "https://huangxuan.me/2020/09/30/%E5%A4%96%E5%8D%96%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%B9%E5%99%A8%E5%8C%96%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E8%BF%9B/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
 
 
 
