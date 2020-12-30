@@ -1,0 +1,345 @@
+I"\E<h3 id="nodejs的优缺点">node.js的优缺点</h3>
+
+<p>优势：</p>
+<ul>
+  <li>高并发能力：事件驱动，非阻塞I/O模式</li>
+  <li>高性能：基于Chrome V8 JavaScript引擎</li>
+  <li>统一的技术栈：使用 js 一门语言就可以开发web的前后端</li>
+</ul>
+
+<p>缺点：</p>
+<ul>
+  <li>难以支持CPU密集型的任务</li>
+  <li>代码自由度高，规范性差</li>
+</ul>
+
+<h3 id="nodejs的原理">node.js的原理</h3>
+<ul>
+  <li>
+    <p>Node.js 使用事件驱动， 非阻塞I/O 模型，非常适合运行数据密集型的应用。</p>
+  </li>
+  <li>
+    <p>基于 Chrome V8，它是一个用 C++ 写的超快的解释器。</p>
+  </li>
+  <li>
+    <p>Node.js 的运行是一个Loop，在每个Loop中负责分发和处理各种事件，而耗时的I/O事件被分发到异步I/O线程中。Node的主线程类似一个前台接待，负责接待从大门进来的所有来访客户，然后分发给不同的后台人员去继续跟进处理。</p>
+  </li>
+  <li>
+    <p>Node..js 本身并不自带web框架（用http模块可以支持简单的web开发），需要引用其他基于Node.js的web开发框，例如express，koa。</p>
+  </li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">http</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">((</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+   <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="dl">'</span><span class="s1">Content-Type</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">text/plain</span><span class="dl">'</span><span class="p">});</span>
+   <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello World</span><span class="se">\n</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8000</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="express">express</h3>
+<p>express是一款最基础的基于node.js的web开发框架，建立在node.js内置的http模块上，它提供如下API：</p>
+<ul>
+  <li>监听端口：</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">express</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">express</span><span class="p">();</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">示例应用正在监听 3000 端口!</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>注册对http请求（get，post，put，delete）的响应回调函数：</li>
+  <li>给请求者发送响应报文</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nx">app</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello World!</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>处理路由</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">express</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">express</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="nx">express</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+
+<span class="c1">// 首页路由</span>
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="dl">'</span><span class="s1">维基首页</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// “关于”页面路由</span>
+<span class="nx">router</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/about</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="dl">'</span><span class="s1">关于此维基</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// router可以使用中间件</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+	<span class="nx">next</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">router</span><span class="p">;</span>
+
+<span class="c1">// 路由挂载需要到某目录下</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="nx">router</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="dl">'</span><span class="s1">/app</span><span class="dl">'</span><span class="p">,</span> <span class="nx">router</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<ul>
+  <li>支持添加中间件</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="rouge-code"><pre><span class="kd">const</span> <span class="nx">a_middleware_function</span> <span class="o">=</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// ... 进行一些操作</span>
+  <span class="nx">next</span><span class="p">();</span> <span class="c1">// 调用 next() ，Express 将调用处理链中下一个中间件函数。</span>
+<span class="p">};</span>
+
+<span class="c1">// 用 use() 为所有的路由和动词添加该函数</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">a_middleware_function</span><span class="p">);</span>
+
+<span class="c1">// 用 use() 为一个特定的路由添加该函数</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="dl">'</span><span class="s1">/someroute</span><span class="dl">'</span><span class="p">,</span> <span class="nx">a_middleware_function</span><span class="p">);</span>
+
+<span class="c1">// 为一个特定的 HTTP 动词和路由添加该函数</span>
+<span class="nx">app</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="nx">a_middleware_function</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>托管静态文件</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="kd">static</span><span class="p">(</span><span class="dl">'</span><span class="s1">public</span><span class="dl">'</span><span class="p">));</span>
+
+<span class="nx">现在</span> <span class="dl">'</span><span class="s1">public</span><span class="dl">'</span> <span class="nx">文件夹下的所有文件均可通过在根</span> <span class="nx">URL</span> <span class="nx">后直接添加文件名来访问了</span><span class="err">，</span><span class="nx">例如</span><span class="err">：</span>
+<span class="nx">http</span><span class="p">:</span><span class="c1">//localhost:3000/images/dog.jpg</span>
+<span class="nx">http</span><span class="p">:</span><span class="c1">//localhost:3000/css/style.css</span>
+<span class="nx">http</span><span class="p">:</span><span class="c1">//localhost:3000/js/app.js</span>
+<span class="nx">http</span><span class="p">:</span><span class="c1">//localhost:3000/about.html</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>使用模板，Express支持多种模板引擎
+```js
+// index.pug
+html
+head
+  title= title
+body
+  h1= message</li>
+</ul>
+
+<p>app.get(‘/’, function (req, res) {
+  // res.render(HTML模板，参数)
+  res.render(‘index’, { title: ‘Hey’, message: ‘Hello there!’ })
+})</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre>
+### Koa
+
+Koa是一个类似于Express的Web开发框架，创始人也是同一个人。Koa的原理和内部结构很像Express，但是语法和内部结构进行了升级。
+```js
+// dome
+const Koa = require('koa');
+const app = new Koa();
+
+app.use(async ctx =&gt; {
+  ctx.body = 'Hello World';
+});
+
+app.listen(3000);
+</pre></td></tr></tbody></table></code></pre></div></div>
+<ul>
+  <li>级联：把多个中间件串联起来
+```js
+app.use(async (ctx, next) =&gt; {
+await next();
+const rt = ctx.response.get(‘X-Response-Time’);
+console.log(<code class="language-plaintext highlighter-rouge">${ctx.method} ${ctx.url} - ${rt}</code>);
+});</li>
+</ul>
+
+<p>app.use(async (ctx, next) =&gt; {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  ctx.set(‘X-Response-Time’, <code class="language-plaintext highlighter-rouge">${ms}ms</code>);
+});</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>
+- 设置属性
+```js
+const Koa = require('koa');
+// 通过构造函数
+const app = new Koa({ proxy: true });
+// 动态设置
+app.proxy = false;
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<ul>
+  <li>context：Koa 的 context 将 node 的 request 和 response 对象封装到单个对象中，并提供了诸多操作方法
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>app.use(async ctx =&gt; {
+ctx; // 这是 Context
+ctx.request; // 这是 koa Request
+ctx.response; // 这是 koa Response
+});
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="webpack">Webpack</h3>
+<p>webpack 是一个 JS 的静态模块打包器。它会递归地构建一个依赖关系图，其中包含应用程序需要的每个模块，然后将所有这些模块打包成一个或多个 bundle。</p>
+<ul>
+  <li>entry：入口起点(entry point)指示 webpack 应该使用哪个模块，来作为构建其内部依赖图的开始。进入入口起点后，webpack 会找出有哪些模块和库是入口起点（直接和间接）依赖的。</li>
+  <li>output：output 属性告诉 webpack 在哪里输出它所创建的 bundles，以及如何命名这些文件，默认值为 ./dist。基本上，整个应用程序结构，都会被编译到你指定的输出路径的文件夹中。你可以通过在配置中指定一个 output 字段，来配置这些处理过程：</li>
+  <li>loader：loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只理解 JavaScript）。loader 可以将所有类型的文件转换为 webpack 能够处理的有效模块，然后你就可以利用 webpack 的打包能力，对它们进行处理。</li>
+  <li>plugins：插件则可以用于执行范围更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。插件接口功能极其强大，可以用来处理各种各样的任务。</li>
+</ul>
+
+<h3 id="vue">Vue</h3>
+<p>Vue一套构建用户界面的渐进式框架。</p>
+
+<h3 id="ssr">SSR</h3>
+<p>server side render：在服务端把HTML文档解析完成（或者部分解析）后，再交给服务端，从而缩短客户端渲染界面的时间。</p>
+
+<h3 id="promise">promise</h3>
+<p>一个promise是一个封装了异步任务的对象，外界可以监听这个promise的状态，同时向其注册回调函数</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre>function ajax(URL) {
+    return new Promise(function (resolve, reject) {
+        var req = new XMLHttpRequest(); 
+        req.open('GET', URL, true);
+        req.onload = function () {
+        if (req.status === 200) { 
+                resolve(req.responseText);
+            } else {
+                reject(new Error(req.statusText));
+            } 
+        };
+        req.onerror = function () {
+            reject(new Error(req.statusText));
+        };
+        req.send(); 
+    });
+}
+var URL = "/try/ajax/testpromise.php"; 
+ajax(URL).then(function onFulfilled(value){
+    document.write('内容是：' + value); 
+}).catch(function onRejected(error){
+    document.write('错误：' + error); 
+});
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+:ET

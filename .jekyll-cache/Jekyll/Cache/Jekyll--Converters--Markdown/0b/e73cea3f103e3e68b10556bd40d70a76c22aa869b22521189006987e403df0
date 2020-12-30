@@ -1,0 +1,8 @@
+I"<h3 id="nodejs的优缺点">node.js的优缺点</h3>
+<p>优势：</p>
+<ul>
+  <li>高并发能力：事件驱动，非阻塞I/O模式</li>
+  <li>高性能：基于Chrome V8 JavaScript引擎</li>
+  <li>统一的技术栈：使用 js 一门语言就可以开发web的前后端</li>
+</ul>
+:ET
