@@ -2,7 +2,7 @@
 
 ### Hi，我是郭赛，在这里练习基本功。
 邮箱：guosainpu@gmail.com<br>
-github：[github](github.com/guosainpu)
+github：[github.com/guosainpu](https://github.com/guosainpu)
 
 
 
