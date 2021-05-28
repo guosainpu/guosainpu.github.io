@@ -1,15 +1,21 @@
-I"�<p>计算机基础：</p>
+I"<p>计算机基础：</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
 5
 6
+7
+8
+9
 </pre></td><td class="rouge-code"><pre>* 编码的奥秘（Charles Petzold）
 * 计算机系统要素：从零开始构建现代计算机 (Noam Nisan &amp; shimon Schocken)
 * 程序员的自我修养--链接、装载与库 (俞甲子等)
 * 深入理解计算机系统 (Randal E. Bryant)
 * 汇编语言 (王爽)
 * 编译原理（龙书）（Alfred V.Fho等）
+* Operating Systems - Three Easy Pieces（Andrea C, Remzi）
+* x86汇编语言-从实模式到保护模式
+* 码农翻身（刘欣）
 </pre></td></tr></tbody></table></code></pre></div></div>
 :ET
