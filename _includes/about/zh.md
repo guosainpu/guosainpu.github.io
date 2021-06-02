@@ -1,6 +1,6 @@
 
 
-### Hi，我是郭赛，在这里练习基本功。
+### Hi，我是郭赛。基本功修行中...
 邮箱：guosainpu@gmail.com<br>
 [github](https://github.com/guosainpu)
 
