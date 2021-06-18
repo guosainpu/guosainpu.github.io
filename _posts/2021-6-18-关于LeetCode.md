@@ -1,0 +1,202 @@
+---
+layout:     post
+title:      关于LeetCode
+date:       2021-6-18
+author:     "guosai"
+tags:
+    - 算法
+    - 计算机基础
+---
+
+### 对数据结构和算法的看法
+
+### 对LeetCode的看法
+
+### 如何刷LeetCode
+
+### 一些总结
+
+在 MacOS 和 iOS 上，可执行程序的启动依赖于 xnu 内核进程运作和动态链接加载器 dyld。dyld 全称 the dynamic link editor，即动态链接器，其本质是 Mach-O 文件，是专门用来加载动态库的库。在 xnu 内核为程序启动做好准备后，执行由内核态切换到用户态，由 dyld 完成后面的加载工作：dyld 会将 App 依赖的动态库和 App 文件加载到内存以后执行。
+
+dyld源码下载地址：https://opensource.apple.com/tarballs/dyld/
+
+不同操作系统的可执行文件格式不同：
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbybt57qaj310s0o4q3w.jpg" width="800"></center>
+
+在现代通用计算机系统中，虽然不同平台的可执行文件的格式不完全一样，但是原理大体相同，基本都是**基于段结构的**，可执行文件的结构基本可以分为：
+1. header段：用于让操作系统识别可执行文件
+2. TEXT段：存放编译后的函数的二进制代码，TEXT段的内容被标记为只读的，可执行的。如果试图修改TEXT段的内容则会引发段异常
+3. DATA段：用于存放一些运行时数据，DATA段的内容是可读可写的（一般是）
+4. 其他段：例如用于辅助完成动态链接的段（Mach-O中是LINKEDIT段）
+
+### Mach-O
+
+Mach-O文件是苹果平台下的可执行文件。
+
+例如，我们进入到/use/bin目录下，我们看到的大多数文件就都是Mach-O文件
+```
+➜  bin pwd
+/usr/bin
+
+➜  bin ls
+2to3-                              file                               machine                            script
+2to3-2.7                           filebyproc.d                       mail                               sdef
+AssetCacheLocatorUtil              fileproviderctl                    mailq                              sdiff
+AssetCacheManagerUtil              filtercalltree                     mailx                              sdp
+AssetCacheTetheratorUtil           find                               make                               sdx
+BuildStrings                       find2perl                          makeinfo                           security
+..........
+
+➜  bin file file
+file: Mach-O 64-bit executable x86_64
+
+➜  bin file script
+script: Mach-O 64-bit executable x86_64
+
+➜  bin file env
+env: Mach-O 64-bit executable x86_64
+
+```
+
+可执行文件一般都是二进制形式的，想要看懂Mach-O文件，一般都要借助工具来分析。常用的有系统自带的otool和可视化工具MachOView
+
+#### otool
+
+otool是Xcode自带工具llvm-otool的一个软连接。他是一个dump工具，帮助我们dump Mach-O文件
+
+#### MachOView
+用 MachOView 来可视化分析则更加方便。
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbyx6yqmvj31au0u0jxl.jpg" width="800"></center>
+
+#### 源代码
+通过源代码的头文件可以帮助分析，而且会有一些有用的注释
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbyzahifzj30vm0f0djw.jpg" width="600"></center>
+
+### Mach-O结构
+
+#### Header
+
+文件最开始的Header是mach_header结构体，定义在<mach-o/loader.h>
+
+```
+struct mach_header_64 {
+	uint32_t	magic;		/* mach magic number identifier, 系统内核用来判断是否是mach-o格式*/
+	cpu_type_t	cputype;	/* cpu specifier, 支持CPU的类型 */
+	cpu_subtype_t	cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file, 说明mach-o文件是属于哪种文件*/
+	uint32_t	ncmds;		/* number of load commands, load command的条数*/
+	uint32_t	sizeofcmds;	/* the size of all the load commands, load command的大小 */
+	uint32_t	flags;		/* flags */
+	uint32_t	reserved;	/* reserved */
+};
+```
+其中filetype常取字段有：
+```
+#define	MH_OBJECT	0x1	 目标文件	
+#define	MH_EXECUTE	0x2	可执行文件	
+#define	MH_DYLIB	0x6	 动态库	
+#define	MH_DYLINKER	0x7	动态连接器	
+#define	MH_DSYM		0xa	存储二进制文件符号信息，用于Debug分析
+```
+
+#### LoadCommand
+
+LoadCommand用于指导动态加载器或动态链接器该如何加载和链接可执行文件以及其所依赖的动态库。也描述了一些segements的信息。
+
+```
+struct segment_command_64 { /* for 64-bit architectures */
+ 	uint32_t	cmd;		/* LC_SEGMENT_64 */
+ 	uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+ 	char		segname[16];	/* segment name */
+ 	uint64_t	vmaddr;		/* memory address of this segment */
+ 	uint64_t	vmsize;		/* memory size of this segment */
+ 	uint64_t	fileoff;	/* file offset of this segment */
+ 	uint64_t	filesize;	/* amount to map from the file */
+ 	vm_prot_t	maxprot;	/* maximum VM protection */
+ 	vm_prot_t	initprot;	/* initial VM protection */
+ 	uint32_t	nsects;		/* number of sections in segment */
+ 	uint32_t	flags;		/* flags */
+};
+```
+
+字段解释：
+
+- cmd：加载命令的类型
+- cmdsize：加载命令所占内存大小
+- segname：存放16字节大小的段名字
+- vmaddr：段的虚拟内存起始地址
+- vmsize：段的虚拟内存大小
+- fileoff：段在文件中偏移量
+- filesize：段在文件大小
+- maxprot：段页面所需要的最高内存保护（4=r,2=w,1=x）
+- initprot：段页面初始的内存保护
+- nsects：段中包含section的数量
+- flags：其他杂项标志位
+
+LoadCommand中的Command也有不同种类，有的是加载各种segements，有的是加载动态库，有的是加载符号等等。下图可以看到Mach-O的一些LoadCommand
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grc8h430qvj30p60miab3.jpg" width="600"></center>
+
+- LC_SEGMENT_64：将文件中的段映射到进程地址空间中
+- LC_DYLD_INFO_ONLY：动态链接相关信息，指导DYLD进行rebase，bind，lazybind等工作
+- LC_SYMTAB：符号表信息，位置、偏移、数据个数，供dyld使用
+- LC_DYSYMTAB：动态符号表信息，供dyld使用
+- LC_LOAD_DYLINKER：链接器信息，记录使用那些链接器完成内核后序的加载工作
+- LC_UUID：Mach-O文件的唯一标识
+- LC_VERSION_MIN_MACOSX：支持最低操作系统版本
+- LC_SOURCE_VERSION：源代码的版本号
+- LC_MAIN：设置主线程的入口即栈大小
+- LC_LOAD_DYLIB：依赖库信息，dyld通过该命令去加载依赖库
+- LC_FUNCTION_STARTS：函数的起始地址表
+- LC_CODE_SIGNATURE：代码签名
+
+#### TEXT 和 DATA
+
+TEXT段和DATA段又可以细分为很多个section，每个section又有不同的作用。其中TEXT段为只读段，DATA有的只读，有的可读可写。
+
+| Section                   | 用途                                                         |
+| ------------------------- | ------------------------------------------------------------ |
+| TEXT                      |                                                              |
+| `__TEXT.__text`           | 主程序代码，一般都是过程（函数）的二进制指令                 |
+| `__TEXT.__cstring`        | C 语言字符串                                                 |
+| `__TEXT.__const`          | `const` 关键字修饰的常量                                     |
+| `__TEXT.__stubs`          | 用于 Stub 的占位代码，很多地方称之为*桩代码*。               |
+| `__TEXT.__stubs_helper`   | 当 Stub 无法找到真正的符号地址后的最终指向，是一些辅助方法（用于符号绑定） |
+| `__TEXT.__objc_methname`  | Objective-C 方法名称                                         |
+| `__TEXT.__objc_methtype`  | Objective-C 方法类型                                         |
+| `__TEXT.__objc_classname` | Objective-C 类名称                                           |
+| DATA                      |                                                              |
+| `__DATA.__data`           | 初始化过的可变数据                                           |
+| `__DATA.__la_symbol_ptr`  | lazy binding 的指针表，表中的指针一开始都指向 `__stub_helper` |
+| `__DATA.nl_symbol_ptr`    | 非 lazy binding 的指针表，每个表项中的指针都指向一个在装载过程中，被动态链机器搜索完成的符号 |
+| `__DATA.__const`          | 没有初始化过的常量                                           |
+| `__DATA.__cfstring`       | 程序中使用的 Core Foundation 字符串（`CFStringRefs`）        |
+| `__DATA.__bss`            | BSS，存放为初始化的全局变量，即常说的静态内存分配            |
+| `__DATA.__common`         | 没有初始化过的符号声明                                       |
+| `__DATA.__objc_classlist` | Objective-C 类列表                                           |
+| `__DATA.__objc_protolist` | Objective-C 原型                                             |
+| `__DATA.__objc_imginfo`   | Objective-C 镜像信息                                         |
+| `__DATA.__objc_selfrefs`  | Objective-C `self` 引用                                      |
+| `__DATA.__objc_protorefs` | Objective-C 原型引用                                         |
+| `__DATA.__objc_superrefs` | Objective-C 超类引用                                         |
+
+#### DanamicLink
+
+- Dynamic Loader Info：指导dyld进行rebase，bind，lazybind等工作
+- Symbol Table：符号表，用于记录符号和符号对应的地址
+- Indirect Symbol Table：间接符号表，主要用于动态链接
+- 字符串表：记录字符串
+
+### 了解Mach-O的意义
+
+1. 了解Mach-O能帮助我们更好的了解iOS程序运行的原理，更深入的理解上层语言运行时的机制，帮助我们更好的进行上层应用的开发。
+2. 能更好的理解一些运行时的黑魔法，例如method swizzle，fishHook等。
+3. 提高一些工作效率，例如通过分析Mach-O来分析废弃方法，重复方法等。
+4. 搞iOS逆向的必备知识
+
+### 后续计划
+
+Mach-O文件的格式、内容本身并不复杂。比较复杂的是Mach-O中如何支持Objc runtime，如何进行动态链接，dyld如何加载mach-o等内容。后续计划再结合这些方面继续对Mach-O进行研究。
+
+1. Mach-O与动态链接
+2. Mach-O与objc runtime
+
