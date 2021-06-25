@@ -1,7 +1,6 @@
 
 
-### Hi，我是郭赛
-### 程序员基本功修行中
+### Hi，我是郭赛。程序员基本功修行中。
 邮箱：guosainpu@gmail.com<br>
 [github](https://github.com/guosainpu)
 
