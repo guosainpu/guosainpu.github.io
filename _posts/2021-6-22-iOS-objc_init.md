@@ -8,7 +8,13 @@ tags:
     - objc
 ---
 
-### _dyld_init
+### dyld & objc_init
+
+前面我们分析到dyld负责加载App主二进制所依赖的动态库，并对APP、动态库做了一些链接和初始化工作。然后针对有初始化方法的动态库，dyld会调用它们的初始化方法，这里就包括runtime的初始化方法objc_init。这个过程如下图：
+
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grtdbw0108j31040lxtdi.jpg" width="1000"></center>
+
+### _objc_init
 
 dyld_init是runtime的初始化方法，主要做了以下事情：
 
@@ -26,6 +32,7 @@ dyld_init是runtime的初始化方法，主要做了以下事情：
     cache_init();
     _imp_implementationWithBlock_init();
 
+	// *重点方法*
     _dyld_objc_notify_register(&map_images, load_images, unmap_image);
 ```
 
@@ -37,7 +44,7 @@ _dyld_objc_notify_register 是在 dyld 中实现的。objc 调用 _dyld_objc_not
 
 1. dyld对当前已经mapped的Image，调用mapped方法
 2. 对当前已经初始化的Image，调用init方法
-3. 如果后续有map, unmap, 初始化Image的行为（例如调用dyopen()），就再调用响应的 mapped，init，unmapped
+3. 如果后续有map, init, unmap Image的行为（例如调用dyopen()），就再调用响应的 mapped，init，unmapped
 
 ```
 // Note: only for use by objc runtime
@@ -91,15 +98,13 @@ void registerObjCNotifiers(_dyld_objc_notify_mapped mapped, _dyld_objc_notify_in
 
 ### read_image
 
-map_image的核心方法是read_image，大概有350行代码。read_image是我们分析的重点，大概做了以下事情：
+map_image的核心方法是read_image，大概有350行代码，核心功能是对非懒加载类的初始化，大概做了以下事情：
 
-1. readClass 主要是读取类，即此时的类仅有地址和名称，还没有 data 数据。
-    - addNamedClass 方法当前类添加到已经创建好的 gdb_objc_realized_classes 哈希表中
-    - addClassTableEntry 将非懒加载的类插入到列表中，然后存储到内存当中，其中如果当前类已经被添加，就不会再次进行添加了
+1. readClass 主要是读取类（处理类的地址和名称，还没有 data 数据），并通过 addNamedClass 方法把类添加到已经创建好的 gdb_objc_realized_classes 哈希表中，方便以后查找类对象
 2. 执行一大堆的初始化和修复任务
     - 创建哈希表
     - 修复selector
-    — 修复类
+    - 修复类
     - 修复消息
     - ......
 3. 把一大堆信息存入map
@@ -107,7 +112,7 @@ map_image的核心方法是read_image，大概有350行代码。read_image是我
     - 方法名
     - protocol
     - ......
-4. realizeClassWithoutSwift 主要是实现类，即将类的 data 数据读取到内存中。
+4. 通过 realizeClassWithoutSwift 方法来初始化类（主要是对ro, rw, rwe的处理）
     - methodizeClass 方法中实现类的方法、属性、协议的序列化
     - attachCategories 方法中实现类以及分类的数据加载
 
@@ -126,14 +131,14 @@ realizeClassWithoutSwift 方法主要作用是将类的 data 信息加载到内�
     - 读取 data 数据，并将其强转为 ro，以及初始化 rw，然后将 ro 拷贝一份到 rw 的 ro
     - ro 表示 read only，其在编译期的时候就已经确定了内存，包含了类的名称、方法列表、协议列表、属性列表和成员变量列表的信息。由于它是只读的，确定了之后就不会发生变化，所以属于 干净的内存(Clean Memory)
     - rw 表示 read Write，由于 OC 的动态性，所以可能会在运行时动态往类中添加属性、方法和协议
-    - rwe 表示 read Write ext，在2020的WWDC上，这部视频 Objective-C运行时的进步 对 内存优化 做了进一步的改进。其中说到 rw 中只有 10% 左右的类真正更改了它们的方法、属性等，所以新增加了 rwe，即是类的额外信息，rw 和 rwe 都属于 脏内存(dirty memory)
+    - rwe 表示 read Write ext，是对rw做了进一步的改进。 rw 中只有 10% 左右的类真正更改了它们的方法、属性等，所以新增加了 rwe，即是类的额外信息，rw 和 rwe 都属于 脏内存(dirty memory)
 2. 递归调用 realizeClassWithoutSwift 完成类的继承链关系
-    - 递归调用 realizeClassWithoutSwift，设置父类和元类的 data 信息加载到内存当中
+    - 递归调用 realizeClassWithoutSwift，**设置父类和元类**
     - 分别将父类和元类赋值给 class 的 superclass 和 classIsa
 3. 调用 methodizeClass 方法，读取方法列表(包括分类)、协议列表、属性列表，然后赋值给 rw，最后返回 cls
 
 
-### 启动流程图（dyld+objc_init）
+### 加载流程图
 
-<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grtdbw0108j31040lxtdi.jpg" width="1000"></center>
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grte95wrr1j324e0u077y.jpg" width="1000"></center>
 
