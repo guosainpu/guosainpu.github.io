@@ -232,6 +232,134 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2021/06/22/iOS-objc_init/">
+        <h2 class="post-title">
+            iOS-objc_init
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                dyld &amp; objc_init
+
+前面我们分析到dyld负责加载App主二进制所依赖的动态库，并对APP、动态库做了一些链接和初始化工作。然后针对有初始化方法的动态库，dyld会调用它们的初始化方法，这里就包括runtime的初始化方法objc_init。这个过程如下图：
+
+
+
+_objc_init
+
+dyld_init是runtime的初始化方法，主要做了以下事情：
+
+
+  环境...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 22, 2021
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2021/06/11/iOS-dyld/">
+        <h2 class="post-title">
+            iOS-dyld
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                dyld
+
+在 MacOS 和 iOS 上，可执行程序的启动依赖于 xnu 内核进程运作和动态链接加载器 dyld。dyld 全称 the dynamic link editor，即动态链接器，其本质是 Mach-O 文件，是专门用来加载动态库的库。
+
+在 xnu 内核为程序启动做好准备后，执行由内核态切换到用户态，由 dyld 完成后面的加载工作：dyld 会将 App 依赖的动态库加载到...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 11, 2021
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2021/06/10/%E5%AF%B9%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95%E7%9A%84%E7%9C%8B%E6%B3%95/">
+        <h2 class="post-title">
+            对数据结构和算法的看法
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                对数据结构和算法的看法
+
+Eric S·Raymond 在《大教堂和市集》说道：
+
+
+  聪明的数据结构和笨拙的代码要比聪明的代码搭配笨拙的数据结构工作得更好。
+
+
+对这个描述深以为然。
+
+以前我对数据结构和算法的作用还没有什么深切的感受，我想主要原因是一直在写上层应用，都是逻辑很简单的简单代码，复杂的底层实现都被大牛们用API给屏蔽掉了。但是当我开始阅读一些计算机底层源码的时候（例如操作系...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 10, 2021
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2021/06/09/Mach-O%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90/">
+        <h2 class="post-title">
+            Mach-O结构分析
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                可执行文件
+
+我们运行一个程序（进程）是把一些特殊文件在内存中加载并运行得到的结果。那么这类文件的格式必须是系统内核可以理解的，系统内核才能正确解析。这类文件被称为可执行的文件。
+
+不同操作系统的可执行文件格式不同：
+
+
+在现代通用计算机系统中，虽然不同平台的可执行文件的格式不完全一样，但是原理大体相同，基本都是基于段结构的，可执行文件的结构基本可以分为：
+
+  header段：用于让操作系...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 9, 2021
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2021/05/25/OS%E5%86%85%E6%A0%B8(xv6)%E6%8E%A2%E7%A9%B6-%E5%88%86%E6%AE%B5&%E5%88%86%E9%A1%B5/">
+        <h2 class="post-title">
+            OS内核(xv6)探究-分段&分页
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                分段与分页
+
+分段和分页是现代操作系统管理和使用内存的方式，一般需要操作系统（软件）配合CPU（硬件）一起来实现分段和分页的功能。我的理解，分段的主要目的是为了实现对内存的保护，即操作系统的保护模式；分页的主要目的是为了提高对内存的利用率，减少内存碎片。
+
+分段是程序员能在开发过程中够感知到的部分，例如我们常说的代码段（TEXT段），数据段（DATA段），堆和栈都是段的概念，还有CS，DS，...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on May 25, 2021
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2021/05/21/OS%E5%86%85%E6%A0%B8(xv6)%E6%8E%A2%E7%A9%B6-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">
         <h2 class="post-title">
             OS内核(xv6)探究-系统调用
@@ -252,7 +380,7 @@
 <hr>
 
 <div class="post-preview">
-    <a href="/2021/05/21/OS%E5%86%85%E6%A0%B8(xv6)%E6%8E%A2%E7%A9%B6-%E5%89%8D%E8%A8%80/">
+    <a href="/2021/05/20/OS%E5%86%85%E6%A0%B8(xv6)%E6%8E%A2%E7%A9%B6-%E5%89%8D%E8%A8%80/">
         <h2 class="post-title">
             OS内核(xv6)探究-前言
         </h2>
@@ -268,7 +396,7 @@ Mark!!! 开始学习课程：操作系统-MIT-xv6
         </div>
     </a>
     <p class="post-meta">
-        Posted by guosai on May 21, 2021
+        Posted by guosai on May 20, 2021
     </p>
 </div>
 <hr>
@@ -348,208 +476,6 @@ OC是基于C的，在C的基础上扩展出了面向对象的能力，支持其�
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2020/07/01/%E9%87%8D%E4%BF%AEC++/">
-        <h2 class="post-title">
-            重修C++
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                准备重学下C++
-
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on July 1, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/">
-        <h2 class="post-title">
-            静态链接分析
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                注：本篇内容基本参考自：Mach-O 与静态链接。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。
-
-材料准备
-
-首先手写一个简单的C程序：a.c，b.c
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-/* a.c */
-#include &lt;stdio.h&gt;
-
-extern int gl...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on June 22, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/">
-        <h2 class="post-title">
-            x86_64汇编下的函数调用过程
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                材料准备
-
-首先手写一个简单的C程序：main.c
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-#include &lt;stdio.h&gt;
-
-void empty();
-i...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on June 10, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2/">
-        <h2 class="post-title">
-            计算机发展史
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                发展阶段
-
-【计算】 –&gt; 【计算 + 存储】 –&gt; 【可编程化计算 + 存储】 –&gt; 【人工智能 + 存储】
-
-早期计算机
-
-简单的加减乘除算数运算工具，目的是利用工具辅助人工计算
-
-1、纯手动工具：结绳记事、算盘、计算尺
-
-
-算盘
-
-2、手动机械工具：
-
-  1623年，德国科学家施卡德建造出世界已知的第一部机械式计算器，成为计算机世代之父，这部机械改良自时钟的齿轮技术...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on June 9, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97/">
-        <h2 class="post-title">
-            C语言拾遗
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                short, long
-
-1
-2
-short int x;
-long int y;
-
-
-short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。
-
-short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on March 29, 2020
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -586,45 +512,50 @@ short, int, long 在不同的机器架构下占用的长度不同，但一般遵
         
         
         
-                <a data-sort="0005" 
+                <a data-sort="0007" 
                     href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
                     title="计算机基础"
-                    rel="20">计算机基础</a>
+                    rel="22">计算机基础</a>
         
-                <a data-sort="0013" 
+                <a data-sort="0017" 
                     href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
                     title="从0到1构建计算机"
                     rel="12">从0到1构建计算机</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0024" 
+                    href="/archive/?tag=iOS"
+                    title="iOS"
+                    rel="5">iOS</a>
+        
+                <a data-sort="0025" 
                     href="/archive/?tag=%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"
                     title="操作系统"
-                    rel="3">操作系统</a>
+                    rel="4">操作系统</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0026" 
                     href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
                     title="汇编语言"
                     rel="3">汇编语言</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0026" 
                     href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
                     title="计算机硬件体系"
                     rel="3">计算机硬件体系</a>
         
-                <a data-sort="0023" 
+                <a data-sort="0026" 
+                    href="/archive/?tag=OS%E5%86%85%E6%A0%B8"
+                    title="OS内核"
+                    rel="3">OS内核</a>
+        
+                <a data-sort="0027" 
                     href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
                     title="数学基础"
                     rel="2">数学基础</a>
         
-                <a data-sort="0023" 
-                    href="/archive/?tag=OS%E5%86%85%E6%A0%B8"
-                    title="OS内核"
-                    rel="2">OS内核</a>
-        
-                <a data-sort="0023" 
-                    href="/archive/?tag=iOS"
-                    title="iOS"
-                    rel="2">iOS</a>
+                <a data-sort="0027" 
+                    href="/archive/?tag=objc"
+                    title="objc"
+                    rel="2">objc</a>
     </div>
 </section>
 

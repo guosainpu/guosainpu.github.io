@@ -232,6 +232,189 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2020/06/22/%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90/">
+        <h2 class="post-title">
+            静态链接分析
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                注：本篇内容基本参考自：Mach-O 与静态链接。然后自己做一些上手实践和分析，用来加深对静态链接过程的理解。
+
+材料准备
+
+首先手写一个简单的C程序：a.c，b.c
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+/* a.c */
+#include &lt;stdio.h&gt;
+
+extern int gl...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 22, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/06/10/x86_64%E6%B1%87%E7%BC%96%E4%B8%8B%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E8%BF%87%E7%A8%8B/">
+        <h2 class="post-title">
+            x86_64汇编下的函数调用过程
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                材料准备
+
+首先手写一个简单的C程序：main.c
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+#include &lt;stdio.h&gt;
+
+void empty();
+i...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 10, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/06/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8F%91%E5%B1%95%E5%8F%B2/">
+        <h2 class="post-title">
+            计算机发展史
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                发展阶段
+
+【计算】 –&gt; 【计算 + 存储】 –&gt; 【可编程化计算 + 存储】 –&gt; 【人工智能 + 存储】
+
+早期计算机
+
+简单的加减乘除算数运算工具，目的是利用工具辅助人工计算
+
+1、纯手动工具：结绳记事、算盘、计算尺
+
+
+算盘
+
+2、手动机械工具：
+
+  1623年，德国科学家施卡德建造出世界已知的第一部机械式计算器，成为计算机世代之父，这部机械改良自时钟的齿轮技术...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on June 9, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/03/29/C%E8%AF%AD%E8%A8%80%E6%8B%BE%E9%81%97/">
+        <h2 class="post-title">
+            C语言拾遗
+        </h2>
+        
+        <div class="post-content-preview">
+            
+                short, long
+
+1
+2
+short int x;
+long int y;
+
+
+short 和 long 用于修饰整型，和 int 一起使用，但使用时 int 关键字可以省略。
+
+short, int, long 在不同的机器架构下占用的长度不同，但一般遵循以下限制：short长度小于等于int，int长度小于等于long，一般short长度至少需要16位，long长度至少需要32位...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by guosai on March 29, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2020/03/22/%E6%94%B6%E8%8E%B7%E5%92%8C%E6%80%BB%E7%BB%93/">
         <h2 class="post-title">
             从0到1构建计算机(12/12)--收获和总结
@@ -362,97 +545,6 @@ class M...
 </div>
 <hr>
 
-<div class="post-preview">
-    <a href="/2020/02/19/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%B8%8E%E6%B1%87%E7%BC%96%E5%99%A8/">
-        <h2 class="post-title">
-            从0到1构建计算机(6/12)--汇编语言与汇编器
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                前一篇我们完成了Hack平台的硬件部分，本篇开始我们进入到软件的部分。相比较而言，软件部分更加复杂，需要花更多时间来实现和调试。软件部分的第一层就是汇编语言和汇编器，本篇我们将定义Hack的汇编语言，并编写对应的汇编器
-
-汇编语言和汇编器
-
-汇编语言是机器语言的符号表示，相比于机器语言，汇编语言更接近于自然语言，便于我们阅读和记忆。汇编语言和机器语言在表述上的一致性是非常高的，绝大多数情况下...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 19, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/02/01/hack-CPU%E6%9E%B6%E6%9E%84%E5%92%8C%E6%8C%87%E4%BB%A4%E9%9B%86/">
-        <h2 class="post-title">
-            从0到1构建计算机(5/12)--实现hack：计算机架构、内存、CPU和指令集
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                经过前两篇我们已经实现了所有的组合逻辑芯片和时序芯片，具备了实现hack计算机的基础，本篇是项目硬件部分的最后一篇，我们将在本篇定义hack能够执行的操作，即hack的指令集；实现hack的内存、CPU，然后将它们组合起来形成完整的计算机硬件架构。
-
-计算机架构
-
-hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是将中央处理单元和存储器，通过存储器中存储的程序指令控制中央处理器的执行...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on February 1, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2020/01/29/%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E6%97%B6%E5%BA%8F%E9%97%A8-%E5%AF%84%E5%AD%98%E5%99%A8-RAM-%E8%AE%A1%E6%95%B0%E5%99%A8/">
-        <h2 class="post-title">
-            从0到1构建计算机(4/12)--时序逻辑芯片：时序门、寄存器、RAM、计数器
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                上一篇我们实现了一系列组合逻辑芯片和CPU的运算大脑：ALU，但是组合逻辑芯片是一个实时系统，只要输入值改变了输出值也马上跟着改变，上一秒辛苦计算出来的值，下一秒就消失不见了，因此我们需要一个具备”记忆功能”的原件，用于存储数据。这就是我们本篇要介绍的：时序逻辑芯片。
-
-反馈电路、时钟系统、D触发器
-
-组合逻辑芯片之所以无法记住上一次计算的值，是因为电流信息的流向是单向的，它总是向前流动，导...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on January 29, 2020
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="/2019/12/16/%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E8%8A%AF%E7%89%87-%E9%80%BB%E8%BE%91%E9%97%A8-%E5%8A%A0%E6%B3%95%E5%99%A8-ALU/">
-        <h2 class="post-title">
-            从0到1构建计算机(3/12)--组合逻辑芯片：逻辑门、加法器、ALU
-        </h2>
-        
-        <div class="post-content-preview">
-            
-                上篇说到：通过使用Nand门，我们可以实现任何逻辑门，进而实现可以一个CPU。后面我们就会搭建一个麻雀虽小但五脏俱全的计算机平台：hack。本篇我们开始第一步，实现搭建hack所需的一组芯片：组合逻辑芯片
-
-组合逻辑芯片
-
-一个最基本的CPU主要由两类芯片组成：
-
-  组合逻辑芯片（Combinational Chips）：与、或、非门，加法器，ALU芯片等。这些芯片主要负责逻辑计算
-  时...
-            
-        </div>
-    </a>
-    <p class="post-meta">
-        Posted by guosai on December 16, 2019
-    </p>
-</div>
-<hr>
-
 
 <!-- Pager -->
 
@@ -493,45 +585,50 @@ hack是基于经典的冯·诺伊曼体系架构，它的关键组成部分是�
         
         
         
-                <a data-sort="0005" 
+                <a data-sort="0007" 
                     href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
                     title="计算机基础"
-                    rel="20">计算机基础</a>
+                    rel="22">计算机基础</a>
         
-                <a data-sort="0013" 
+                <a data-sort="0017" 
                     href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
                     title="从0到1构建计算机"
                     rel="12">从0到1构建计算机</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0024" 
+                    href="/archive/?tag=iOS"
+                    title="iOS"
+                    rel="5">iOS</a>
+        
+                <a data-sort="0025" 
                     href="/archive/?tag=%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"
                     title="操作系统"
-                    rel="3">操作系统</a>
+                    rel="4">操作系统</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0026" 
                     href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
                     title="汇编语言"
                     rel="3">汇编语言</a>
         
-                <a data-sort="0022" 
+                <a data-sort="0026" 
                     href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
                     title="计算机硬件体系"
                     rel="3">计算机硬件体系</a>
         
-                <a data-sort="0023" 
+                <a data-sort="0026" 
+                    href="/archive/?tag=OS%E5%86%85%E6%A0%B8"
+                    title="OS内核"
+                    rel="3">OS内核</a>
+        
+                <a data-sort="0027" 
                     href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
                     title="数学基础"
                     rel="2">数学基础</a>
         
-                <a data-sort="0023" 
-                    href="/archive/?tag=OS%E5%86%85%E6%A0%B8"
-                    title="OS内核"
-                    rel="2">OS内核</a>
-        
-                <a data-sort="0023" 
-                    href="/archive/?tag=iOS"
-                    title="iOS"
-                    rel="2">iOS</a>
+                <a data-sort="0027" 
+                    href="/archive/?tag=objc"
+                    title="objc"
+                    rel="2">objc</a>
     </div>
 </section>
 

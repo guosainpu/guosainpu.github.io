@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="">
+    <meta name="keywords"  content="">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Mach-O结构分析 - 一只草履虫">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="可执行文件
+">
+    
+    <meta property="article:published_time" content="2021-06-09T00:00:00Z">
+    
+    
+    <meta property="article:author" content="guosai">
+    
+    
+    <meta property="article:tag" content="iOS">
+    
+    <meta property="article:tag" content="objc-runtime">
+    
+    
+    <meta property="og:image" content="http://localhost:4000/img/avatar-hux-ny.jpg">
+    <meta property="og:url" content="http://localhost:4000/2021/06/09/Mach-O%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90/">
+    <meta property="og:site_name" content="一只草履虫">
+    
+    <title>Mach-O结构分析 - 一只草履虫</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2021/06/09/Mach-O%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">一只草履虫</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/home-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/home-bg.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=iOS" title="iOS">iOS</a>
+                        
+                        <a class="tag" href="/archive/?tag=objc-runtime" title="objc-runtime">objc-runtime</a>
+                        
+                    </div>
+                    <h1>Mach-O结构分析</h1>
+                    
+                    <h2 class="subheading"></h2>
+                    <span class="meta">Posted by guosai on June 9, 2021</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h3 id="可执行文件">可执行文件</h3>
+
+<p>我们运行一个程序（进程）是把一些特殊文件在内存中加载并运行得到的结果。那么这类文件的格式必须是系统内核可以理解的，系统内核才能正确解析。这类文件被称为<strong>可执行的文件</strong>。</p>
+
+<p>不同操作系统的可执行文件格式不同：</p>
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbybt57qaj310s0o4q3w.jpg" width="800" /></center>
+
+<p>在现代通用计算机系统中，虽然不同平台的可执行文件的格式不完全一样，但是原理大体相同，基本都是<strong>基于段结构的</strong>，可执行文件的结构基本可以分为：</p>
+<ol>
+  <li>header段：用于让操作系统识别可执行文件</li>
+  <li>TEXT段：存放编译后的函数的二进制代码，TEXT段的内容被标记为只读的，可执行的。如果试图修改TEXT段的内容则会引发段异常</li>
+  <li>DATA段：用于存放一些运行时数据，DATA段的内容是可读可写的（一般是）</li>
+  <li>其他段：例如用于辅助完成动态链接的段（Mach-O中是LINKEDIT段）</li>
+</ol>
+
+<h3 id="mach-o">Mach-O</h3>
+
+<p>Mach-O文件是苹果平台下的可执行文件。</p>
+
+<p>例如，我们进入到/use/bin目录下，我们看到的大多数文件就都是Mach-O文件</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre>➜  bin pwd
+/usr/bin
+
+➜  bin ls
+2to3-                              file                               machine                            script
+2to3-2.7                           filebyproc.d                       mail                               sdef
+AssetCacheLocatorUtil              fileproviderctl                    mailq                              sdiff
+AssetCacheManagerUtil              filtercalltree                     mailx                              sdp
+AssetCacheTetheratorUtil           find                               make                               sdx
+BuildStrings                       find2perl                          makeinfo                           security
+..........
+
+➜  bin file file
+file: Mach-O 64-bit executable x86_64
+
+➜  bin file script
+script: Mach-O 64-bit executable x86_64
+
+➜  bin file env
+env: Mach-O 64-bit executable x86_64
+
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可执行文件一般都是二进制形式的，想要看懂Mach-O文件，一般都要借助工具来分析。常用的有系统自带的otool和可视化工具MachOView</p>
+
+<h4 id="otool">otool</h4>
+
+<p>otool是Xcode自带工具llvm-otool的一个软连接。他是一个dump工具，帮助我们dump Mach-O文件</p>
+
+<h4 id="machoview">MachOView</h4>
+<p>用 MachOView 来可视化分析则更加方便。</p>
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbyx6yqmvj31au0u0jxl.jpg" width="800" /></center>
+
+<h4 id="源代码">源代码</h4>
+<p>通过源代码的头文件可以帮助分析，而且会有一些有用的注释</p>
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grbyzahifzj30vm0f0djw.jpg" width="600" /></center>
+
+<h3 id="mach-o结构">Mach-O结构</h3>
+
+<h4 id="header">Header</h4>
+
+<p>文件最开始的Header是mach_header结构体，定义在&lt;mach-o/loader.h&gt;</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>struct mach_header_64 {
+	uint32_t	magic;		/* mach magic number identifier, 系统内核用来判断是否是mach-o格式*/
+	cpu_type_t	cputype;	/* cpu specifier, 支持CPU的类型 */
+	cpu_subtype_t	cpusubtype;	/* machine specifier */
+	uint32_t	filetype;	/* type of file, 说明mach-o文件是属于哪种文件*/
+	uint32_t	ncmds;		/* number of load commands, load command的条数*/
+	uint32_t	sizeofcmds;	/* the size of all the load commands, load command的大小 */
+	uint32_t	flags;		/* flags */
+	uint32_t	reserved;	/* reserved */
+};
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>其中filetype常取字段有：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>#define	MH_OBJECT	0x1	 目标文件	
+#define	MH_EXECUTE	0x2	可执行文件	
+#define	MH_DYLIB	0x6	 动态库	
+#define	MH_DYLINKER	0x7	动态连接器	
+#define	MH_DSYM		0xa	存储二进制文件符号信息，用于Debug分析
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="loadcommand">LoadCommand</h4>
+
+<p>LoadCommand用于指导动态加载器或动态链接器该如何加载和链接可执行文件以及其所依赖的动态库。也描述了一些segements的信息。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>struct segment_command_64 { /* for 64-bit architectures */
+ 	uint32_t	cmd;		/* LC_SEGMENT_64 */
+ 	uint32_t	cmdsize;	/* includes sizeof section_64 structs */
+ 	char		segname[16];	/* segment name */
+ 	uint64_t	vmaddr;		/* memory address of this segment */
+ 	uint64_t	vmsize;		/* memory size of this segment */
+ 	uint64_t	fileoff;	/* file offset of this segment */
+ 	uint64_t	filesize;	/* amount to map from the file */
+ 	vm_prot_t	maxprot;	/* maximum VM protection */
+ 	vm_prot_t	initprot;	/* initial VM protection */
+ 	uint32_t	nsects;		/* number of sections in segment */
+ 	uint32_t	flags;		/* flags */
+};
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>字段解释：</p>
+
+<ul>
+  <li>cmd：加载命令的类型</li>
+  <li>cmdsize：加载命令所占内存大小</li>
+  <li>segname：存放16字节大小的段名字</li>
+  <li>vmaddr：段的虚拟内存起始地址</li>
+  <li>vmsize：段的虚拟内存大小</li>
+  <li>fileoff：段在文件中偏移量</li>
+  <li>filesize：段在文件大小</li>
+  <li>maxprot：段页面所需要的最高内存保护（4=r,2=w,1=x）</li>
+  <li>initprot：段页面初始的内存保护</li>
+  <li>nsects：段中包含section的数量</li>
+  <li>flags：其他杂项标志位</li>
+</ul>
+
+<p>LoadCommand中的Command也有不同种类，有的是加载各种segements，有的是加载动态库，有的是加载符号等等。下图可以看到Mach-O的一些LoadCommand</p>
+<center><img src="https://tva1.sinaimg.cn/large/008i3skNly1grc8h430qvj30p60miab3.jpg" width="600" /></center>
+
+<ul>
+  <li>LC_SEGMENT_64：将文件中的段映射到进程地址空间中</li>
+  <li>LC_DYLD_INFO_ONLY：动态链接相关信息，指导DYLD进行rebase，bind，lazybind等工作</li>
+  <li>LC_SYMTAB：符号表信息，位置、偏移、数据个数，供dyld使用</li>
+  <li>LC_DYSYMTAB：动态符号表信息，供dyld使用</li>
+  <li>LC_LOAD_DYLINKER：链接器信息，记录使用那些链接器完成内核后序的加载工作</li>
+  <li>LC_UUID：Mach-O文件的唯一标识</li>
+  <li>LC_VERSION_MIN_MACOSX：支持最低操作系统版本</li>
+  <li>LC_SOURCE_VERSION：源代码的版本号</li>
+  <li>LC_MAIN：设置主线程的入口即栈大小</li>
+  <li>LC_LOAD_DYLIB：依赖库信息，dyld通过该命令去加载依赖库</li>
+  <li>LC_FUNCTION_STARTS：函数的起始地址表</li>
+  <li>LC_CODE_SIGNATURE：代码签名</li>
+</ul>
+
+<h4 id="text-和-data">TEXT 和 DATA</h4>
+
+<p>TEXT段和DATA段又可以细分为很多个section，每个section又有不同的作用。其中TEXT段为只读段，DATA有的只读，有的可读可写。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Section</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TEXT</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__text</code></td>
+      <td>主程序代码，一般都是过程（函数）的二进制指令</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__cstring</code></td>
+      <td>C 语言字符串</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__const</code></td>
+      <td><code class="language-plaintext highlighter-rouge">const</code> 关键字修饰的常量</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__stubs</code></td>
+      <td>用于 Stub 的占位代码，很多地方称之为<em>桩代码</em>。</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__stubs_helper</code></td>
+      <td>当 Stub 无法找到真正的符号地址后的最终指向，是一些辅助方法（用于符号绑定）</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__objc_methname</code></td>
+      <td>Objective-C 方法名称</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__objc_methtype</code></td>
+      <td>Objective-C 方法类型</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__TEXT.__objc_classname</code></td>
+      <td>Objective-C 类名称</td>
+    </tr>
+    <tr>
+      <td>DATA</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__data</code></td>
+      <td>初始化过的可变数据</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__la_symbol_ptr</code></td>
+      <td>lazy binding 的指针表，表中的指针一开始都指向 <code class="language-plaintext highlighter-rouge">__stub_helper</code></td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.nl_symbol_ptr</code></td>
+      <td>非 lazy binding 的指针表，每个表项中的指针都指向一个在装载过程中，被动态链机器搜索完成的符号</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__const</code></td>
+      <td>没有初始化过的常量</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__cfstring</code></td>
+      <td>程序中使用的 Core Foundation 字符串（<code class="language-plaintext highlighter-rouge">CFStringRefs</code>）</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__bss</code></td>
+      <td>BSS，存放为初始化的全局变量，即常说的静态内存分配</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__common</code></td>
+      <td>没有初始化过的符号声明</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_classlist</code></td>
+      <td>Objective-C 类列表</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_protolist</code></td>
+      <td>Objective-C 原型</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_imginfo</code></td>
+      <td>Objective-C 镜像信息</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_selfrefs</code></td>
+      <td>Objective-C <code class="language-plaintext highlighter-rouge">self</code> 引用</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_protorefs</code></td>
+      <td>Objective-C 原型引用</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">__DATA.__objc_superrefs</code></td>
+      <td>Objective-C 超类引用</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="danamiclink">DanamicLink</h4>
+
+<ul>
+  <li>Dynamic Loader Info：指导dyld进行rebase，bind，lazybind等工作</li>
+  <li>Symbol Table：符号表，用于记录符号和符号对应的地址</li>
+  <li>Indirect Symbol Table：间接符号表，主要用于动态链接</li>
+  <li>字符串表：记录字符串</li>
+</ul>
+
+<h3 id="了解mach-o的意义">了解Mach-O的意义</h3>
+
+<ol>
+  <li>了解Mach-O能帮助我们更好的了解iOS程序运行的原理，更深入的理解上层语言运行时的机制，帮助我们更好的进行上层应用的开发。</li>
+  <li>能更好的理解一些运行时的黑魔法，例如method swizzle，fishHook等。</li>
+  <li>提高一些工作效率，例如通过分析Mach-O来分析废弃方法，重复方法等。</li>
+  <li>搞iOS逆向的必备知识</li>
+</ol>
+
+<h3 id="后续计划">后续计划</h3>
+
+<p>Mach-O文件的格式、内容本身并不复杂。比较复杂的是Mach-O中如何支持Objc runtime，如何进行动态链接，dyld如何加载mach-o等内容。后续计划再结合这些方面继续对Mach-O进行研究。</p>
+
+<ol>
+  <li>Mach-O与动态链接</li>
+  <li>Mach-O与objc runtime</li>
+</ol>
+
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2021/05/25/OS%E5%86%85%E6%A0%B8(xv6)%E6%8E%A2%E7%A9%B6-%E5%88%86%E6%AE%B5&%E5%88%86%E9%A1%B5/" data-toggle="tooltip" data-placement="top" title="OS内核(xv6)探究-分段&分页">
+                        Previous<br>
+                        <span>OS内核(xv6)探究-分段&分页</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2021/06/10/%E5%AF%B9%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95%E7%9A%84%E7%9C%8B%E6%B3%95/" data-toggle="tooltip" data-placement="top" title="对数据结构和算法的看法">
+                        Next<br>
+                        <span>对数据结构和算法的看法</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                <!---->
+                <!-- disqus 评论框 start -->
+                <!--<div class="comment">-->
+                <!--    <div id="disqus_thread" class="disqus-thread"></div>-->
+                <!--</div>-->
+                <!-- disqus 评论框 end -->
+                <!---->
+
+                <!---->
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80"
+                    title="计算机基础"
+                    rel="22">计算机基础</a>
+        
+                <a data-sort="0017" 
+                    href="/archive/?tag=%E4%BB%8E0%E5%88%B01%E6%9E%84%E5%BB%BA%E8%AE%A1%E7%AE%97%E6%9C%BA"
+                    title="从0到1构建计算机"
+                    rel="12">从0到1构建计算机</a>
+        
+                <a data-sort="0024" 
+                    href="/archive/?tag=iOS"
+                    title="iOS"
+                    rel="5">iOS</a>
+        
+                <a data-sort="0025" 
+                    href="/archive/?tag=%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"
+                    title="操作系统"
+                    rel="4">操作系统</a>
+        
+                <a data-sort="0026" 
+                    href="/archive/?tag=%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80"
+                    title="汇编语言"
+                    rel="3">汇编语言</a>
+        
+                <a data-sort="0026" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A1%AC%E4%BB%B6%E4%BD%93%E7%B3%BB"
+                    title="计算机硬件体系"
+                    rel="3">计算机硬件体系</a>
+        
+                <a data-sort="0026" 
+                    href="/archive/?tag=OS%E5%86%85%E6%A0%B8"
+                    title="OS内核"
+                    rel="3">OS内核</a>
+        
+                <a data-sort="0027" 
+                    href="/archive/?tag=%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80"
+                    title="数学基础"
+                    rel="2">数学基础</a>
+        
+                <a data-sort="0027" 
+                    href="/archive/?tag=objc"
+                    title="objc"
+                    rel="2">objc</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hux";
+    var disqus_identifier = "/2021/06/09/Mach-O结构分析";
+    var disqus_url = "http://localhost:4000/2021/06/09/Mach-O%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'huangxuan.me';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
