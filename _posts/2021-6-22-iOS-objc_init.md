@@ -125,7 +125,7 @@ map_image的核心方法是read_image，大概有350行代码，核心功能是�
 
 ### realizeClassWithoutSwift
 
-realizeClassWithoutSwift 方法主要作用是将类的 data 信息加载到内存当中，还有对 ro 和 rw 进行了相关操作。主要有以下几个步骤。
+realizeClassWithoutSwift 主要做了以下三件事情：
 
 1. 读取 data 数据，并设置 ro 、rw
     - 读取 data 数据，并将其强转为 ro，以及初始化 rw，然后将 ro 拷贝一份到 rw 的 ro
