@@ -137,6 +137,166 @@ realizeClassWithoutSwift 主要做了以下三件事情：
     - 分别将父类和元类赋值给 class 的 superclass 和 classIsa
 3. 调用 methodizeClass 方法，读取方法列表(包括分类)、协议列表、属性列表，然后赋值给 rw，最后返回 cls
 
+### load_images
+
+load_images 函数是对 load 方法的加载和调用，接下来我们就来看看底层是怎么对 load 处理的。
+
+```c
+void load_images(const char *path __unused, const struct mach_header *mh)
+{
+    // 如果这里没有+load方法，则返回时不带锁。
+    if (!hasLoadMethods((const headerType *)mh)) return;
+
+    recursive_mutex_locker_t lock(loadMethodLock);
+
+    {
+        mutex_locker_t lock2(runtimeLock);
+        // 准备，查找 load 方法
+        prepare_load_methods((const headerType *)mh);
+    }
+
+    // 调用 load 方法
+    call_load_methods();
+}
+```
+
+进到 prepare_load_methods 可以看到系统是如何加载 load 方法的。遵循的原则：先去加载父类的，然后再加载本类，之后再去加载分类的 load 方法。
+
+```c
+void prepare_load_methods(const headerType *mhdr)
+{
+    size_t count, i;
+    runtimeLock.assertLocked();
+    // 获取非懒加载类列表
+    classref_t *classlist = 
+        _getObjc2NonlazyClassList(mhdr, &count);
+    for (i = 0; i < count; i++) {
+        // 循环遍历去加载非懒加载类的 load 方法到 loadable_classes
+        schedule_class_load(remapClass(classlist[i]));
+    }
+    // 获取非懒加载分类列表
+    category_t **categorylist = _getObjc2NonlazyCategoryList(mhdr, &count);
+    for (i = 0; i < count; i++) {
+        category_t *cat = categorylist[i];
+        Class cls = remapClass(cat->cls);
+        if (!cls) continue;  // category for ignored weak-linked class
+        if (cls->isSwiftStable()) {
+            _objc_fatal("Swift class extensions and categories on Swift "
+                        "classes are not allowed to have +load methods");
+        }
+        // 如果本类没有初始化就去初始化
+        realizeClassWithoutSwift(cls);
+        assert(cls->ISA()->isRealized());
+        
+        // 循环遍历去加载非懒加载分类的 load 方法到 loadable_categories
+        // 和非懒加载类差不多，就是数组不一样
+        add_category_to_loadable_list(cat);
+    }
+}
+
+static void schedule_class_load(Class cls)
+{
+    if (!cls) return;
+    assert(cls->isRealized());  // _read_images should realize
+
+    if (cls->data()->flags & RW_LOADED) return;
+
+    // 常规操作，递归调用父类加载 load 方法
+    schedule_class_load(cls->superclass);
+    // 将 load 方法加载到 loadable_classes
+    add_class_to_loadable_list(cls);
+    cls->setInfo(RW_LOADED); 
+}
+
+void add_class_to_loadable_list(Class cls)
+{
+    IMP method;
+    loadMethodLock.assertLocked();
+    // 获取 load 方法的 imp
+    method = cls->getLoadMethod();
+    // 如果没有 load 方法直接返回
+    if (!method) return; 
+    
+    if (PrintLoading) {
+        _objc_inform("LOAD: class '%s' scheduled for +load", 
+                     cls->nameForLogging());
+    }
+    // 扩容
+    if (loadable_classes_used == loadable_classes_allocated) {
+        loadable_classes_allocated = loadable_classes_allocated*2 + 16;
+        loadable_classes = (struct loadable_class *)
+            realloc(loadable_classes,
+                              loadable_classes_allocated *
+                              sizeof(struct loadable_class));
+    }
+    // loadable_classes 添加 load 方法
+    loadable_classes[loadable_classes_used].cls = cls;
+    loadable_classes[loadable_classes_used].method = method;
+    loadable_classes_used++;
+}
+```
+
+load方法的调用
+
+```c
+void call_load_methods(void)
+{
+    static bool loading = NO;
+    bool more_categories;
+    loadMethodLock.assertLocked();
+
+    // 保证只调用一次
+    if (loading) return;
+    loading = YES;
+
+    void *pool = objc_autoreleasePoolPush();
+    // do while 循环调用 load 方法
+    do {
+        // 1.重复调用非懒加载类的 load，直到没有更多的
+        while (loadable_classes_used > 0) {
+            call_class_loads();
+        }
+
+        // 2.调用非懒加载分类的 load 方法，和非懒加载类差不多
+        more_categories = call_category_loads();
+
+        // 3. 如果有类或更多未尝试的类别，则运行更多 load
+    } while (loadable_classes_used > 0  ||  more_categories);
+
+    objc_autoreleasePoolPop(pool);
+    loading = NO;
+}
+
+static void call_class_loads(void)
+{
+    int i;
+    // 取出 loadable_classes
+    struct loadable_class *classes = loadable_classes;
+    int used = loadable_classes_used;
+    loadable_classes = nil;
+    loadable_classes_allocated = 0;
+    loadable_classes_used = 0;
+    
+    // 调用保存在 loadable_classes 里的 load 方法
+    for (i = 0; i < used; i++) {
+        Class cls = classes[i].cls;
+        load_method_t load_method = (load_method_t)classes[i].method;
+        if (!cls) continue; 
+
+        if (PrintLoading) {
+            _objc_inform("LOAD: +[%s load]\n", cls->nameForLogging());
+        }
+        // 发送 load 消息
+        (*load_method)(cls, SEL_load);
+    }
+    
+    // 释放内存
+    if (classes) free(classes);
+}
+
+```
+
+总结看 load 的调用，可以得出，load 的调用顺序是：**父类->本类->分类。**
 
 ### 加载流程图
 
