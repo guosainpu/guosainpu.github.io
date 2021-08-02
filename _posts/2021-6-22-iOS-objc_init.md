@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      iOS-objc_init
-date:       2021-6-22
+date:       2019-6-22
 author:     "guosai"
 tags:
     - iOS
